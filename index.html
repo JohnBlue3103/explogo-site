@@ -1,0 +1,309 @@
+<!doctype html>
+<html lang="fr">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>ExploGo</title>
+    <meta name="description"
+        content="ExploGo révèle l’histoire autour de vous : +20 000 lieux certifiés, scan à proximité, progression, partage. Pour explorer, enseigner et visiter." />
+    <link rel="stylesheet" href="css/home.css">
+    <script src="js/home.js" defer></script>
+</head>
+
+<body>
+    <a class="skip-link" href="#contenu">Aller au contenu</a>
+
+    <header class="site-header">
+        <nav class="nav" aria-label="Navigation principale">
+            <a class="brand" href="home.html" aria-label="ExploGo, retour à l'accueil">
+                <img src="assets/img/logo.png" alt="" class="brand-logo">
+                <span class="brand-name">ExploGo</span>
+            </a>
+
+            <ul class="nav-links">
+                <li><a href="#fonctionnalites">Fonctionnalités</a></li>
+                <li><a href="#pour-qui">Pour qui ?</a></li>
+                <li><a href="#fiabilite">Fiabilité</a></li>
+                <li><a href="#faq">FAQ</a></li>
+            </ul>
+
+            <ul class="nav-cta">
+                <li><a class="btn btn-primary" href="#telecharger">Télécharger</a></li>
+            </ul>
+        </nav>
+        <!-- HERO -->
+        <section id="hero" class="section hero" aria-labelledby="titre-principal">
+            <div class="hero-bg" aria-hidden="true">
+                <!-- Fond carte stylisé (SVG léger) -->
+                <svg class="hero-map" viewBox="0 0 1200 700" preserveAspectRatio="none" aria-hidden="true">
+                    <defs>
+                        <linearGradient id="g1" x1="0" x2="1">
+                            <stop offset="0" stop-color="rgba(43,142,160,0.22)"></stop>
+                            <stop offset="1" stop-color="rgba(255,122,92,0.16)"></stop>
+                        </linearGradient>
+                    </defs>
+
+                    <!-- “routes” -->
+                    <path d="M-40,120 C160,40 260,260 460,180 C640,100 720,260 900,220 C1060,190 1120,70 1260,110"
+                        fill="none" stroke="url(#g1)" stroke-width="2.2" opacity="0.55" />
+                    <path d="M-40,420 C180,520 320,340 520,420 C700,490 820,620 980,520 C1120,450 1180,380 1260,430"
+                        fill="none" stroke="rgba(43,142,160,0.18)" stroke-width="2" opacity="0.6" />
+                    <path d="M120,680 C220,560 380,560 520,620 C680,690 820,540 1020,610 C1120,640 1180,610 1260,650"
+                        fill="none" stroke="rgba(255,210,74,0.18)" stroke-width="2" opacity="0.8" />
+
+                    <!-- “quartiers” (formes très subtiles) -->
+                    <circle cx="250" cy="240" r="110" fill="rgba(43,142,160,0.06)"></circle>
+                    <circle cx="860" cy="260" r="140" fill="rgba(255,122,92,0.05)"></circle>
+                    <circle cx="720" cy="520" r="160" fill="rgba(255,210,74,0.06)"></circle>
+                </svg>
+
+                <!-- Pins animés -->
+                <span class="pin" style="--x:18%; --y:32%; --d:0s"></span>
+                <span class="pin" style="--x:38%; --y:26%; --d:.4s"></span>
+                <span class="pin" style="--x:52%; --y:44%; --d:.8s"></span>
+                <span class="pin" style="--x:64%; --y:30%; --d:1.1s"></span>
+                <span class="pin" style="--x:78%; --y:46%; --d:1.5s"></span>
+                <span class="pin" style="--x:30%; --y:58%; --d:1.8s"></span>
+            </div>
+
+            <div class="container hero-grid">
+                <div class="hero-copy" data-reveal>
+                    <h1 id="titre-principal">Explorez l’histoire qui vous entoure !</h1>
+                    <p class="lead">
+                        Partez en immersion dans l’histoire et le patrimoine avec ExploGo.<br> Autour de vous, marchez
+                        sur
+                        les traces des grands personnages et des batailles décisives, explorez châteaux, églises et
+                        cathédrales, demeures remarquables, monuments antiques et vestiges de la Préhistoire grâce à la
+                        géolocalisation en temps réel.<br> Créez votre profil, collectionnez les lieux, gagnez
+                        expérience et
+                        niveaux, relevez des défis et partagez vos découvertes.<br> Chaque récit, court et sourcé, vous
+                        plonge dans une visite vivante. ExploGo transforme chaque balade en aventure historique
+                        immersive.
+                    </p>
+
+                    <div class="actions">
+                        <a class="btn btn-primary" href="#telecharger">Télécharger l’application</a>
+
+                        <p class="meta">
+                            <strong><span id="countPois" data-count="25000">20&nbsp;000</span></strong> points d’intérêt
+                            •
+                            Données issues de bases reconnues
+                        </p>
+                    </div>
+                    <figure class="postcard" data-reveal>
+                        <img src="assets/img/carte_france_vintage.png"
+                            alt="Explorateur devant une cité médiévale, ambiance voyage dans le temps">
+                    </figure>
+                </div>
+                <figure class="shot" data-reveal>
+                    <img src="assets/ecran-app/ecran-carte.jpg"
+                        alt="Capture d’écran de l’application ExploGo affichant une carte avec des lieux historiques" />
+                    <figcaption>Carte interactive et fiches de lieux : l’histoire, au bon endroit.</figcaption>
+                </figure>
+            </div>
+        </section>
+    </header>
+
+    <main id="contenu">
+
+        <!-- FONCTIONNALITÉS -->
+        <section id="fonctionnalites" class="section" aria-labelledby="titre-fonctionnalites">
+            <div class="container">
+                <div class="section-head" data-reveal>
+                    <h2 id="titre-fonctionnalites">Fonctionnalités principales</h2>
+                </div>
+
+                <div class="feature-switcher">
+                    <div class="feature-list" role="tablist" aria-label="Fonctionnalités">
+                        <button class="feature-item is-active" role="tab" aria-selected="true"
+                            data-title="Carte interactive"
+                            data-desc="Repère des lieux autour de toi et explore par zone, ville ou quartier."
+                            data-badge="+20 000 lieux" data-img="assets/features/map.png">
+                            Carte interactive
+                        </button>
+
+                        <button class="feature-item" role="tab" aria-selected="false"
+                            data-title="Fiches contextualisées"
+                            data-desc="Des informations claires et vérifiées pour comprendre l’histoire d’un lieu."
+                            data-badge="Sources reconnues" data-img="assets/features/fiche.png">
+                            Fiches contextualisées
+                        </button>
+
+                        <button class="feature-item" role="tab" aria-selected="false" data-title="Recherche & filtres"
+                            data-desc="Trouve rapidement un lieu ou un thème : périodes, types de sites, villes."
+                            data-badge="Rapide & précis" data-img="assets/features/recherche.png">
+                            Recherche & filtres
+                        </button>
+
+                        <button class="feature-item" role="tab" aria-selected="false"
+                            data-title="Scan sur place (≤ 100 m)"
+                            data-desc="Approche-toi d’un lieu pour le scanner, le débloquer et enrichir ton parcours."
+                            data-badge="Scan ≤ 100 m" data-img="assets/features/scan.png">
+                            Scan sur place (≤ 100 m)
+                        </button>
+                    </div>
+
+                    <div class="feature-preview" data-reveal>
+                        <div class="feature-card">
+                            <div class="feature-top">
+                                <p class="feature-kicker">Détails</p>
+                            </div>
+
+                            <div class="feature-progress" aria-hidden="true">
+                                <span id="featureBar"></span>
+                            </div>
+
+                            <h3 id="featureTitle">Carte interactive</h3>
+                            <p id="featureDesc">Repère des lieux autour de toi et explore par zone, ville ou quartier.
+                            </p>
+
+                            <div class="feature-badges">
+                                <span id="featureBadge" class="badge">+20 000 lieux</span>
+                                <span id="featurePulse" class="pulse-badge" aria-hidden="true">Scan</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- POUR QUI -->
+        <section id="pour-qui" class="section section-soft" aria-labelledby="titre-pour-qui">
+            <div class="container">
+                <div class="section-head">
+                    <h2 id="titre-pour-qui">ExploGo s’adapte à toi</h2>
+                    <p class="sublead">
+                        Une application complète pour tous les usages.
+                    </p>
+                </div>
+
+                <div class="cards-3">
+                    <article class="card card-explorateurs" aria-labelledby="cible-explorateurs">
+                        <h3 id="cible-explorateurs">Explorateurs</h3>
+                        <p>Balades, scans, progression : transforme tes sorties en aventure culturelle.</p>
+                        <a class="link" href="explorateurs.html">Découvrir</a>
+                    </article>
+
+                    <article class="card card-enseignants" aria-labelledby="cible-enseignants">
+                        <h3 id="cible-enseignants">Enseignants</h3>
+                        <p>Un support moderne pour rendre l’histoire plus vivante (cours, sorties, projets).</p>
+                        <a class="link" href="enseignants.html">Découvrir</a>
+                    </article>
+
+                    <article class="card card-tourisme" aria-labelledby="cible-tourisme">
+                        <h3 id="cible-tourisme">Tourisme</h3>
+                        <p>Un guide culturel : visite une ville et comprends ce qui s’y est passé.</p>
+                        <a class="link" href="tourisme.html">Découvrir</a>
+                    </article>
+                </div>
+            </div>
+        </section>
+
+        <!-- FIABILITÉ -->
+        <section id="fiabilite" class="section" aria-labelledby="titre-fiabilite">
+            <div class="container">
+                <div class="split">
+                    <div>
+                        <h2 id="titre-fiabilite">Fiabilité & démarche</h2>
+                        <p class="lead-small">
+                            ExploGo s’appuie sur <strong>plus de 20 000</strong> points d’intérêt.
+                            Données issues de bases <strong>certifiées et reconnues</strong>, supervisées par un
+                            <strong>professeur d’Histoire-Géographie</strong>.
+                        </p>
+
+                        <ul class="bullets">
+                            <li>Sources reconnues et structurées</li>
+                            <li>Contrôle éditorial et cohérence des fiches</li>
+                            <li>Objectif : rendre l’histoire accessible sans la déformer</li>
+                        </ul>
+                    </div>
+
+                    <aside class="panel">
+                        <p class="panel-kicker">En bref</p>
+                        <p class="panel-title">Une base solide, conçue pour durer.</p>
+                        <p class="panel-text">
+                            Les informations s’appuient sur
+                            <a href="https://www.culture.gouv.fr/espace-documentation/bases-de-donnees/merimee-une-base-de-donnees-du-patrimoine-monumental-francais-de-la-prehistoire-a-nos-jours"
+                                target="_blank" rel="noopener noreferrer">Mérimée</a>,
+                            des bibliographies spécialisées,
+                            <a href="https://commons.wikimedia.org/wiki/Accueil" target="_blank"
+                                rel="noopener noreferrer">Wikimedia Commons</a>
+                            et <a href="https://www.wikidata.org/wiki/Wikidata:Main_Page" target="_blank"
+                                rel="noopener noreferrer">Wikidata</a>.
+                        </p>
+                    </aside>
+                </div>
+            </div>
+        </section>
+
+        <!-- TÉLÉCHARGEMENT -->
+        <section id="telecharger" class="section section-soft" aria-labelledby="titre-telecharger">
+            <div class="container">
+                <div class="section-head">
+                    <h2 id="titre-telecharger">Télécharger sur mobile</h2>
+                    <p class="sublead">Choisis ta plateforme.</p>
+                </div>
+
+                <ul class="store-list">
+                    <li><a href="https://example.com/android" rel="nofollow">Installer sur Android</a></li>
+                    <li><a href="https://example.com/ios" rel="nofollow">Installer sur iPhone</a></li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- FAQ -->
+        <section id="faq" class="section" aria-labelledby="titre-faq">
+            <div class="container">
+                <div class="section-head">
+                    <h2 id="titre-faq">FAQ</h2>
+                    <p class="sublead">Réponses rapides. Le reste sur les pages dédiées.</p>
+                </div>
+
+                <div class="faq">
+                    <details>
+                        <summary>Comment fonctionne le scan des lieux ?</summary>
+                        <p>Pour scanner un lieu, il faut se rendre à proximité (environ <strong>moins de 100
+                                mètres</strong>).
+                            Une fois scanné, le lieu est ajouté à tes découvertes.</p>
+                    </details>
+
+                    <details>
+                        <summary>D’où viennent les informations historiques ?</summary>
+                        <p>Les données proviennent de bases reconnues et sont encadrées par un professeur
+                            d’Histoire-Géographie,
+                            afin d’assurer une bonne fiabilité historique.</p>
+                    </details>
+
+                    <details>
+                        <summary>Peut-on utiliser ExploGo en classe ?</summary>
+                        <p>Oui : ExploGo peut servir de support pour des activités pédagogiques, des sorties et des
+                            projets,
+                            en rendant l’histoire plus interactive.</p>
+                    </details>
+
+                    <details>
+                        <summary>ExploGo peut-il servir de guide touristique ?</summary>
+                        <p>Oui : en visitant une ville, tu peux repérer des lieux, comprendre les événements associés
+                            et construire un parcours de découverte.</p>
+                    </details>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="site-footer">
+        <div class="container">
+            <nav aria-label="Liens de bas de page">
+                <ul class="footer-links">
+                    <li><a href="conditions-utilisation.html">Conditions d'utilisation</a></li>
+                    <li><a href="confidentialite.html">Politique de confidentialité</a></li>
+                    <li><a href="mentions-legales.html">Mentions légales</a></li>
+                </ul>
+            </nav>
+            <p class="copyright">© <span>ExploGo</span> — Tous droits réservés.</p>
+        </div>
+    </footer>
+</body>
+
+</html>

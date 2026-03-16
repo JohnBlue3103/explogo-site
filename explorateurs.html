@@ -1,0 +1,412 @@
+<!-- explorateurs.html -->
+<!doctype html>
+<html lang="fr">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>ExploGo — Explorateurs</title>
+    <meta name="description"
+        content="Transforme tes sorties en aventure : scan sur place, niveaux, collection de monuments et rapport d’explorateur avec stats." />
+
+    <!-- Base style identique à la home -->
+    <link rel="stylesheet" href="css/home.css">
+    <!-- Surcouche dédiée -->
+    <link rel="stylesheet" href="css/explorateurs.css">
+
+    <script src="js/explorateurs.js" defer></script>
+</head>
+
+<body>
+    <a class="skip-link" href="#contenu">Aller au contenu</a>
+
+    <header class="site-header">
+        <nav class="nav" aria-label="Navigation principale">
+            <a class="brand" href="home.html" aria-label="ExploGo, retour à l'accueil">
+                <img src="assets/img/logo.png" alt="" class="brand-logo">
+                <span class="brand-name">ExploGo</span>
+            </a>
+
+            <ul class="nav-links">
+                <li><a href="#progression">Progression</a></li>
+                <li><a href="#rapport">Rapport</a></li>
+                <li><a href="#collection">Collection</a></li>
+                <li><a href="#defis">Défis</a></li>
+                <li><a href="#telecharger">Télécharger</a></li>
+            </ul>
+
+            <ul class="nav-cta">
+                <li><a class="btn btn-primary" href="#telecharger">Télécharger</a></li>
+            </ul>
+        </nav>
+        <!-- HERO (cohérent, mais différent : focus "jeu + progression") -->
+        <section class="section hero hero-explorateurs" aria-labelledby="titre-principal">
+            <div class="hero-bg" aria-hidden="true">
+                <svg class="hero-map" viewBox="0 0 1200 700" preserveAspectRatio="none" aria-hidden="true">
+                    <defs>
+                        <linearGradient id="gx" x1="0" x2="1">
+                            <stop offset="0" stop-color="rgba(43,142,160,0.22)"></stop>
+                            <stop offset="1" stop-color="rgba(255,122,92,0.14)"></stop>
+                        </linearGradient>
+                    </defs>
+
+                    <path d="M-40,140 C160,40 300,240 480,180 C660,120 740,300 920,240 C1080,190 1140,80 1260,120"
+                        fill="none" stroke="url(#gx)" stroke-width="2.2" opacity="0.55" />
+                    <path d="M-40,430 C180,540 340,340 540,430 C720,510 860,640 1000,540 C1140,460 1180,380 1260,430"
+                        fill="none" stroke="rgba(43,142,160,0.18)" stroke-width="2" opacity="0.6" />
+                    <circle cx="260" cy="260" r="120" fill="rgba(43,142,160,0.06)"></circle>
+                    <circle cx="880" cy="280" r="150" fill="rgba(255,122,92,0.05)"></circle>
+                    <circle cx="740" cy="520" r="170" fill="rgba(255,210,74,0.06)"></circle>
+                </svg>
+
+                <span class="pin" style="--x:18%; --y:34%; --d:0s"></span>
+                <span class="pin" style="--x:40%; --y:28%; --d:.4s"></span>
+                <span class="pin" style="--x:58%; --y:44%; --d:.9s"></span>
+                <span class="pin" style="--x:74%; --y:30%; --d:1.2s"></span>
+                <span class="pin" style="--x:82%; --y:50%; --d:1.6s"></span>
+                <span class="pin" style="--x:30%; --y:60%; --d:1.9s"></span>
+            </div>
+
+            <div class="container hero-grid">
+                <div class="hero-copy" data-reveal>
+                    <h1 id="titre-principal">Chaque balade devient une quête.</h1>
+                    <p class="lead">
+                        Scanne des lieux sur place, gagne des niveaux, complète ta collection et suis tes progrès dans
+                        ton
+                        <strong>rapport d’explorateur</strong>.
+                    </p>
+
+                    <div class="actions">
+                        <a class="btn btn-primary" href="#rapport">Voir le rapport</a>
+                        <a class="btn btn-secondary" href="#telecharger">Télécharger l’app</a>
+                    </div>
+
+                    <ul class="mini-stats" aria-label="Aperçu des stats de jeu">
+                        <li class="mini-stat">
+                            <span class="mini-label">Scan</span>
+                            <span class="mini-value">≤ 100 m</span>
+                        </li>
+                        <li class="mini-stat">
+                            <span class="mini-label">Points d’intérêt</span>
+                            <span class="mini-value">+20 000</span>
+                        </li>
+                        <li class="mini-stat">
+                            <span class="mini-label">Progression</span>
+                            <span class="mini-value">Niveaux</span>
+                        </li>
+                    </ul>
+                    <figure class="postcard" data-reveal>
+                        <img src="assets/img/explorateur_temporel.png"
+                            alt="Explorateur devant une cité médiévale, ambiance voyage dans le temps">
+                        <figcaption>
+                            Grâce à ExploGo, devenez un explorateur explorateur temporel !
+                        </figcaption>
+                    </figure>
+                </div>
+
+                <figure class="shot shot-duo" data-reveal>
+                    <img src="assets/ecran-app/ecran-rapport-explo.jpg"
+                        alt="Capture d’écran du rapport d’explorateur avec progression, visites et statistiques" />
+                    <figcaption>Le rapport d’explorateur : progression, stats, et collection.</figcaption>
+                </figure>
+            </div>
+        </section>
+    </header>
+
+    <main id="contenu">
+        <!-- SCAN & XP -->
+        <section id="scan-xp" class="section" aria-labelledby="titre-scan-xp">
+            <div class="container">
+                <div class="split">
+                    <div data-reveal>
+                        <h2 id="titre-scan-xp">Scanne sur place, gagne de l’XP</h2>
+                        <p class="lead-small">
+                            Chaque monument visité te fait gagner de l’<strong>XP</strong> et te permet d'augmenter le niveau de ton compte. Plus tu explores, plus tu débloques des <strong>bonus</strong> et de nouvelles récompenses.
+                        </p>
+                        <ul class="bullets">
+                            <li><strong>XP à chaque visite</strong> selon le type de monument</li>
+                        </ul>
+                        <div class="xp-notes">
+                            <p>
+                                Les lieux les plus rares rapportent plus d’XP :
+                                <strong>personnages, batailles, lieux majeurs, cathédrales, musées</strong>.
+                            </p>
+                            <p>
+                                Les catégories très présentes en France, comme les
+                                <strong>églises, châteaux et demeures</strong>, rapportent un peu moins,
+                                mais permettent de progresser régulièrement.
+                            </p>
+                        </div>
+                        <p class="inline-cta">
+                            <a class="btn btn-tertiary" href="#rapport">Voir le rapport d’explorateur</a>
+                        </p>
+                    </div>
+                    <figure class="scan-showcase" data-reveal>
+                        <img src="assets/ecran-app/ecran-scan.jpg"
+                            alt="Animation de scan : gain d'XP et lieu visité (exemple Tour Eiffel)">
+                        <figcaption>À chaque scan validé : XP, progression et ajout automatique au rapport.</figcaption>
+                    </figure>
+                </div>
+            </div>
+        </section>
+
+        <!-- OBJECTIFS -->
+        <section id="objectifs" class="section section-soft" aria-labelledby="titre-objectifs">
+            <div class="container">
+                <div class="section-head" data-reveal>
+                    <h2 id="titre-objectifs">Des objectifs clairs, une progression qui reste motivante</h2>
+                    <p class="sublead">
+                        ExploGo te donne des repères simples : tu avances à chaque visite, tu franchis
+                        des paliers réguliers et tu vois ta progression grandir sans blocage.
+                    </p>
+                </div>
+
+                <div class="objectifs-layout">
+                    <div class="objectifs-main" data-reveal>
+                        <div class="objectifs-steps">
+
+
+                            <article class="objective-step">
+                                <span class="objective-step-num">1</span>
+                                <div>
+                                    <h3>Paliers par catégorie</h3>
+                                    <p>
+                                        Chaque type de lieu possède ses propres seuils de progression.
+                                        Quand tu atteins un palier, tu débloques un <strong>bonus XP</strong>
+                                        et une nouvelle récompense.
+                                    </p>
+                                </div>
+                            </article>
+
+                            <article class="objective-step">
+                                <span class="objective-step-num">2</span>
+                                <div>
+                                    <h3>Paliers globaux</h3>
+                                    <p>
+                                        Ton nombre total de lieux visités compte aussi. Cela encourage une
+                                        exploration variée et valorise l’ensemble de tes découvertes.
+                                    </p>
+                                </div>
+                            </article>
+                        </div>
+                    </div>
+
+                    <aside class="panel panel-objectifs" data-reveal>
+                        <p class="panel-kicker">Système de progression</p>
+                        <p class="panel-title">Simple, équilibré et adapté au patrimoine français</p>
+                        <p class="panel-text">
+                            ExploGo tient compte de la réalité du terrain : beaucoup d’églises, de châteaux
+                            et de demeures, mais aussi des catégories plus rares qui offrent des pics de
+                            progression plus marqués.
+                        </p>
+
+                        <div class="panel-grid objectifs-panel-grid">
+                            <div class="panel-chip">
+                                <span class="chip-k">XP</span>
+                                <span class="chip-v">À chaque visite</span>
+                            </div>
+                            <div class="panel-chip">
+                                <span class="chip-k">Paliers</span>
+                                <span class="chip-v">Catégorie + global</span>
+                            </div>
+                            <div class="panel-chip">
+                                <span class="chip-k">Niveaux</span>
+                                <span class="chip-v">100 au total</span>
+                            </div>
+                        </div>
+                    </aside>
+                </div>
+            </div>
+        </section>
+
+        <!-- RAPPORT D’EXPLORATEUR (section “stats”, cœur de la page) -->
+        <section id="rapport" class="section" aria-labelledby="titre-rapport">
+            <div class="container">
+                <div class="section-head" data-reveal>
+                    <h2 id="titre-rapport">Ton rapport d’explorateur</h2>
+                    <p class="sublead">
+                        Un suivi clair : un historique de ce que tu as vu et tes collections par
+                        catégorie.
+                    </p>
+                </div>
+
+                <div class="report-grid" data-reveal>
+                    <article class="report-card report-rencontres" aria-labelledby="rc-1">
+                        <h3 id="rc-1">Rencontres</h3>
+                        <p class="report-value">
+                            <span class="mono" data-counter="5">5</span><span class="sep">/</span><span
+                                class="mono">408</span>
+                        </p>
+                        <p class="report-desc">Personnages rencontrés</p>
+                    </article>
+
+                    <article class="report-card report-batailles" aria-labelledby="rc-2">
+                        <h3 id="rc-2">Batailles</h3>
+                        <p class="report-value">
+                            <span class="mono" data-counter="2">2</span><span class="sep">/</span><span
+                                class="mono">492</span>
+                        </p>
+                        <p class="report-desc">Batailles observées</p>
+                    </article>
+
+                    <article class="report-card report-lieux" aria-labelledby="rc-3">
+                        <h3 id="rc-3">Lieux iconiques</h3>
+                        <p class="report-value">
+                            <span class="mono" data-counter="6">6</span><span class="sep">/</span><span
+                                class="mono">172</span>
+                        </p>
+                        <p class="report-desc">Sites majeurs visités</p>
+                    </article>
+
+                    <article class="report-card is-highlight report-monuments" aria-labelledby="rc-4">
+                        <h3 id="rc-4">Monuments</h3>
+                        <p class="report-value">
+                            <span class="mono" data-counter="17">17</span><span class="sep">/</span><span
+                                class="mono">19489</span>
+                        </p>
+                        <p class="report-desc">Monuments scannés</p>
+                        <p class="report-cta"><a class="link" href="#collection">Voir le détail</a></p>
+                    </article>
+
+                    <article class="report-card report-prehistoire" aria-labelledby="rc-5">
+                        <h3 id="rc-5">Préhistoire</h3>
+                        <p class="report-value">
+                            <span class="mono" data-counter="4">4</span><span class="sep">/</span><span
+                                class="mono">1364</span>
+                        </p>
+                        <p class="report-desc">Points d’intérêt préhistoriques</p>
+                    </article>
+
+                    <article class="report-card report-antiquite" aria-labelledby="rc-6">
+                        <h3 id="rc-6">Antiquité</h3>
+                        <p class="report-value">
+                            <span class="mono" data-counter="5">5</span><span class="sep">/</span><span
+                                class="mono">603</span>
+                        </p>
+                        <p class="report-desc">Points d’intérêt antiques</p>
+                    </article>
+                </div>
+
+                <div class="report-note" data-reveal>
+                    <p class="lead-small">
+                        Chaque chiffre est une <strong>découverte réelle</strong> : tu progresses après chaque visite !
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- COLLECTION (détail monuments + types + liste) -->
+        <section id="collection" class="section section-soft" aria-labelledby="titre-collection">
+            <div class="container">
+                <div class="section-head" data-reveal>
+                    <h2 id="titre-collection">Collection : monuments</h2>
+                    <p class="sublead">Classements par type, recherche rapide, et historique de visite.</p>
+                </div>
+
+                <div class="collection-layout">
+                    <!-- Colonne gauche -->
+                    <figure class="shot" data-reveal>
+                        <img src="assets/ecran-app/ecran-detail-monument.jpg"
+                            alt="Capture d’écran du détail des monuments avec répartition par type et liste des visites" />
+                        <figcaption>Répartition par type + liste des monuments visités.</figcaption>
+                    </figure>
+
+                    <!-- Colonne droite (IMPORTANT : tout regrouper ici) -->
+                    <div class="collection-ui" data-reveal>
+                        <p class="collection-kicker">
+                            <strong><span id="monumentsVisited">21</span></strong> monuments visités
+                        </p>
+
+                        <div class="type-grid" aria-label="Répartition des monuments par type (démo)">
+                            <div class="type-card">
+                                <p class="type-value"><span class="mono" id="count-eglises">0</span><span
+                                        class="sep">/</span><span class="mono">10137</span></p>
+                                <p class="type-label">Églises</p>
+                            </div>
+
+                            <div class="type-card">
+                                <p class="type-value"><span class="mono" id="count-demeures">0</span><span
+                                        class="sep">/</span><span class="mono">2140</span></p>
+                                <p class="type-label">Demeures</p>
+                            </div>
+
+                            <div class="type-card">
+                                <p class="type-value"><span class="mono" id="count-musees">0</span><span
+                                        class="sep">/</span><span class="mono">587</span></p>
+                                <p class="type-label">Musées</p>
+                            </div>
+
+                            <div class="type-card">
+                                <p class="type-value"><span class="mono" id="count-chateaux">0</span><span
+                                        class="sep">/</span><span class="mono">5925</span></p>
+                                <p class="type-label">Châteaux</p>
+                            </div>
+
+                            <div class="type-card">
+                                <p class="type-value"><span class="mono" id="count-ponts">0</span><span
+                                        class="sep">/</span><span class="mono">555</span></p>
+                                <p class="type-label">Ponts</p>
+                            </div>
+
+                            <div class="type-card">
+                                <p class="type-value"><span class="mono" id="count-cathedrales">0</span><span
+                                        class="sep">/</span><span class="mono">145</span></p>
+                                <p class="type-label">Cathédrales</p>
+                            </div>
+                        </div>
+
+                        <div class="search-like search-sticky" role="search" aria-label="Rechercher un monument">
+                            <input id="monumentSearch" type="search" placeholder="Rechercher un monument..."
+                                aria-label="Rechercher un monument" aria-controls="monumentList" autocomplete="off">
+                            <p class="hint"><small><span id="monumentCount">0</span> résultat(s)</small></p>
+                        </div>
+
+                        <div id="monumentEmpty" class="empty-state" hidden>
+                            <p><strong>Aucun monument trouvé.</strong></p>
+                            <p class="empty-sub">Essaie “église”, “toulouse”, “pont”…</p>
+                        </div>
+
+                        <!-- Liste scrollable -->
+                        <div class="visit-scroll" aria-label="Liste des monuments visités">
+                            <div class="visit-list" id="monumentList"></div>
+                        </div>
+
+                        <p class="inline-cta">
+                            <a class="btn btn-tertiary" href="#telecharger">Débloquer plus de stats</a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TÉLÉCHARGEMENT (CTA final cohérent) -->
+        <section id="telecharger" class="section section-soft" aria-labelledby="titre-telecharger">
+            <div class="container">
+                <div class="section-head">
+                    <h2 id="titre-telecharger">Prêt à jouer dehors ?</h2>
+                    <p class="sublead">Télécharge ExploGo et commence à scanner autour de toi.</p>
+                </div>
+
+                <ul class="store-list">
+                    <li><a href="https://example.com/android" rel="nofollow">Installer sur Android</a></li>
+                    <li><a href="https://example.com/ios" rel="nofollow">Installer sur iPhone</a></li>
+                </ul>
+            </div>
+        </section>
+    </main>
+
+    <footer class="site-footer">
+        <div class="container">
+            <nav aria-label="Liens de bas de page">
+                <ul class="footer-links">
+                    <li><a href="contact.html">Contact</a></li>
+                    <li><a href="confidentialite.html">Politique de confidentialité</a></li>
+                    <li><a href="mentions-legales.html">Mentions légales</a></li>
+                </ul>
+            </nav>
+            <p class="copyright">© <span>ExploGo</span> — Tous droits réservés.</p>
+        </div>
+    </footer>
+</body>
+
+</html>

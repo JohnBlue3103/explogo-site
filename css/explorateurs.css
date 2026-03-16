@@ -1,0 +1,766 @@
+/* Surcouche : garde l’ADN home.css, ajoute juste la mise en page dédiée */
+.mini-stats {
+    list-style: none;
+    padding: 0;
+    margin: 1.1rem 0 0;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: .75rem;
+}
+
+.mini-stat {
+    border: 1px solid rgba(0, 0, 0, .08);
+    background: rgba(255, 255, 255, .72);
+    border-radius: 14px;
+    padding: .75rem .85rem;
+    backdrop-filter: blur(6px);
+}
+
+.mini-label {
+    display: block;
+    font-size: .85rem;
+    opacity: .75;
+}
+
+.mini-value {
+    display: block;
+    font-weight: 800;
+    margin-top: .15rem;
+}
+
+.shot-duo img {
+    object-fit: cover;
+    max-height: 80ch;
+}
+
+/* =========================================================
+   POSTCARD — VRAIE CARTE POSTALE (papier + cadre + patine)
+   ========================================================= */
+
+.hero-explorateurs .postcard {
+    margin: 14px 0 0;
+    max-width: 380px;
+
+    position: relative;
+    border-radius: 18px;
+    overflow: hidden;
+
+    /* papier crème */
+    background: linear-gradient(180deg, #fbf7ea, #f2ecda);
+    border: 1px solid rgba(15, 23, 42, 0.16);
+
+    /* effet carte posée */
+    box-shadow:
+        0 28px 60px rgba(15, 23, 42, .18),
+        0 10px 22px rgba(15, 23, 42, .10);
+
+    transform: rotate(-2.2deg);
+    transform-origin: 40% 20%;
+
+    /* épaisseur carton + marge autour de la photo */
+    padding: 14px 14px 12px;
+}
+
+/* texture papier + bords légèrement vieillis */
+.hero-explorateurs .postcard::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+
+    background:
+        /* vignettage bords (effet usé) */
+        radial-gradient(120% 90% at 50% 42%, transparent 58%, rgba(0, 0, 0, .18) 100%),
+
+        /* fibres papier */
+        repeating-linear-gradient(0deg,
+            rgba(15, 23, 42, 0.018) 0px,
+            rgba(15, 23, 42, 0.018) 1px,
+            transparent 2px,
+            transparent 7px),
+        repeating-linear-gradient(90deg,
+            rgba(15, 23, 42, 0.012) 0px,
+            rgba(15, 23, 42, 0.012) 1px,
+            transparent 2px,
+            transparent 9px),
+
+        /* micro taches */
+        radial-gradient(circle at 18% 72%, rgba(0, 0, 0, .06) 0 1px, transparent 2px),
+        radial-gradient(circle at 76% 22%, rgba(0, 0, 0, .05) 0 1px, transparent 2px),
+        radial-gradient(circle at 70% 82%, rgba(0, 0, 0, .05) 0 1px, transparent 2px);
+
+    opacity: .55;
+    mix-blend-mode: multiply;
+}
+
+/* photo : encadrée + légère patine */
+.hero-explorateurs .postcard img {
+    display: block;
+    width: 100%;
+    height: auto;
+
+    border-radius: 14px;
+    border: 1px solid rgba(15, 23, 42, 0.10);
+
+    /* liseré photo + ombre */
+    box-shadow:
+        0 14px 28px rgba(15, 23, 42, .12),
+        0 0 0 6px rgba(255, 255, 255, .55) inset;
+
+    /* rendu photo ancienne */
+    filter: sepia(.55) saturate(.78) contrast(1.06) brightness(1.03);
+}
+
+/* légende : zone “message” de carte postale */
+.hero-explorateurs .postcard figcaption {
+    position: relative;
+    margin-top: 10px;
+
+    padding: 10px 12px;
+    border-radius: 14px;
+
+    background: rgba(255, 255, 255, 0.38);
+    border: 1px solid rgba(15, 23, 42, 0.10);
+
+    color: rgba(45, 55, 72, .92);
+    font-size: 0.98rem;
+
+    /* vibe carte postale */
+    font-family: ui-serif, Georgia, "Times New Roman", Times, serif;
+    letter-spacing: .01em;
+    line-height: 1.35;
+}
+
+/* mobile : rotation plus faible */
+@media (max-width: 560px) {
+    .hero-explorateurs .postcard {
+        max-width: 320px;
+        transform: rotate(-1.1deg);
+        padding: 12px 12px 10px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .hero-explorateurs .postcard {
+        transform: none;
+    }
+}
+
+/* ===========================
+   Scan showcase — style amélioré
+   (cohérent avec le reste : card premium + légers détails)
+   =========================== */
+
+.scan-showcase {
+    position: relative;
+    border-radius: 22px;
+    overflow: hidden;
+    border: 1px solid rgba(0, 0, 0, .08);
+    background: rgba(255, 255, 255, .78);
+    box-shadow:
+        0 18px 34px rgba(0, 0, 0, .08),
+        0 2px 0 rgba(255, 255, 255, .55) inset;
+    backdrop-filter: blur(8px);
+}
+
+.scan-showcase::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background:
+        radial-gradient(600px 280px at 18% 22%, rgba(43, 142, 160, .14), transparent 62%),
+        radial-gradient(520px 260px at 78% 28%, rgba(255, 122, 92, .12), transparent 62%),
+        radial-gradient(620px 320px at 55% 88%, rgba(255, 210, 74, .10), transparent 65%);
+    mix-blend-mode: normal;
+    opacity: .85;
+}
+
+.scan-showcase img {
+    display: block;
+    width: 100%;
+    height: auto;
+}
+
+.scan-showcase figcaption {
+    position: absolute;
+    left: 14px;
+    right: 14px;
+    bottom: 12px;
+    padding: .7rem .85rem;
+    border-radius: 16px;
+    border: 1px solid rgba(0, 0, 0, .08);
+    background: rgba(255, 255, 255, .86);
+    box-shadow: 0 12px 22px rgba(0, 0, 0, .10);
+    backdrop-filter: blur(10px);
+    font-size: .92rem;
+    line-height: 1.35;
+    color: rgba(0, 0, 0, .78);
+}
+
+.scan-showcase figcaption::before {
+    content: "Scan";
+    display: inline-flex;
+    align-items: center;
+    gap: .35rem;
+    margin-right: .55rem;
+    padding: .28rem .55rem;
+    border-radius: 999px;
+    border: 1px solid rgba(43, 142, 160, .18);
+    background: rgba(43, 142, 160, .10);
+    color: rgba(20, 90, 102, .95);
+    font-weight: 800;
+    font-size: .8rem;
+    letter-spacing: .01em;
+}
+
+@media (max-width: 560px) {
+    .scan-showcase {
+        border-radius: 18px;
+    }
+
+    .scan-showcase figcaption {
+        left: 10px;
+        right: 10px;
+        bottom: 10px;
+        border-radius: 14px;
+        font-size: .9rem;
+    }
+}
+
+/* Panel progression */
+.panel-progress .panel-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: .6rem;
+    margin-top: 1rem;
+}
+
+.panel-chip {
+    border: 1px solid rgba(0, 0, 0, .08);
+    background: rgba(255, 255, 255, .7);
+    border-radius: 14px;
+    padding: .7rem .75rem;
+}
+
+.chip-k {
+    display: block;
+    font-size: .82rem;
+    opacity: .75;
+}
+
+.chip-v {
+    display: block;
+    font-weight: 850;
+    font-size: 1.1rem;
+    margin-top: .1rem;
+}
+
+.progress-ui {
+    margin-top: .8rem;
+}
+
+.progress-bar {
+    display: block;
+    width: 100%;
+    height: 10px;
+    border-radius: 999px;
+    background: rgba(0, 0, 0, .08);
+    overflow: hidden;
+}
+
+.progress-fill {
+    display: block;
+    height: 100%;
+    border-radius: 999px;
+    background: rgba(43, 142, 160, .75);
+}
+
+.progress-meta {
+    display: flex;
+    justify-content: space-between;
+    gap: .75rem;
+    margin-top: .6rem;
+    font-size: .92rem;
+    opacity: .85;
+}
+
+.mono {
+    font-variant-numeric: tabular-nums;
+}
+
+/* Rapport */
+.report-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.report-card {
+    border: 1px solid rgba(0, 0, 0, .08);
+    background: rgba(255, 255, 255, .85);
+    border-radius: 18px;
+    padding: 1rem 1rem .9rem;
+    box-shadow: 0 14px 26px rgba(0, 0, 0, .06);
+}
+
+.report-card h3 {
+    margin: 0 0 .55rem;
+    font-size: 1.05rem;
+}
+
+.report-value {
+    margin: 0;
+    font-weight: 900;
+    font-size: 1.55rem;
+    letter-spacing: -.02em;
+}
+
+.report-desc {
+    margin: .25rem 0 0;
+    opacity: .78;
+}
+
+.report-card .sep,
+.type-card .sep {
+    opacity: .55;
+    padding: 0 .15rem;
+}
+
+.report-card.is-highlight {
+    border-color: rgba(43, 142, 160, .28);
+    background: linear-gradient(180deg, rgba(43, 142, 160, .10), rgba(255, 255, 255, .90));
+}
+
+.report-cta {
+    margin: .65rem 0 0;
+}
+
+.report-card{
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  background: #fff;
+  transition: border-color 180ms ease, box-shadow 180ms ease, transform 180ms ease;
+}
+
+.report-card > *{
+  position: relative;
+  z-index: 2;
+}
+
+.report-card::before{
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  opacity: 0;
+  transform: scale(1.03);
+  transition: opacity 260ms ease, transform 420ms ease;
+}
+
+.report-card::after{
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: linear-gradient(
+    180deg,
+    rgba(255,255,255,0.86) 0%,
+    rgba(255,255,255,0.74) 100%
+  );
+  opacity: 0;
+  transition: opacity 260ms ease;
+}
+
+.report-card:hover{
+  transform: translateY(-2px);
+  box-shadow: 0 16px 34px rgba(15,23,42,0.08);
+  border-color: rgba(43,142,160,0.22);
+}
+
+.report-card:hover::before{
+  opacity: 0.0;
+  transform: scale(1);
+}
+
+.report-card:hover::after{
+  opacity: 1;
+}
+
+/* Images par catégorie */
+.report-rencontres::before{
+  background-image: url("../assets/img/personnage.png");
+}
+
+.report-batailles::before{
+  background-image: url("../assets/img/bataille.png");
+}
+
+.report-lieux::before{
+  background-image: url("../assets/img/iconique.png");
+}
+
+.report-monuments::before{
+  background-image: url("../assets/img/monument.png");
+}
+
+.report-prehistoire::before{
+  background-image: url("../assets/img/prehistoire.png");
+}
+
+.report-antiquite::before{
+  background-image: url("../assets/img/antiquite.png");
+}
+
+/* ======================================================
+   Collection / Rapport d'explorateur — DÉMO INTERACTIVE
+   ====================================================== */
+
+.collection-layout {
+    display: grid;
+    grid-template-columns: minmax(0, .51fr) minmax(0, .95fr);
+    gap: 1.6rem;
+    align-items: start;
+    margin-top: 1.2rem;
+}
+
+/* Capture écran (colonne gauche) */
+.collection-layout .shot {
+    position: relative;
+    top: auto;
+    min-height: fit-content;
+}
+.collection-layout .shot img{
+    object-fit: cover;
+}
+
+/* Colonne droite : démo interactive */
+.collection-ui {
+    min-width: 0;
+    border: 1px solid rgba(0, 0, 0, .06);
+    background: rgba(255, 255, 255, .75);
+    border-radius: 18px;
+    padding: 1rem;
+    box-shadow: 0 14px 26px rgba(0, 0, 0, .05);
+    overflow: hidden;
+}
+
+/* "21 monuments visités" */
+.collection-kicker {
+    margin: 0 0 .75rem;
+    font-weight: 600;
+    opacity: .85;
+}
+
+/* Répartition par type */
+.type-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: .75rem;
+}
+
+.type-card {
+    border: 1px solid rgba(0, 0, 0, .08);
+    background: rgba(255, 255, 255, .85);
+    border-radius: 16px;
+    padding: .85rem;
+    transition: transform .15s ease, box-shadow .15s ease;
+}
+
+.type-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 18px rgba(0, 0, 0, .06);
+}
+
+.type-value {
+    margin: 0;
+    font-weight: 900;
+    font-size: 1.2rem;
+}
+
+.type-label {
+    margin: .25rem 0 0;
+    opacity: .8;
+    font-size: .92rem;
+}
+
+/* Recherche */
+.search-like {
+    margin-top: 1rem;
+}
+
+.search-like input {
+    width: 100%;
+    padding: .9rem 1rem;
+    border-radius: 999px;
+    border: 1px solid rgba(0, 0, 0, .12);
+    background: rgba(255, 255, 255, .9);
+    transition: border-color .2s ease, box-shadow .2s ease;
+}
+
+.search-like input:focus {
+    outline: none;
+    border-color: rgba(43, 142, 160, .6);
+    box-shadow: 0 0 0 3px rgba(43, 142, 160, .12);
+}
+
+/* IMPORTANT : on désactive le sticky pour éviter l'effet “ça bouge” */
+.search-sticky {
+    position: static;
+    top: auto;
+    z-index: auto;
+    padding-top: 0;
+    background: transparent;
+}
+
+/* ===========================
+   LISTE : ne capte PLUS le scroll de page par défaut
+   => devient scrollable seulement quand activée via JS
+   =========================== */
+
+.visit-scroll {
+    margin-top: .9rem;
+    max-height: 300px;
+    overflow-y: auto;
+    padding-right: .3rem;
+}
+
+/* Activée (hover / tap) : scroll interne */
+.visit-scroll.is-scroll-enabled {
+    overflow-y: auto;
+    scroll-behavior: smooth;
+
+    mask-image: linear-gradient(to bottom,
+            transparent 0px,
+            black 18px,
+            black calc(100% - 18px),
+            transparent 100%);
+}
+
+/* Scrollbar élégante (quand activée) */
+.visit-scroll.is-scroll-enabled::-webkit-scrollbar {
+    width: 8px;
+}
+
+.visit-scroll.is-scroll-enabled::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, .18);
+    border-radius: 999px;
+}
+
+.visit-scroll.is-scroll-enabled::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+/* Items */
+.visit-list {
+    display: grid;
+    gap: .65rem;
+}
+
+.visit-item {
+    display: flex;
+    justify-content: space-between;
+    gap: .75rem;
+    padding: .9rem 1rem;
+    border-radius: 16px;
+    border: 1px solid rgba(0, 0, 0, .08);
+    background: rgba(255, 255, 255, .9);
+    transition: background .15s ease, transform .15s ease;
+}
+
+.visit-item:hover {
+    background: rgba(43, 142, 160, .05);
+    transform: translateX(3px);
+}
+
+.visit-title {
+    margin: 0;
+    font-weight: 700;
+}
+
+.visit-meta {
+    margin: .25rem 0 0;
+    opacity: .75;
+    font-size: .9rem;
+}
+
+/* Empty state */
+.empty-state {
+    margin-top: .9rem;
+    padding: .95rem 1rem;
+    border-radius: 16px;
+    border: 1px solid rgba(0, 0, 0, .08);
+    background: rgba(255, 255, 255, .85);
+}
+
+/* Responsive */
+@media (max-width: 980px) {
+    .collection-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .collection-layout .shot {
+        position: relative;
+        top: auto;
+    }
+
+    .visit-scroll {
+        max-height: 420px;
+    }
+}
+
+/* =========================
+   OBJECTIFS
+   ========================= */
+
+.objectifs-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1.08fr) minmax(320px, .82fr);
+    gap: 1.4rem;
+    align-items: start;
+    margin-top: 1rem;
+}
+
+.objectifs-main {
+    min-width: 0;
+}
+
+.objectifs-steps {
+    display: grid;
+    gap: .9rem;
+}
+
+.objective-step {
+    display: grid;
+    grid-template-columns: 56px minmax(0, 1fr);
+    gap: .95rem;
+    align-items: start;
+    padding: 1rem 1rem 1rem 1.05rem;
+    border-radius: 18px;
+    border: 1px solid rgba(0, 0, 0, .08);
+    background: rgba(255, 255, 255, .88);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, .05);
+    transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+}
+
+.objective-step:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 16px 30px rgba(15, 23, 42, .07);
+    border-color: rgba(43, 142, 160, .18);
+}
+
+.objective-step-num {
+    display: inline-grid;
+    place-items: center;
+    width: 56px;
+    height: 56px;
+    border-radius: 999px;
+    font-weight: 900;
+    font-size: 1.05rem;
+    color: rgba(20, 90, 102, .98);
+    background: rgba(43, 142, 160, .12);
+    border: 1px solid rgba(43, 142, 160, .18);
+    box-shadow: 0 6px 14px rgba(43, 142, 160, .10);
+}
+
+.objective-step h3 {
+    margin: 0 0 .35rem;
+    font-size: 1.08rem;
+}
+
+.objective-step p {
+    margin: 0;
+    line-height: 1.5;
+    opacity: .9;
+}
+
+.panel-objectifs {
+    position: relative;
+    overflow: hidden;
+}
+
+.panel-objectifs::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background:
+        radial-gradient(520px 240px at 18% 22%, rgba(43, 142, 160, .12), transparent 62%),
+        radial-gradient(480px 220px at 82% 24%, rgba(255, 122, 92, .10), transparent 62%),
+        radial-gradient(560px 280px at 55% 88%, rgba(255, 210, 74, .08), transparent 65%);
+    opacity: .9;
+}
+
+.panel-objectifs > * {
+    position: relative;
+    z-index: 1;
+}
+
+.objectifs-panel-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: .6rem;
+    margin-top: 1rem;
+}
+
+.objectifs-list {
+    display: grid;
+    gap: .7rem;
+    margin-top: 1rem;
+}
+
+.objectif-line {
+    border: 1px solid rgba(0, 0, 0, .08);
+    background: rgba(255, 255, 255, .72);
+    border-radius: 14px;
+    padding: .85rem .9rem;
+    backdrop-filter: blur(6px);
+}
+
+.objectif-line strong {
+    display: block;
+    font-size: .96rem;
+    margin-bottom: .2rem;
+}
+
+.objectif-line span {
+    display: block;
+    font-size: .92rem;
+    opacity: .82;
+    line-height: 1.4;
+}
+
+@media (max-width: 980px) {
+    .objectifs-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .objectifs-panel-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 720px) {
+    .objective-step {
+        grid-template-columns: 46px minmax(0, 1fr);
+        padding: .9rem;
+    }
+
+    .objective-step-num {
+        width: 46px;
+        height: 46px;
+        font-size: .95rem;
+    }
+}
+
+@media (max-width: 560px) {
+    .objectif-line {
+        padding: .75rem .8rem;
+        border-radius: 12px;
+    }
+}

@@ -1,0 +1,221 @@
+/* Surcouche : garde l’ADN home.css, ajoute juste la mise en page dédiée enseignants */
+
+
+/* Mini stats (réutilise l’idée explorateurs, mais en plus "classe") */
+.mini-stats{
+  list-style: none;
+  padding: 0;
+  margin: 1.1rem 0 0;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: .75rem;
+}
+
+.mini-stat{
+  border: 1px solid rgba(15,23,42,.10);
+  background: rgba(255,255,255,.72);
+  border-radius: 14px;
+  padding: .75rem .85rem;
+  backdrop-filter: blur(6px);
+  box-shadow: 0 12px 22px rgba(15,23,42,.06);
+}
+
+.mini-label{
+  display: block;
+  font-size: .85rem;
+  opacity: .75;
+}
+
+.mini-value{
+  display: block;
+  font-weight: 900;
+  margin-top: .15rem;
+}
+
+@media (max-width: 640px){
+  .mini-stats{ grid-template-columns: 1fr; }
+}
+
+/* "Steps" (process fiabilité) */
+.steps{
+  margin: 1rem 0 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: .85rem;
+}
+
+.step{
+  border: 1px solid rgba(15,23,42,.10);
+  background: rgba(255,255,255,.75);
+  border-radius: 16px;
+  padding: .9rem 1rem;
+  box-shadow: 0 12px 24px rgba(15,23,42,.06);
+}
+
+.step-title{
+  margin: 0 0 .25rem;
+  font-weight: 900;
+  color: rgba(19,35,58,.98);
+}
+
+.step-text{ margin: 0; color: rgba(71,85,105,.98); }
+
+/* Bullets (récits) */
+.bullets{
+  margin: .9rem 0 0;
+  padding-left: 1.2rem;
+  color: rgba(71,85,105,.98);
+}
+
+.bullets li{ margin: .4rem 0; }
+
+/* Story card (preview) */
+.story-card{
+  border-radius: 22px;
+  overflow: hidden;
+  border: 1px solid rgba(15,23,42,.10);
+  background:
+    radial-gradient(700px 320px at 18% 22%, rgba(43,142,160,.12), transparent 62%),
+    radial-gradient(560px 280px at 82% 20%, rgba(255,122,92,.10), transparent 64%),
+    radial-gradient(540px 300px at 55% 86%, rgba(255,210,74,.11), transparent 65%),
+    rgba(255,255,255,.78);
+  box-shadow: 0 18px 34px rgba(15,23,42,.10);
+  padding: 1.15rem 1.15rem 1rem;
+  backdrop-filter: blur(10px);
+}
+
+.story-kicker{
+  margin: 0 0 .4rem;
+  font-weight: 800;
+  color: rgba(35,124,140,.98);
+}
+
+.story-title{
+  margin: 0 0 .6rem;
+  font-weight: 950;
+  color: rgba(15,23,42,.98);
+  letter-spacing: -0.02em;
+}
+
+.story-text{ margin: 0 0 .75rem; color: rgba(71,85,105,.98); }
+.story-foot{ margin: 0; }
+
+/* Scenario switcher (tabs + preview) */
+.scenario-switcher{
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+  margin-top: 18px;
+}
+
+@media (min-width: 980px){
+  .scenario-switcher{
+    grid-template-columns: 0.9fr 1.1fr;
+    gap: 18px;
+    align-items: start;
+  }
+}
+
+.scenario-list{
+  display: grid;
+  gap: 10px;
+}
+
+.scenario-item{
+  width: 100%;
+  text-align: left;
+  padding: 14px 14px;
+  border-radius: 18px;
+  border: 1px solid rgba(15,23,42,0.10);
+  background: rgba(255,255,255,0.72);
+  color: rgba(15,23,42,0.92);
+  cursor: pointer;
+  font-weight: 850;
+  transition: transform 120ms ease, box-shadow 120ms ease, background 120ms ease, border-color 120ms ease;
+}
+
+.scenario-item:hover{
+  transform: translateY(-1px);
+  box-shadow: 0 14px 28px rgba(15,23,42,0.08);
+}
+
+.scenario-item.is-active{
+  border-color: rgba(43,142,160,0.32);
+  background: rgba(43,142,160,0.06);
+}
+
+.scenario-preview{
+  position: relative;
+}
+
+.scenario-card{
+  border-radius: 22px;
+  border: 1px solid rgba(15,23,42,0.10);
+  background: rgba(255,255,255,0.78);
+  box-shadow: 0 18px 34px rgba(15,23,42,0.10);
+  padding: 1.1rem 1.1rem 1rem;
+  backdrop-filter: blur(10px);
+}
+
+.scenario-top{
+  display:flex;
+  align-items:center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: .5rem;
+}
+
+.scenario-kicker{
+  margin: 0;
+  font-weight: 800;
+  color: rgba(100,116,139,.95);
+}
+
+.scenario-desc{ margin: 0 0 .8rem; }
+
+.scenario-items{
+  margin: .3rem 0 1rem;
+  padding-left: 1.1rem;
+  color: rgba(71,85,105,.98);
+}
+
+.scenario-items li{ margin: .42rem 0; }
+
+/* Petite animation de mise à jour */
+.scenario-card.is-updating{
+  animation: pop 220ms ease;
+}
+
+@keyframes pop{
+  from{ transform: translateY(2px); opacity: .85; }
+  to{ transform: translateY(0); opacity: 1; }
+}
+
+/* FAQ : légèrement plus premium */
+.faq details{
+  border: 1px solid rgba(15,23,42,0.10);
+  border-radius: 16px;
+  background: rgba(255,255,255,0.78);
+  padding: .75rem .9rem;
+  box-shadow: 0 14px 26px rgba(15,23,42,0.07);
+}
+
+.faq details + details{ margin-top: 10px; }
+
+.faq summary{
+  cursor: pointer;
+  font-weight: 850;
+  color: rgba(15,23,42,0.92);
+}
+
+.faq summary::-webkit-details-marker{ display:none; }
+
+.faq summary::after{
+  content: "＋";
+  float: right;
+  font-weight: 900;
+  color: rgba(35,124,140,.95);
+}
+
+.faq details[open] summary::after{ content: "−"; }

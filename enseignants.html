@@ -1,0 +1,369 @@
+<!doctype html>
+<html lang="fr">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>ExploGo — Enseignants</title>
+    <meta name="description"
+        content="ExploGo pour les enseignants : données pertinentes et vérifiées, récits immersifs et accessibles, activités en classe et en sortie pour rendre les cours plus interactifs." />
+
+    <!-- Base style identique à la home -->
+    <link rel="stylesheet" href="css/home.css">
+    <!-- Surcouche dédiée -->
+    <link rel="stylesheet" href="css/enseignants.css">
+
+    <script src="js/enseignants.js" defer></script>
+</head>
+
+<body>
+    <a class="skip-link" href="#contenu">Aller au contenu</a>
+
+    <header class="site-header">
+        <nav class="nav" aria-label="Navigation principale">
+            <a class="brand" href="home.html" aria-label="ExploGo, retour à l'accueil">
+                <img src="assets/img/logo.png" alt="" class="brand-logo">
+                <span class="brand-name">ExploGo</span>
+            </a>
+
+            <ul class="nav-links">
+                <li><a href="#pedagogie">Pédagogie</a></li>
+                <li><a href="#fiabilite">Fiabilité</a></li>
+                <li><a href="#recits">Récits</a></li>
+                <li><a href="#usages">Usages</a></li>
+                <li><a href="#faq">FAQ</a></li>
+                <li><a href="#telecharger">Télécharger</a></li>
+            </ul>
+
+            <ul class="nav-cta">
+                <li><a class="btn btn-primary" href="#telecharger">Télécharger</a></li>
+            </ul>
+        </nav>
+        <!-- HERO -->
+        <section class="section hero hero-enseignants" aria-labelledby="titre-principal">
+            <div class="hero-bg" aria-hidden="true">
+                <svg class="hero-map" viewBox="0 0 1200 700" preserveAspectRatio="none" aria-hidden="true">
+                    <defs>
+                        <linearGradient id="gt" x1="0" x2="1">
+                            <stop offset="0" stop-color="rgba(43,142,160,0.22)"></stop>
+                            <stop offset="1" stop-color="rgba(255,122,92,0.14)"></stop>
+                        </linearGradient>
+                    </defs>
+
+                    <path d="M-40,120 C170,40 310,250 500,170 C660,110 760,300 940,230 C1090,175 1145,70 1260,110"
+                        fill="none" stroke="url(#gt)" stroke-width="2.2" opacity="0.55" />
+                    <path d="M-40,435 C190,560 350,345 560,440 C730,520 875,650 1010,540 C1145,450 1180,380 1260,430"
+                        fill="none" stroke="rgba(43,142,160,0.18)" stroke-width="2" opacity="0.6" />
+
+                    <circle cx="260" cy="240" r="120" fill="rgba(43,142,160,0.06)"></circle>
+                    <circle cx="860" cy="250" r="150" fill="rgba(255,122,92,0.05)"></circle>
+                    <circle cx="740" cy="520" r="170" fill="rgba(255,210,74,0.06)"></circle>
+                </svg>
+
+                <span class="pin" style="--x:22%; --y:30%; --d:0s"></span>
+                <span class="pin" style="--x:46%; --y:42%; --d:.5s"></span>
+                <span class="pin" style="--x:70%; --y:34%; --d:1.1s"></span>
+                <span class="pin" style="--x:58%; --y:60%; --d:1.6s"></span>
+            </div>
+
+            <div class="container hero-grid">
+                <div class="hero-copy" data-reveal>
+                    <h1 id="titre-principal">Un support fiable pour capter l’attention.</h1>
+                    <p class="lead">
+                        ExploGo transforme la proximité en levier pédagogique : des données <strong>pertinentes</strong>
+                        et <strong>vérifiées</strong>, des récits immersifs et accessibles, et des usages concrets pour
+                        la
+                        classe comme pour les sorties.
+                    </p>
+
+                    <div class="actions">
+                        <a class="btn btn-primary" href="#telecharger">Télécharger</a>
+                    </div>
+
+                    <ul class="mini-stats" aria-label="Chiffres clés">
+                        <li class="mini-stat"><span class="mini-label">Base de lieux</span><span
+                                class="mini-value">20&nbsp;000+</span></li>
+                        <li class="mini-stat"><span class="mini-label">Contenu</span><span
+                                class="mini-value">Vérifié</span></li>
+                        <li class="mini-stat"><span class="mini-label">Approche</span><span class="mini-value">Immersive
+                                & claire</span></li>
+                    </ul>
+
+                    <p class="meta">
+                        Pour un <strong>débutant</strong> comme pour un <strong>passionné</strong> : lecture rapide,
+                        approfondissement, sources, et contexte.
+                    </p>
+                </div>
+
+                <figure class="shot shot-wide" data-reveal>
+                    <img src="assets/ecran-app/ecran-fiche-infos.jpg"
+                        alt="Capture d’écran de la fiche d’informations ExploGo présentant un lieu historique et ses informations" />
+                    <figcaption>Fiches contextualisées : données, contexte, sources — prêtes à être exploitées.
+                    </figcaption>
+                </figure>
+            </div>
+        </section>
+    </header>
+
+    <main id="contenu">
+        
+
+        <!-- PÉDAGOGIE -->
+        <section id="pedagogie" class="section section-soft" aria-labelledby="titre-pedagogie">
+            <div class="container">
+                <div class="section-head" data-reveal>
+                    <h2 id="titre-pedagogie">Ce que ça change en classe</h2>
+                    <p class="sublead">Un même outil, plusieurs niveaux de lecture — et des élèves plus engagés.</p>
+                </div>
+
+                <div class="cards-3 cards-compact" data-reveal>
+                    <article class="card">
+                        <h3>Concret, local, mémorable</h3>
+                        <p>
+                            Un événement “près d’ici” devient un point d’accroche. Les élèves retiennent mieux quand le
+                            contexte est <strong>situé</strong>.
+                        </p>
+                        <p class="card-foot"><span class="badge">Carte</span> <span class="badge">Contexte</span></p>
+                    </article>
+
+                    <article class="card">
+                        <h3>Du rapide… à l’approfondi</h3>
+                        <p>
+                            Une lecture synthétique pour aller vite, et des détails pour aller plus loin : idéal pour
+                            un <strong>débutant</strong> comme pour un <strong>passionné</strong>.
+                        </p>
+                        <p class="card-foot"><span class="badge">Différenciation</span></p>
+                    </article>
+
+                    <article class="card">
+                        <h3>Plus interactif</h3>
+                        <p>
+                            Activités courtes, quiz, défis, scans sur place : l’app devient un support d’échanges et de
+                            participation.
+                        </p>
+                        <p class="card-foot"><span class="badge">Motivation</span> <span class="badge">Projet</span></p>
+                    </article>
+                </div>
+            </div>
+        </section>
+
+        <!-- FIABILITÉ -->
+        <section id="fiabilite" class="section" aria-labelledby="titre-fiabilite">
+            <div class="container">
+                <div class="split">
+                    <div data-reveal>
+                        <h2 id="titre-fiabilite">La pertinence des données, avant tout</h2>
+                        <p class="lead-small">
+                            Pour enseigner, il faut pouvoir faire confiance : ExploGo met l’accent sur des contenus
+                            <strong>pertinents</strong> (ce qui compte pour comprendre) et sur une relecture
+                            <strong>par un professeur d’Histoire-Géographie</strong>.
+                        </p>
+
+                        <ol class="steps" aria-label="Processus de fiabilité">
+                            <li class="step">
+                                <p class="step-title">Sélection</p>
+                                <p class="step-text">Lieux et événements choisis pour leur intérêt historique et leur
+                                    valeur pédagogique.</p>
+                            </li>
+                            <li class="step">
+                                <p class="step-title">Vérification</p>
+                                <p class="step-text">Contrôle des informations et formulation claire, adaptée aux
+                                    élèves.
+                                </p>
+                            </li>
+                            <li class="step">
+                                <p class="step-title">Mise en contexte</p>
+                                <p class="step-text">Dates, enjeux, repères : l’élève comprend “pourquoi c’est
+                                    important”.
+                                </p>
+                            </li>
+                        </ol>
+                    </div>
+
+                    <aside class="panel" data-reveal>
+                        <p class="panel-kicker">Pour l’enseignant</p>
+                        <p class="panel-title">Un gain de temps.</p>
+                        <p class="panel-text">
+                            Vous récupérez une base prête à l’emploi : fiches, repères, lieux proches du programme… et
+                            la liberté d’adapter à votre séquence.
+                        </p>
+                        <p class="inline-cta">
+                            <a class="btn btn-tertiary" href="#usages">Voir les usages</a>
+                        </p>
+                    </aside>
+                </div>
+            </div>
+        </section>
+
+        <!-- RÉCITS -->
+        <section id="recits" class="section section-soft" aria-labelledby="titre-recits">
+            <div class="container">
+                <div class="split">
+                    <div data-reveal>
+                        <h2 id="titre-recits">Des récits immersifs et accessibles</h2>
+                        <p class="lead-small">
+                            Les élèves entrent dans l’histoire par le récit : une narration claire, des repères, et un
+                            langage adapté.
+                        </p>
+
+                        <ul class="bullets">
+                            <li><strong>Accroche</strong> : un “fil rouge” pour comprendre rapidement.</li>
+                            <li><strong>Repères</strong> : dates, personnages, enjeux, vocabulaire.</li>
+                            <li><strong>Approfondissement</strong> : pour aller plus loin (club, option, curieux).</li>
+                        </ul>
+                    </div>
+
+                    <div class="story-card" data-reveal aria-label="Aperçu d’un récit">
+                        <p class="story-kicker">Exemple d’angle pédagogique</p>
+                        <p class="story-title">“Pourquoi ce lieu a compté ?”</p>
+                        <p class="story-text">
+                            Un lieu n’est pas qu’un point sur une carte : il raconte un changement, un conflit, une
+                            invention, une mémoire. ExploGo aide l’élève à relier le lieu au chapitre.
+                        </p>
+                        <p class="story-foot"><span class="badge">Narration</span> <span class="badge">Clarté</span>
+                            <span class="badge">Sources</span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- USAGES 
+        <section id="usages" class="section" aria-labelledby="titre-usages">
+            <div class="container">
+                <div class="section-head" data-reveal>
+                    <h2 id="titre-usages">Des scénarios concrets, prêts à adapter</h2>
+                    <p class="sublead">Voici quelques exemples d'utilisations pédagogiques d'ExploGo
+                    </p>
+                </div>
+
+                <div class="scenario-switcher" data-reveal>
+                    <div class="scenario-list" role="tablist" aria-label="Scénarios pédagogiques">
+                        <button class="scenario-item is-active" role="tab" aria-selected="true"
+                            data-title="Avant le cours"
+                            data-desc="Lancer une séquence par une question problématisée (5–10 min)"
+                            data-items="• Accroche : afficher la carte et faire formuler une question (‘Pourquoi ici ? Pourquoi à cette période ?’)|• Repérage guidé : choisir 3 lieux locaux en lien avec le thème (conflits, industrialisation, mémoires, aménagement…)|• Lecture flash d’une fiche : relever 3 infos + 1 mot-clé + 1 source mentionnée|• Mise en hypothèse : ‘Qu’est-ce que ce lieu raconte de la société de l’époque ?’|• Mini-tâche : chaque binôme prépare 1 slide (lieu, date, acteurs, enjeu, vocabulaire)">
+                            Avant le cours
+                        </button>
+
+                        <button class="scenario-item" role="tab" aria-selected="false" data-title="En sortie"
+                            data-desc="Transformer la visite en enquête guidée et coopérative"
+                            data-items="• Parcours 30–60 min : 4 à 6 scans (≤ 100 m) avec objectifs précis (situer, décrire, expliquer)|• Défi “indices” : relever un détail observable (inscription, matériau, emplacement) et le relier à l’explication historique|• Rôles en groupe : lecteur de fiche / cartographe / reporter / vérificateur (cohérence + chronologie)|• Questionnement : ‘Quelle trace du passé voit-on encore ? Qu’est-ce qui a changé ?’|• Restitution sur place : 1 minute par groupe (signification du lieu + preuve/indice + une limite ou une incertitude)">
+                            En sortie
+                        </button>
+
+                        <button class="scenario-item" role="tab" aria-selected="false" data-title="Après le cours"
+                            data-desc="Consolider, croiser les informations et faire produire"
+                            data-items="• Retour d’enquête : relier lieux ↔ notions (causes/conséquences, continuités/ruptures, acteurs)|• Atelier “sources” : que sait-on ? d’où ça vient ? que manque-t-il ? (distinction fait / interprétation)|• Production au choix : récit immersif (audio 1 min), mini-article, frise locale, ou “parcours commenté” (3 étapes)|• Débat EMC/patrimoine : mémoire, commémoration, renommage, mise en tourisme…">
+                            Après le cours
+                        </button>
+                    </div>
+
+                    <div class="scenario-preview" role="region" aria-label="Détails du scénario">
+                        <div class="scenario-card">
+                            <div class="scenario-top">
+                                <p class="scenario-kicker">Scénario</p>
+                                <span class="badge" id="scenarioBadge">Avant le cours</span>
+                            </div>
+
+                            <h3 id="scenarioTitle">Avant le cours</h3>
+                            <p id="scenarioDesc" class="scenario-desc">Lancer une séquence par une question
+                                problématisée (5–10 min)</p>
+
+                            <ul id="scenarioItems" class="scenario-items" aria-label="Étapes"></ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="cards-3 cards-compact" data-reveal>
+                    <article class="card">
+                        <h3>Différenciation réelle</h3>
+                        <p>Un même lieu, plusieurs niveaux d’exigence : repérage/vocabulaire pour sécuriser, puis
+                            approfondissement (causes, acteurs, débat, comparaison) pour aller plus loin.</p>
+                        <p class="card-foot"><span class="badge">Débutant → Passionné</span></p>
+                    </article>
+                    <article class="card">
+                        <h3>Coopération & oral</h3>
+                        <p>Chaque groupe “devient expert” d’un lieu : 3 informations essentielles, 1 indice observé, 1
+                            question ouverte. Restitution courte + échanges (validation, correction, nuance).</p>
+                        <p class="card-foot"><span class="badge">Restitution</span></p>
+                    </article>
+                    <article class="card">
+                        <h3>Sortie “zéro papier”, mais exigeante</h3>
+                        <p>Fiches sur mobile + carte : une visite active. Les élèves apprennent à questionner, vérifier
+                            et argumenter à partir de traces et d’informations contextualisées.</p>
+                        <p class="card-foot"><span class="badge">Enquête de terrain</span></p>
+                    </article>
+                </div>
+            </div>
+        </section>
+-->
+        <!-- FAQ -->
+        <section id="faq" class="section section-soft" aria-labelledby="titre-faq">
+            <div class="container">
+                <div class="section-head" data-reveal>
+                    <h2 id="titre-faq">FAQ</h2>
+                    <p class="sublead">Les réponses essentielles, côté classe.</p>
+                </div>
+
+                <div class="faq" data-reveal>
+                    <details>
+                        <summary>Est-ce adapté à tous les niveaux ?</summary>
+                        <p>
+                            Oui : les fiches privilégient d’abord la compréhension (clair, structuré), puis proposent
+                            des
+                            repères et des éléments pour approfondir. Cela fonctionne autant avec des élèves en
+                            découverte qu’avec des passionnés.
+                        </p>
+                    </details>
+
+                    <details>
+                        <summary>Comment est assurée la fiabilité ?</summary>
+                        <p>
+                            Les informations sont sélectionnées pour leur intérêt historique, mises en contexte, puis
+                            relues et vérifiées par un professeur d’Histoire-Géographie.
+                        </p>
+                    </details>
+
+                    <details>
+                        <summary>Peut-on l’utiliser en sortie scolaire ?</summary>
+                        <p>
+                            Oui : l’usage “sur le terrain” (repérage + scan à proximité) aide à guider un parcours et à
+                            rendre les élèves acteurs : observation, collecte, restitution.
+                        </p>
+                    </details>
+                </div>
+            </div>
+        </section>
+
+        <!-- TÉLÉCHARGEMENT -->
+        <section id="telecharger" class="section" aria-labelledby="titre-telecharger">
+            <div class="container">
+                <div class="section-head" data-reveal>
+                    <h2 id="titre-telecharger">Prêt à rendre vos cours plus interactifs ?</h2>
+                    <p class="sublead">ExploGo vous accompagne en classe, en sortie et dans vos projets.</p>
+                </div>
+
+                <ul class="store-list" data-reveal>
+                    <li><a href="https://example.com/android" rel="nofollow">Installer sur Android</a></li>
+                    <li><a href="https://example.com/ios" rel="nofollow">Installer sur iPhone</a></li>
+                </ul>
+            </div>
+        </section>
+    </main>
+
+    <footer class="site-footer">
+        <div class="container">
+            <nav aria-label="Liens de bas de page">
+                <ul class="footer-links">
+                    <li><a href="contact.html">Contact</a></li>
+                    <li><a href="confidentialite.html">Politique de confidentialité</a></li>
+                    <li><a href="mentions-legales.html">Mentions légales</a></li>
+                </ul>
+            </nav>
+            <p class="copyright">© <span>ExploGo</span> — Tous droits réservés.</p>
+        </div>
+    </footer>
+</body>
+
+</html>

@@ -1,0 +1,343 @@
+<!doctype html>
+<html lang="fr">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ExploGo — Tourisme interne & patrimoine</title>
+  <meta name="description"
+    content="ExploGo donne envie de redécouvrir sa ville : lieux clés en un coup d'œil, anecdotes locales, patrimoine français à partager avec ses proches grâce au fil d'actualité." />
+
+  <link rel="stylesheet" href="css/home.css">
+  <link rel="stylesheet" href="css/tourisme.css">
+  <script src="js/tourisme.js" defer></script>
+</head>
+
+<body>
+  <a class="skip-link" href="#contenu">Aller au contenu</a>
+
+  <header class="site-header tourisme-header">
+    <nav class="nav" aria-label="Navigation principale">
+      <a class="brand" href="home.html" aria-label="ExploGo, retour à l'accueil">
+        <img src="assets/img/logo.png" alt="" class="brand-logo">
+        <span class="brand-name">ExploGo</span>
+      </a>
+
+      <ul class="nav-links">
+        <li><a href="#decouvrir">Découvrir</a></li>
+        <li><a href="#anecdotes">Anecdotes</a></li>
+        <li><a href="#partage">Partage</a></li>
+        <li><a href="#parcours">Parcours</a></li>
+        <li><a href="#faq">FAQ</a></li>
+      </ul>
+
+      <ul class="nav-cta">
+        <li><a class="btn btn-primary" href="#telecharger">Télécharger</a></li>
+      </ul>
+    </nav>
+
+    <section class="section hero hero-tourisme" aria-labelledby="titre-principal">
+      <div class="hero-bg" aria-hidden="true">
+        <svg class="hero-map" viewBox="0 0 1200 700" preserveAspectRatio="none" aria-hidden="true">
+          <defs>
+            <linearGradient id="tourLine" x1="0" x2="1">
+              <stop offset="0" stop-color="rgba(43,142,160,0.24)"></stop>
+              <stop offset="1" stop-color="rgba(255,122,92,0.18)"></stop>
+            </linearGradient>
+          </defs>
+          <path d="M-30,170 C160,40 280,240 430,180 C610,110 680,280 860,250 C1010,225 1110,120 1260,170" fill="none"
+            stroke="url(#tourLine)" stroke-width="2.2" opacity="0.72" />
+          <path d="M40,520 C210,580 330,380 520,450 C670,510 810,640 1010,560 C1120,520 1180,440 1260,470" fill="none"
+            stroke="rgba(43,142,160,0.18)" stroke-width="2" opacity="0.72" />
+          <circle cx="250" cy="240" r="120" fill="rgba(43,142,160,0.05)"></circle>
+          <circle cx="900" cy="250" r="160" fill="rgba(255,122,92,0.05)"></circle>
+          <circle cx="760" cy="540" r="170" fill="rgba(255,210,74,0.06)"></circle>
+        </svg>
+
+        <span class="pin" style="--x:18%; --y:32%; --d:0s"></span>
+        <span class="pin" style="--x:37%; --y:27%; --d:.4s"></span>
+        <span class="pin" style="--x:52%; --y:46%; --d:.9s"></span>
+        <span class="pin" style="--x:68%; --y:29%; --d:1.3s"></span>
+        <span class="pin" style="--x:77%; --y:52%; --d:1.7s"></span>
+      </div>
+
+      <div class="container hero-grid tourisme-hero-grid">
+        <div class="hero-copy" data-reveal>
+          <h1 id="titre-principal">Redécouvrez votre ville en un coup d'œil.</h1>
+          <p class="lead">
+            ExploGo transforme le <strong>tourisme de proximité</strong> en expérience simple et vivante :
+            repérez les lieux clés autour de vous, apprenez des <strong>anecdotes locales</strong>,
+            puis partagez vos découvertes et le <strong>patrimoine français</strong> avec vos amis grâce au fil
+            d'actualité.
+          </p>
+
+          <div class="actions actions-stack-mobile">
+            <a class="btn btn-primary" href="#decouvrir">Voir l'expérience</a>
+            <a class="btn btn-tertiary" href="#partage">Découvrir le fil d'actualité</a>
+          </div>
+
+          <ul class="mini-stats" aria-label="Points clés de l'offre touristique">
+            <li class="mini-stat">
+              <span class="mini-label">Découverte rapide</span>
+              <span class="mini-value">Lieux clés visibles</span>
+            </li>
+            <li class="mini-stat">
+              <span class="mini-label">Dimension locale</span>
+              <span class="mini-value">Anecdotes de proximité</span>
+            </li>
+            <li class="mini-stat">
+              <span class="mini-label">Dimension sociale</span>
+              <span class="mini-value">Partage & inspiration</span>
+            </li>
+          </ul>
+
+          <p class="meta hero-note">
+            Pour les habitants, les familles, les visiteurs du week-end et tous ceux qui veulent
+            <strong>mieux connaître ce qu'ils ont près de chez eux</strong>.
+          </p>
+        </div>
+
+        <div class="hero-visual" data-reveal>
+          <figure class="shot shot-main">
+            <img src="assets/ecran-app/ecran-carte-rapprochee.jpg"
+              alt="Carte ExploGo affichant plusieurs lieux patrimoniaux dans une ville" />
+            <figcaption>La carte met immédiatement en avant les points d'intérêt à visiter autour de soi.</figcaption>
+          </figure>
+
+          <div class="hero-floating-card floating-card-top">
+            <p class="floating-kicker">En un regard</p>
+            <p class="floating-title">Repérez les incontournables</p>
+            <p class="floating-text">Monuments, places, bâtiments remarquables et lieux à découvrir à proximité.</p>
+          </div>
+
+          <div class="hero-floating-card floating-card-bottom">
+            <p class="floating-kicker">Après la visite</p>
+            <p class="floating-title">Publiez vos découvertes</p>
+            <p class="floating-text">Un fil d'actualité pour montrer ce que vous avez appris et donner envie aux autres.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </header>
+
+  <main id="contenu">
+    <section id="decouvrir" class="section section-soft" aria-labelledby="titre-decouvrir">
+      <div class="container">
+        <div class="section-head" data-reveal>
+          <p class="section-kicker">Pourquoi cette page ?</p>
+          <h2 id="titre-decouvrir">Découvrir les lieux clés d'une ville</h2>
+          <p class="sublead">
+            L'application aide à comprendre rapidement ce qu'il y a à voir autour de soi,
+            pour transformer une promenade en vraie découverte culturelle.
+          </p>
+        </div>
+
+        <div class="value-grid" data-reveal>
+          <article class="value-card value-card-highlight">
+            <span class="value-index">01</span>
+            <h3>Voir l'essentiel immédiatement</h3>
+            <p>
+              La carte et les fiches permettent d'identifier les <strong>lieux incontournables</strong>
+              d'un quartier ou d'un centre-ville en quelques secondes.
+            </p>
+            <p class="value-foot">Idéal pour une balade spontanée, une sortie du dimanche ou un week-end sur place.</p>
+          </article>
+
+          <article class="value-card">
+            <span class="value-index">02</span>
+            <h3>Donner envie de lever les yeux</h3>
+            <p>
+              En montrant ce qu'un lieu représente, ExploGo rend la ville plus lisible,
+              plus concrète et plus attractive pour les habitants eux-mêmes.
+            </p>
+            <p class="value-foot">On ne passe plus devant un monument sans savoir pourquoi il compte.</p>
+          </article>
+
+          <article class="value-card">
+            <span class="value-index">03</span>
+            <h3>Faire du proche une destination</h3>
+            <p>
+              Le tourisme interne valorise ce qui a toujours été là : places, monuments, bâtiments historiques,
+              traces d'événements ou de personnages qui racontent la ville.
+            </p>
+            <p class="value-foot">Une manière simple de soutenir la curiosité locale et le patrimoine français.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="anecdotes" class="section" aria-labelledby="titre-anecdotes">
+      <div class="container">
+        <div class="story-layout">
+          <div class="story-copy" data-reveal>
+            <p class="section-kicker">Créer l'envie de visiter</p>
+            <h2 id="titre-anecdotes">Des anecdotes qui donnent du relief à sa propre ville</h2>
+            <p class="lead-small">
+              ExploGo ne se contente pas de nommer un lieu : l'application raconte
+              <strong>ce qu'il s'y est passé</strong>, pourquoi il est singulier,
+              et ce qu'il révèle de l'histoire locale.
+            </p>
+
+            <div class="story-points">
+              <article class="story-point">
+                <h3>Rendre la découverte mémorable</h3>
+                <p>Une anecdote bien choisie marque davantage qu'une date isolée et aide à retenir l'histoire du lieu.
+                </p>
+              </article>
+
+              <article class="story-point">
+                <h3>Créer un attachement local</h3>
+                <p>Connaître les petites histoires de sa ville donne envie de sortir, de revisiter un quartier et d'en
+                  parler autour de soi.</p>
+              </article>
+
+              <article class="story-point">
+                <h3>Montrer que le patrimoine est proche</h3>
+                <p>Le patrimoine français n'est pas seulement dans les grands sites célèbres : il existe aussi juste à
+                  côté de chez soi.</p>
+              </article>
+            </div>
+          </div>
+
+          <figure class="device-showcase" data-reveal>
+            <img src="assets/ecran-app/ecran-anecdote.jpg"
+              alt="Fiche d'information ExploGo détaillant un lieu avec contexte et éléments historiques" />
+          </figure>
+        </div>
+      </div>
+    </section>
+
+    <section id="partage" class="section section-soft" aria-labelledby="titre-partage">
+      <div class="container">
+        <div class="section-head" data-reveal>
+          <p class="section-kicker">Dimension sociale</p>
+          <h2 id="titre-partage">Partager ses découvertes pour faire circuler le patrimoine</h2>
+          <p class="sublead">
+            Le fil d'actualité transforme la visite en conversation : on montre ce qu'on a vu,
+            ce qu'on a appris et on donne des idées de sorties à ses proches.
+          </p>
+        </div>
+
+        <div class="social-grid">
+          <figure class="feed-shot" data-reveal>
+            <img src="assets/ecran-app/ecran-fil-actualit&#233;.jpg"
+              alt="Fil d'actualité ExploGo avec des publications de découvertes patrimoniales" />
+            <figcaption>Le fil d'actualité met en valeur les découvertes, les lieux remarqués et les anecdotes apprises.
+            </figcaption>
+          </figure>
+
+          <div class="social-copy" data-reveal>
+            <div class="social-card">
+              <h3>Donner envie aux autres de visiter</h3>
+              <p>Une publication peut déclencher une sortie en famille, une balade entre amis ou la redécouverte d'un
+                quartier oublié.</p>
+            </div>
+
+            <div class="social-card">
+              <h3>Valoriser le patrimoine français de manière simple</h3>
+              <p>On partage un lieu, une histoire, une façade ou un détail marquant sans avoir besoin d'un discours
+                expert.</p>
+            </div>
+
+            <div class="social-card">
+              <h3>Créer une dynamique locale</h3>
+              <p>Les découvertes de chacun nourrissent celles des autres et renforcent l'intérêt pour les lieux proches
+                de chez soi.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section section-soft" aria-labelledby="titre-arguments">
+      <div class="container">
+        <div class="section-head" data-reveal>
+          <p class="section-kicker">En résumé</p>
+          <h2 id="titre-arguments">Les arguments clés de la proposition tourisme</h2>
+        </div>
+
+        <div class="argument-band" data-reveal>
+          <article class="argument-pill">
+            <h3>Découverte immédiate</h3>
+            <p>Les lieux clés d'une ville sont visibles rapidement, ce qui facilite le repérage et la visite.</p>
+          </article>
+          <article class="argument-pill">
+            <h3>Curiosité locale</h3>
+            <p>Les anecdotes et récits donnent envie d'explorer davantage ce qui se trouve déjà près de chez soi.</p>
+          </article>
+          <article class="argument-pill">
+            <h3>Patrimoine partagé</h3>
+            <p>Le fil d'actualité aide à diffuser ses découvertes et à faire rayonner le patrimoine français dans son
+              cercle proche.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- TÉLÉCHARGEMENT -->
+        <section id="telecharger" class="section" aria-labelledby="titre-telecharger">
+            <div class="container">
+                <div class="section-head" data-reveal>
+                    <h2 id="titre-telecharger">Prêt à donner vie au patrimoine français ?</h2>
+                </div>
+
+                <ul class="store-list" data-reveal>
+                    <li><a href="https://example.com/android" rel="nofollow">Installer sur Android</a></li>
+                    <li><a href="https://example.com/ios" rel="nofollow">Installer sur iPhone</a></li>
+                </ul>
+            </div>
+        </section>
+
+    <section id="faq" class="section" aria-labelledby="titre-faq">
+      <div class="container">
+        <div class="section-head" data-reveal>
+          <p class="section-kicker">FAQ</p>
+          <h2 id="titre-faq">Questions fréquentes</h2>
+          <p class="sublead">Des réponses simples sur l'usage touristique de l'application.</p>
+        </div>
+
+        <div class="faq" data-reveal>
+          <details>
+            <summary>À qui s'adresse cette page tourisme ?</summary>
+            <p>Elle s'adresse aux habitants, familles, promeneurs, visiteurs de proximité et à tous ceux qui veulent
+              redécouvrir leur ville sans organiser un grand voyage.</p>
+          </details>
+
+          <details>
+            <summary>En quoi ExploGo favorise-t-il le tourisme interne ?</summary>
+            <p>L'application met en avant les lieux clés à proximité, donne des repères historiques simples et
+              transforme un environnement familier en terrain de découverte.</p>
+          </details>
+
+          <details>
+            <summary>Pourquoi le fil d'actualité est-il utile ?</summary>
+            <p>Parce qu'il permet de partager ses trouvailles, de donner envie à d'autres de visiter et de faire vivre
+              le patrimoine français à travers des recommandations concrètes.</p>
+          </details>
+
+          <details>
+            <summary>Quel est le bénéfice principal pour l'utilisateur ?</summary>
+            <p>Mieux connaître ce qu'il a près de chez lui, sortir avec une intention de découverte et créer de
+              nouvelles idées de balades culturelles locales.</p>
+          </details>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <nav aria-label="Liens de bas de page">
+        <ul class="footer-links">
+          <li><a href="conditions-utilisation.html">Conditions d'utilisation</a></li>
+          <li><a href="confidentialite.html">Politique de confidentialité</a></li>
+          <li><a href="mentions-legales.html">Mentions légales</a></li>
+        </ul>
+      </nav>
+      <p class="copyright">© <span>ExploGo</span> — Tous droits réservés.</p>
+    </div>
+  </footer>
+</body>
+
+</html>
