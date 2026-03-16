@@ -440,6 +440,12 @@ h2{ font-size: var(--h2); }
   max-width: 420px;
 }
 
+.hero .shot{
+  max-width: 340px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
 .shot figcaption{
   padding: 12px 14px;
   font-size: 0.95rem;
