@@ -764,3 +764,83 @@
         border-radius: 12px;
     }
 }
+
+/* =========================
+   MOBILE — ajustements
+   ========================= */
+
+@media (max-width: 860px) {
+    .hero-explorateurs .actions {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: .75rem;
+        align-items: stretch;
+    }
+
+    .hero-explorateurs .actions .btn {
+        width: 100%;
+        min-width: 0;
+        padding-inline: .9rem;
+        text-align: center;
+    }
+
+    .scan-showcase figcaption {
+        position: static;
+        left: auto;
+        right: auto;
+        bottom: auto;
+    }
+
+    .scan-showcase figcaption::before {
+        display: none;
+    }
+
+    .report-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .visit-scroll {
+        max-height: 240px;
+        overflow-y: auto;
+    }
+}
+
+@media (max-width: 560px) {
+    .report-grid {
+        gap: .8rem;
+    }
+
+    .report-card {
+        padding: .9rem .85rem;
+        border-radius: 16px;
+    }
+
+    .report-card h3 {
+        font-size: .98rem;
+    }
+
+    .report-value {
+        font-size: 1.3rem;
+    }
+
+    .type-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: .65rem;
+    }
+
+    .type-card {
+        padding: .8rem .75rem;
+    }
+
+    .type-value {
+        font-size: 1.05rem;
+    }
+
+    .type-label {
+        font-size: .88rem;
+    }
+
+    .visit-scroll {
+        max-height: 220px;
+    }
+}
