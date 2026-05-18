@@ -172,6 +172,7 @@ async function openEdit(id) {
     document.getElementById("fDistance").value = p.distanceKm || "";
     document.getElementById("fDuree").value = p.dureeMinutes || "";
     document.getElementById("fDescription").value = p.description || "";
+    document.getElementById("fActif").checked = !!p.actif;
     renderEtapes();
 
   } catch {
@@ -197,6 +198,7 @@ async function handleSave(e) {
     distanceKm: parseFloat(document.getElementById("fDistance").value) || null,
     dureeMinutes: parseInt(document.getElementById("fDuree").value) || null,
     description: document.getElementById("fDescription").value.trim(),
+    actif: document.getElementById("fActif").checked,
     etapes: etapes,
   };
 
