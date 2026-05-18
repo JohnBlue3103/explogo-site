@@ -159,7 +159,7 @@ async function openEdit(id) {
   document.getElementById("formTitle").textContent = "Modifier le parcours";
 
   try {
-    const res = await apiFetch(`/api/parcours/${id}`);
+    const res = await apiFetch(`/api/parcours/mes-parcours/${id}`);
     const p = await res.json();
     currentParcours = p;
     etapes = p.etapes || [];
