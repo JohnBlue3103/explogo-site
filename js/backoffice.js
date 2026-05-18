@@ -238,7 +238,7 @@ async function deleteParcours(id) {
    ETAPES
    ========================= */
 function addEtape() {
-  etapes.push({ poiType: "monument", poiId: "", descriptionEtape: "" });
+  etapes.push({ poiType: "", poiId: "", poiNom: "", descriptionEtape: "" });
   renderEtapes();
 }
 
@@ -258,6 +258,49 @@ function updateEtape(i, field, value) {
   etapes[i][field] = value;
 }
 
+function selectPoi(i, poiType, poiId, poiNom) {
+  etapes[i].poiType = poiType;
+  etapes[i].poiId = poiId;
+  etapes[i].poiNom = poiNom;
+  renderEtapes();
+}
+
+function clearPoi(i) {
+  etapes[i].poiType = "";
+  etapes[i].poiId = "";
+  etapes[i].poiNom = "";
+  renderEtapes();
+}
+
+let searchTimers = {};
+
+async function handlePoiSearch(i, q) {
+  clearTimeout(searchTimers[i]);
+  const dropdown = document.getElementById(`poi-dropdown-${i}`);
+  if (!q || q.length < 2) { dropdown.innerHTML = ""; dropdown.classList.add("hidden"); return; }
+
+  searchTimers[i] = setTimeout(async () => {
+    try {
+      const res = await apiFetch(`/api/parcours/search-poi?q=${encodeURIComponent(q)}`);
+      const results = await res.json();
+      if (!results.length) {
+        dropdown.innerHTML = '<div class="poi-option poi-empty">Aucun résultat</div>';
+      } else {
+        dropdown.innerHTML = results.slice(0, 10).map(r => `
+          <div class="poi-option" onclick="selectPoi(${i}, '${esc(r.categorie)}', '${r.id}', '${esc(r.nom)}')">
+            <span class="poi-nom">${esc(r.nom)}</span>
+            <span class="poi-type">${esc(r.categorie)}</span>
+          </div>
+        `).join("");
+      }
+      dropdown.classList.remove("hidden");
+    } catch {
+      dropdown.innerHTML = "";
+      dropdown.classList.add("hidden");
+    }
+  }, 300);
+}
+
 function renderEtapes() {
   const list = document.getElementById("etapesList");
 
@@ -266,27 +309,26 @@ function renderEtapes() {
     return;
   }
 
-  const typeOptions = POI_TYPES.map(t =>
-    `<option value="${t.value}">${t.label}</option>`
-  ).join("");
-
   list.innerHTML = etapes.map((e, i) => `
     <div class="etape-row">
       <div class="etape-num">${i + 1}</div>
       <div class="etape-fields">
-        <div class="form-group">
-          <label>Type de POI</label>
-          <select onchange="updateEtape(${i}, 'poiType', this.value)">
-            ${POI_TYPES.map(t =>
-              `<option value="${t.value}" ${e.poiType === t.value ? "selected" : ""}>${t.label}</option>`
-            ).join("")}
-          </select>
-        </div>
-        <div class="form-group">
-          <label>ID du POI</label>
-          <input type="text" value="${esc(e.poiId || '')}"
-            placeholder="Ex : PA00102614"
-            onchange="updateEtape(${i}, 'poiId', this.value)">
+        <div class="form-group full poi-search-group">
+          <label>Point d'intérêt</label>
+          ${e.poiId ? `
+            <div class="poi-selected">
+              <span>${esc(e.poiNom || e.poiId)}</span>
+              <span class="poi-type">${esc(e.poiType)}</span>
+              <button type="button" class="btn-icon" onclick="clearPoi(${i})" title="Changer">✕</button>
+            </div>
+          ` : `
+            <div class="poi-search-wrapper">
+              <input type="text" placeholder="Rechercher un lieu par nom…"
+                oninput="handlePoiSearch(${i}, this.value)"
+                autocomplete="off">
+              <div id="poi-dropdown-${i}" class="poi-dropdown hidden"></div>
+            </div>
+          `}
         </div>
         <div class="form-group full">
           <label>Description de l'étape (optionnel)</label>
