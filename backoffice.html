@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Backoffice — Explogo Tourisme</title>
+  <link rel="stylesheet" href="css/backoffice.css">
+</head>
+<body>
+
+<!-- ========== LOGIN ========== -->
+<div id="view-login" class="view">
+  <div class="login-card">
+    <img src="assets/img/logo.png" class="login-logo" alt="Explogo">
+    <h1>Espace organisateur</h1>
+    <p class="login-sub">Mairies &amp; Offices de tourisme</p>
+    <form id="loginForm">
+      <label>Email</label>
+      <input id="loginEmail" type="email" placeholder="contact@mairie.fr" required>
+      <label>Mot de passe</label>
+      <input id="loginPassword" type="password" placeholder="••••••••" required>
+      <p id="loginError" class="error hidden"></p>
+      <button type="submit" class="btn-primary" id="loginBtn">Se connecter</button>
+    </form>
+  </div>
+</div>
+
+<!-- ========== DASHBOARD ========== -->
+<div id="view-dashboard" class="view hidden">
+  <header class="topbar">
+    <div class="topbar-brand">
+      <img src="assets/img/logo.png" alt="Explogo">
+      <span>Explogo Tourisme</span>
+    </div>
+    <div class="topbar-right">
+      <span id="orgName" class="org-name"></span>
+      <button class="btn-outline" onclick="logout()">Déconnexion</button>
+    </div>
+  </header>
+
+  <main class="main-content">
+    <div class="page-header">
+      <div>
+        <h2>Mes parcours</h2>
+        <p class="page-sub">Gérez vos itinéraires touristiques</p>
+      </div>
+      <button class="btn-primary" onclick="openCreate()">+ Nouveau parcours</button>
+    </div>
+
+    <div id="parcoursGrid" class="parcours-grid">
+      <div class="loading">Chargement…</div>
+    </div>
+  </main>
+</div>
+
+<!-- ========== FORMULAIRE PARCOURS ========== -->
+<div id="view-form" class="view hidden">
+  <header class="topbar">
+    <div class="topbar-brand">
+      <img src="assets/img/logo.png" alt="Explogo">
+      <span>Explogo Tourisme</span>
+    </div>
+    <div class="topbar-right">
+      <button class="btn-outline" onclick="showDashboard()">← Retour</button>
+    </div>
+  </header>
+
+  <main class="main-content">
+    <h2 id="formTitle">Nouveau parcours</h2>
+
+    <form id="parcoursForm" class="parcours-form">
+      <input type="hidden" id="parcoursId">
+
+      <div class="form-grid">
+        <div class="form-group">
+          <label>Titre *</label>
+          <input id="fTitre" type="text" placeholder="Ex : Parcours médiéval du centre-ville" required>
+        </div>
+        <div class="form-group">
+          <label>Ville *</label>
+          <input id="fVille" type="text" placeholder="Ex : Poitiers" required>
+        </div>
+        <div class="form-group">
+          <label>Thème *</label>
+          <select id="fTheme">
+            <option value="MEDIEVAL">Médiéval</option>
+            <option value="RELIGIEUX">Religieux</option>
+            <option value="INDUSTRIEL">Industriel</option>
+            <option value="GASTRONOMIQUE">Gastronomique</option>
+            <option value="NATURE">Nature</option>
+            <option value="GENERAL">Général</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Niveau</label>
+          <select id="fNiveau">
+            <option value="FACILE">Facile</option>
+            <option value="MOYEN">Moyen</option>
+            <option value="DIFFICILE">Difficile</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Distance (km)</label>
+          <input id="fDistance" type="number" step="0.1" min="0" placeholder="2.5">
+        </div>
+        <div class="form-group">
+          <label>Durée (minutes)</label>
+          <input id="fDuree" type="number" min="0" placeholder="90">
+        </div>
+      </div>
+
+      <div class="form-group full">
+        <label>Description</label>
+        <textarea id="fDescription" rows="4" placeholder="Décrivez ce parcours…"></textarea>
+      </div>
+
+      <!-- ETAPES -->
+      <div class="etapes-section">
+        <div class="etapes-header">
+          <h3>Étapes</h3>
+          <button type="button" class="btn-secondary" onclick="addEtape()">+ Ajouter une étape</button>
+        </div>
+        <div id="etapesList" class="etapes-list">
+          <p class="etapes-empty">Aucune étape. Ajoutez des points d'intérêt.</p>
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <p id="formError" class="error hidden"></p>
+        <button type="button" class="btn-outline" onclick="showDashboard()">Annuler</button>
+        <button type="submit" class="btn-primary" id="saveBtn">Enregistrer</button>
+      </div>
+    </form>
+  </main>
+</div>
+
+<script src="js/backoffice.js"></script>
+</body>
+</html>
