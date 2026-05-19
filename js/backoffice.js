@@ -49,52 +49,6 @@ function showDashboard() {
 }
 
 /* =========================
-   GOOGLE SIGN-IN
-   ========================= */
-window.onGoogleLibraryLoad = () => {
-  google.accounts.id.initialize({
-    client_id: "996946387044-2em61r84nl4tm6e3c6h9ckstolcq2gim.apps.googleusercontent.com",
-    callback: handleGoogleCredential,
-  });
-  google.accounts.id.renderButton(
-    document.getElementById("google-btn-wrapper"),
-    { theme: "outline", size: "large", text: "signin_with", width: 320, locale: "fr" }
-  );
-};
-
-async function handleGoogleCredential(response) {
-  const errEl = document.getElementById("loginError");
-  errEl.classList.add("hidden");
-  try {
-    const res = await fetch(`${API}/auth/google`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ idToken: response.credential }),
-    });
-    const data = await res.json();
-    if (!res.ok) {
-      errEl.textContent = data.error || "Erreur authentification Google";
-      errEl.classList.remove("hidden");
-      return;
-    }
-    if (data.role !== "ROLE_ORGANISATEUR" && data.role !== "ROLE_ADMIN") {
-      errEl.textContent = "Accès réservé aux organisateurs. Contactez l'administrateur.";
-      errEl.classList.remove("hidden");
-      return;
-    }
-    token = data.token;
-    userRole = data.role;
-    localStorage.setItem("bo_token", token);
-    localStorage.setItem("bo_role", userRole);
-    document.getElementById("orgName").textContent = data.pseudo || data.email;
-    showDashboard();
-  } catch {
-    errEl.textContent = "Serveur indisponible";
-    errEl.classList.remove("hidden");
-  }
-}
-
-/* =========================
    AUTH
    ========================= */
 async function handleLogin(e) {
@@ -200,7 +154,7 @@ function renderUsers(users) {
     const r = roleLabels[u.role] || { label: u.role, cls: "badge-gray" };
     const isOrg = u.role === "ROLE_ORGANISATEUR";
     const org = u.organisateur;
-    const authIcon = u.googleAccount ? "🟢 Google" : u.appleAccount ? "🍎 Apple" : "🔑 Email";
+    const authIcon = u.appleAccount ? "🍎 Apple" : "🔑 Email";
 
     return `
     <div class="admin-user-row">
