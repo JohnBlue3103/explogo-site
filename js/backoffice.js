@@ -110,34 +110,39 @@ function logout() {
 /* =========================
    ADMIN
    ========================= */
-let allUsers = [];
+let adminPage = 0;
+let adminTotal = 0;
+let searchTimer = null;
 
 function showAdmin() {
   showView("admin");
+  adminPage = 0;
   loadAdminUsers();
 }
 
 async function loadAdminUsers() {
   const list = document.getElementById("adminUserList");
   list.innerHTML = '<div class="loading">Chargement…</div>';
+  const q = document.getElementById("adminSearch").value.trim();
   try {
-    const res = await apiFetch("/admin/users");
-    allUsers = await res.json();
-    renderUsers(allUsers);
+    const res = await apiFetch(`/admin/users?q=${encodeURIComponent(q)}&page=${adminPage}`);
+    const data = await res.json();
+    adminTotal = data.total;
+    renderUsers(data.users, data.page, data.totalPages);
   } catch {
     list.innerHTML = '<div class="loading">Erreur de chargement</div>';
   }
 }
 
 function filterUsers() {
-  const q = document.getElementById("adminSearch").value.toLowerCase().trim();
-  const filtered = q
-    ? allUsers.filter(u => u.email.toLowerCase().includes(q) || u.pseudo.toLowerCase().includes(q))
-    : allUsers;
-  renderUsers(filtered);
+  clearTimeout(searchTimer);
+  searchTimer = setTimeout(() => {
+    adminPage = 0;
+    loadAdminUsers();
+  }, 350);
 }
 
-function renderUsers(users) {
+function renderUsers(users, page, totalPages) {
   const list = document.getElementById("adminUserList");
   if (!users.length) {
     list.innerHTML = '<div class="loading">Aucun utilisateur trouvé</div>';
@@ -150,7 +155,7 @@ function renderUsers(users) {
     ROLE_ADMIN:         { label: "Admin",          cls: "badge-orange" },
   };
 
-  list.innerHTML = users.map(u => {
+  const rows = users.map(u => {
     const r = roleLabels[u.role] || { label: u.role, cls: "badge-gray" };
     const isOrg = u.role === "ROLE_ORGANISATEUR";
     const org = u.organisateur;
@@ -174,6 +179,20 @@ function renderUsers(users) {
       </div>
     </div>`;
   }).join("");
+
+  const pagination = totalPages > 1 ? `
+    <div class="admin-pagination">
+      <button class="btn-outline" onclick="changePage(${page - 1})" ${page === 0 ? "disabled" : ""}>← Précédent</button>
+      <span>Page ${page + 1} / ${totalPages} · ${adminTotal} utilisateurs</span>
+      <button class="btn-outline" onclick="changePage(${page + 1})" ${page >= totalPages - 1 ? "disabled" : ""}>Suivant →</button>
+    </div>` : `<div class="admin-pagination-info">${adminTotal} utilisateurs</div>`;
+
+  list.innerHTML = rows + pagination;
+}
+
+function changePage(p) {
+  adminPage = p;
+  loadAdminUsers();
 }
 
 function openPromoCreate(u) {
