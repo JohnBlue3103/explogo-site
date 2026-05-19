@@ -169,11 +169,8 @@ async function openEdit(id) {
     document.getElementById("fVille").value = p.ville || "";
     document.getElementById("fTheme").value = p.theme || "GENERAL";
     document.getElementById("fNiveau").value = p.niveau || "FACILE";
-    document.getElementById("fDistance").value = p.distanceKm || "";
-    document.getElementById("fDuree").value = p.dureeMinutes || "";
     document.getElementById("fDescription").value = p.description || "";
     document.getElementById("fActif").checked = !!p.actif;
-    document.getElementById("fTransportMode").value = p.transportMode || "foot-walking";
     renderEtapes();
 
   } catch {
@@ -196,11 +193,8 @@ async function handleSave(e) {
     ville: document.getElementById("fVille").value.trim(),
     theme: document.getElementById("fTheme").value,
     niveau: document.getElementById("fNiveau").value,
-    distanceKm: parseFloat(document.getElementById("fDistance").value) || null,
-    dureeMinutes: parseInt(document.getElementById("fDuree").value) || null,
     description: document.getElementById("fDescription").value.trim(),
     actif: document.getElementById("fActif").checked,
-    transportMode: document.getElementById("fTransportMode").value,
     etapes: etapes,
   };
 
