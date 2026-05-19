@@ -236,6 +236,12 @@ async function deleteParcours(id) {
    ETAPES
    ========================= */
 function addEtape() {
+  const ville = document.getElementById("fVille").value.trim();
+  if (!ville) {
+    alert("Veuillez d'abord saisir la ville du parcours pour filtrer les points d'intérêt.");
+    document.getElementById("fVille").focus();
+    return;
+  }
   etapes.push({ poiType: "", poiId: "", poiNom: "", descriptionEtape: "" });
   renderEtapes();
 }
@@ -277,17 +283,25 @@ async function handlePoiSearch(i, q) {
   const dropdown = document.getElementById(`poi-dropdown-${i}`);
   if (!q || q.length < 2) { dropdown.innerHTML = ""; dropdown.classList.add("hidden"); return; }
 
+  const ville = document.getElementById("fVille").value.trim();
+  if (!ville) {
+    dropdown.innerHTML = '<div class="poi-option poi-empty">⚠️ Renseignez d\'abord la ville du parcours</div>';
+    dropdown.classList.remove("hidden");
+    return;
+  }
+
   searchTimers[i] = setTimeout(async () => {
     try {
-      const res = await apiFetch(`/api/parcours/search-poi?q=${encodeURIComponent(q)}`);
+      const url = `/api/parcours/search-poi?q=${encodeURIComponent(q)}&ville=${encodeURIComponent(ville)}`;
+      const res = await apiFetch(url);
       const results = await res.json();
       if (!results.length) {
-        dropdown.innerHTML = '<div class="poi-option poi-empty">Aucun résultat</div>';
+        dropdown.innerHTML = `<div class="poi-option poi-empty">Aucun résultat à ${esc(ville)}</div>`;
       } else {
         dropdown.innerHTML = results.slice(0, 10).map(r => `
           <div class="poi-option" onclick="selectPoi(${i}, '${esc(r.categorie)}', '${r.id}', '${esc(r.nom)}')">
             <span class="poi-nom">${esc(r.nom)}</span>
-            <span class="poi-type">${esc(r.categorie)}</span>
+            <span class="poi-type">${esc(r.categorie)}${r.commune ? ' · ' + esc(r.commune) : ''}</span>
           </div>
         `).join("");
       }
