@@ -339,6 +339,13 @@ textarea { resize: vertical; }
 
 .poi-nom { font-weight: 500; }
 
+.poi-commune {
+  font-weight: 400;
+  font-size: 0.85em;
+  color: var(--text-muted);
+  margin-left: 2px;
+}
+
 .poi-type {
   font-size: 0.75rem;
   color: var(--text-muted);

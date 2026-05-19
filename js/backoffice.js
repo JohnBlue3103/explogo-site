@@ -296,12 +296,12 @@ async function handlePoiSearch(i, q) {
       const res = await apiFetch(url);
       const results = await res.json();
       if (!results.length) {
-        dropdown.innerHTML = `<div class="poi-option poi-empty">Aucun résultat à ${esc(ville)}</div>`;
+        dropdown.innerHTML = `<div class="poi-option poi-empty">Aucun résultat pour "${esc(q)}"</div>`;
       } else {
         dropdown.innerHTML = results.slice(0, 15).map(r => `
           <div class="poi-option" onclick="selectPoi(${i}, '${esc(r.categorie)}', '${r.id}', '${esc(r.nom)}')">
-            <span class="poi-nom">${esc(r.nom)}</span>
-            <span class="poi-type">${esc(r.categorie)}${r.commune ? ' · ' + esc(r.commune) : ''}</span>
+            <span class="poi-nom">${esc(r.nom)}${r.commune ? ` <span class="poi-commune">(${esc(r.commune)})</span>` : ''}</span>
+            <span class="poi-type">${esc(r.categorie)}</span>
           </div>
         `).join("");
       }
