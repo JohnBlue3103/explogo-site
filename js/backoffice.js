@@ -1,7 +1,8 @@
 const API = "https://api.explogo.fr";
 
-let token = localStorage.getItem("bo_token") || null;
-let currentParcours = null; // parcours en cours d'édition
+let token    = localStorage.getItem("bo_token") || null;
+let userRole = localStorage.getItem("bo_role")  || null;
+let currentParcours = null;
 let etapes = [];
 
 const THEMES = {
@@ -43,6 +44,54 @@ function showView(name) {
 function showDashboard() {
   showView("dashboard");
   loadParcours();
+  const adminBtn = document.getElementById("adminNavBtn");
+  if (adminBtn) adminBtn.classList.toggle("hidden", userRole !== "ROLE_ADMIN");
+}
+
+/* =========================
+   GOOGLE SIGN-IN
+   ========================= */
+window.onGoogleLibraryLoad = () => {
+  google.accounts.id.initialize({
+    client_id: "996946387044-2em61r84nl4tm6e3c6h9ckstolcq2gim.apps.googleusercontent.com",
+    callback: handleGoogleCredential,
+  });
+  google.accounts.id.renderButton(
+    document.getElementById("google-btn-wrapper"),
+    { theme: "outline", size: "large", text: "signin_with", width: 320, locale: "fr" }
+  );
+};
+
+async function handleGoogleCredential(response) {
+  const errEl = document.getElementById("loginError");
+  errEl.classList.add("hidden");
+  try {
+    const res = await fetch(`${API}/auth/google`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ idToken: response.credential }),
+    });
+    const data = await res.json();
+    if (!res.ok) {
+      errEl.textContent = data.error || "Erreur authentification Google";
+      errEl.classList.remove("hidden");
+      return;
+    }
+    if (data.role !== "ROLE_ORGANISATEUR" && data.role !== "ROLE_ADMIN") {
+      errEl.textContent = "Accès réservé aux organisateurs. Contactez l'administrateur.";
+      errEl.classList.remove("hidden");
+      return;
+    }
+    token = data.token;
+    userRole = data.role;
+    localStorage.setItem("bo_token", token);
+    localStorage.setItem("bo_role", userRole);
+    document.getElementById("orgName").textContent = data.pseudo || data.email;
+    showDashboard();
+  } catch {
+    errEl.textContent = "Serveur indisponible";
+    errEl.classList.remove("hidden");
+  }
 }
 
 /* =========================
@@ -81,7 +130,9 @@ async function handleLogin(e) {
     }
 
     token = data.token;
+    userRole = data.role;
     localStorage.setItem("bo_token", token);
+    localStorage.setItem("bo_role", userRole);
     document.getElementById("orgName").textContent = data.pseudo || data.email;
     showDashboard();
 
@@ -96,8 +147,173 @@ async function handleLogin(e) {
 
 function logout() {
   localStorage.removeItem("bo_token");
+  localStorage.removeItem("bo_role");
   token = null;
+  userRole = null;
   showView("login");
+}
+
+/* =========================
+   ADMIN
+   ========================= */
+let allUsers = [];
+
+function showAdmin() {
+  showView("admin");
+  loadAdminUsers();
+}
+
+async function loadAdminUsers() {
+  const list = document.getElementById("adminUserList");
+  list.innerHTML = '<div class="loading">Chargement…</div>';
+  try {
+    const res = await apiFetch("/admin/users");
+    allUsers = await res.json();
+    renderUsers(allUsers);
+  } catch {
+    list.innerHTML = '<div class="loading">Erreur de chargement</div>';
+  }
+}
+
+function filterUsers() {
+  const q = document.getElementById("adminSearch").value.toLowerCase().trim();
+  const filtered = q
+    ? allUsers.filter(u => u.email.toLowerCase().includes(q) || u.pseudo.toLowerCase().includes(q))
+    : allUsers;
+  renderUsers(filtered);
+}
+
+function renderUsers(users) {
+  const list = document.getElementById("adminUserList");
+  if (!users.length) {
+    list.innerHTML = '<div class="loading">Aucun utilisateur trouvé</div>';
+    return;
+  }
+
+  const roleLabels = {
+    ROLE_USER:          { label: "Visiteur",      cls: "badge-gray" },
+    ROLE_ORGANISATEUR:  { label: "Organisateur",  cls: "badge-green" },
+    ROLE_ADMIN:         { label: "Admin",          cls: "badge-orange" },
+  };
+
+  list.innerHTML = users.map(u => {
+    const r = roleLabels[u.role] || { label: u.role, cls: "badge-gray" };
+    const isOrg = u.role === "ROLE_ORGANISATEUR";
+    const org = u.organisateur;
+    const authIcon = u.googleAccount ? "🟢 Google" : u.appleAccount ? "🍎 Apple" : "🔑 Email";
+
+    return `
+    <div class="admin-user-row">
+      <div class="admin-user-info">
+        <div class="admin-user-main">
+          <span class="admin-pseudo">${esc(u.pseudo)}</span>
+          <span class="badge ${r.cls}">${r.label}</span>
+          <span class="admin-auth-badge">${authIcon}</span>
+        </div>
+        <div class="admin-user-email">${esc(u.email)}</div>
+        ${isOrg && org.nom ? `<div class="admin-org-info">${esc(org.nom)}${org.ville ? ` · ${esc(org.ville)}` : ""} · ${org.maxParcours} parcours · ${org.abonnementActif ? "✅ actif" : "⏸ suspendu"}</div>` : ""}
+      </div>
+      <div class="admin-user-actions">
+        ${!isOrg && u.role !== "ROLE_ADMIN" ? `<button class="btn-secondary" onclick='openPromoCreate(${JSON.stringify(u)})'>Promouvoir</button>` : ""}
+        ${isOrg ? `<button class="btn-secondary" onclick='openPromoEdit(${JSON.stringify(u)})'>Modifier</button>` : ""}
+        ${isOrg ? `<button class="btn-icon danger" onclick="revoquerOrg(${org.id}, '${esc(u.pseudo)}')">Révoquer</button>` : ""}
+      </div>
+    </div>`;
+  }).join("");
+}
+
+function openPromoCreate(u) {
+  document.getElementById("promoModalTitle").textContent = "Promouvoir en organisateur";
+  document.getElementById("promoUserLabel").textContent = `${u.pseudo} · ${u.email}`;
+  document.getElementById("promoUserId").value = u.id;
+  document.getElementById("promoOrgId").value = "";
+  document.getElementById("promoNom").value = "";
+  document.getElementById("promoVille").value = "";
+  document.getElementById("promoMax").value = "5";
+  document.getElementById("promoAbonnementWrap").style.display = "none";
+  document.getElementById("promoError").classList.add("hidden");
+  document.getElementById("promoModal").classList.remove("hidden");
+}
+
+function openPromoEdit(u) {
+  const org = u.organisateur;
+  document.getElementById("promoModalTitle").textContent = "Modifier l'organisateur";
+  document.getElementById("promoUserLabel").textContent = `${u.pseudo} · ${u.email}`;
+  document.getElementById("promoUserId").value = u.id;
+  document.getElementById("promoOrgId").value = org.id;
+  document.getElementById("promoNom").value = org.nom || "";
+  document.getElementById("promoVille").value = org.ville || "";
+  document.getElementById("promoMax").value = org.maxParcours || 5;
+  document.getElementById("promoAbonnement").checked = org.abonnementActif !== false;
+  document.getElementById("promoAbonnementWrap").style.display = "block";
+  document.getElementById("promoError").classList.add("hidden");
+  document.getElementById("promoModal").classList.remove("hidden");
+}
+
+function closePromoModal(e) {
+  if (e && e.target !== document.getElementById("promoModal")) return;
+  document.getElementById("promoModal").classList.add("hidden");
+}
+
+async function savePromo() {
+  const errEl = document.getElementById("promoError");
+  errEl.classList.add("hidden");
+  const nom  = document.getElementById("promoNom").value.trim();
+  if (!nom) { errEl.textContent = "Le nom est requis"; errEl.classList.remove("hidden"); return; }
+
+  const orgId = document.getElementById("promoOrgId").value;
+  const btn   = document.getElementById("promoSaveBtn");
+  btn.disabled = true;
+  btn.textContent = "Enregistrement…";
+
+  try {
+    let res;
+    if (orgId) {
+      res = await apiFetch(`/admin/organisateurs/${orgId}`, {
+        method: "PUT",
+        body: JSON.stringify({
+          nom,
+          ville:            document.getElementById("promoVille").value.trim(),
+          maxParcours:      parseInt(document.getElementById("promoMax").value) || 5,
+          abonnementActif:  document.getElementById("promoAbonnement").checked,
+        }),
+      });
+    } else {
+      res = await apiFetch("/admin/organisateurs", {
+        method: "POST",
+        body: JSON.stringify({
+          utilisateurId: document.getElementById("promoUserId").value,
+          nom,
+          ville:       document.getElementById("promoVille").value.trim(),
+          maxParcours: parseInt(document.getElementById("promoMax").value) || 5,
+        }),
+      });
+    }
+
+    if (!res.ok) {
+      const d = await res.json().catch(() => ({}));
+      errEl.textContent = d.message || "Erreur serveur";
+      errEl.classList.remove("hidden");
+      return;
+    }
+
+    document.getElementById("promoModal").classList.add("hidden");
+    loadAdminUsers();
+  } catch {
+    errEl.textContent = "Serveur indisponible";
+    errEl.classList.remove("hidden");
+  } finally {
+    btn.disabled = false;
+    btn.textContent = "Enregistrer";
+  }
+}
+
+async function revoquerOrg(orgId, pseudo) {
+  if (!confirm(`Révoquer ${pseudo} comme organisateur ? Ses parcours seront conservés mais il ne pourra plus se connecter au backoffice.`)) return;
+  try {
+    const res = await apiFetch(`/admin/organisateurs/${orgId}`, { method: "DELETE" });
+    if (res.ok) loadAdminUsers();
+  } catch { alert("Erreur serveur"); }
 }
 
 /* =========================

@@ -64,6 +64,26 @@ body {
   text-align: left;
 }
 
+.login-divider {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin: 1.25rem 0 1rem;
+  color: var(--text-muted);
+  font-size: 0.8rem;
+}
+.login-divider::before,
+.login-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+#google-btn-wrapper {
+  display: flex;
+  justify-content: center;
+}
+
 /* ===== TOPBAR ===== */
 .topbar {
   background: var(--surface);
@@ -447,8 +467,92 @@ textarea { resize: vertical; }
   padding: 3rem;
 }
 
+/* ===== ADMIN ===== */
+.admin-search-wrap input {
+  padding: 0.6rem 1rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-size: 0.9rem;
+  width: 280px;
+}
+
+.admin-user-list { display: flex; flex-direction: column; gap: 0.75rem; }
+
+.admin-user-row {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1rem 1.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  box-shadow: var(--shadow);
+}
+
+.admin-user-info { flex: 1; min-width: 0; }
+
+.admin-user-main {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.25rem;
+  flex-wrap: wrap;
+}
+
+.admin-pseudo { font-weight: 600; font-size: 0.95rem; }
+
+.admin-auth-badge {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.admin-user-email { font-size: 0.82rem; color: var(--text-muted); }
+
+.admin-org-info {
+  font-size: 0.8rem;
+  color: var(--primary);
+  margin-top: 0.25rem;
+}
+
+.admin-user-actions { display: flex; gap: 0.5rem; flex-shrink: 0; }
+
+/* ===== MODAL ===== */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 500;
+  padding: 1rem;
+}
+
+.modal-card {
+  background: var(--surface);
+  border-radius: 16px;
+  padding: 2rem;
+  width: 100%;
+  max-width: 440px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+}
+
+.modal-card h3 { font-size: 1.2rem; font-weight: 700; margin-bottom: 0.25rem; }
+
+.modal-sub { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem; }
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+}
+
 @media (max-width: 600px) {
   .form-grid { grid-template-columns: 1fr; }
   .etape-fields { grid-template-columns: 1fr; }
   .page-header { flex-direction: column; }
+  .admin-search-wrap input { width: 100%; }
+  .admin-user-row { flex-direction: column; align-items: flex-start; }
 }

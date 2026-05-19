@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Backoffice — Explogo Tourisme</title>
   <link rel="stylesheet" href="css/backoffice.css">
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
 </head>
 <body>
 
@@ -22,6 +23,8 @@
       <p id="loginError" class="error hidden"></p>
       <button type="submit" class="btn-primary" id="loginBtn">Se connecter</button>
     </form>
+    <div class="login-divider"><span>ou</span></div>
+    <div id="google-btn-wrapper"></div>
   </div>
 </div>
 
@@ -34,6 +37,7 @@
     </div>
     <div class="topbar-right">
       <span id="orgName" class="org-name"></span>
+      <button id="adminNavBtn" class="btn-outline hidden" onclick="showAdmin()">⚙ Administration</button>
       <button class="btn-outline" onclick="logout()">Déconnexion</button>
     </div>
   </header>
@@ -131,6 +135,69 @@
       </div>
     </form>
   </main>
+</div>
+
+<!-- ========== ADMIN ========== -->
+<div id="view-admin" class="view hidden">
+  <header class="topbar">
+    <div class="topbar-brand">
+      <img src="assets/img/logo.png" alt="Explogo">
+      <span>Administration</span>
+    </div>
+    <div class="topbar-right">
+      <button class="btn-outline" onclick="showDashboard()">← Mes parcours</button>
+      <button class="btn-outline" onclick="logout()">Déconnexion</button>
+    </div>
+  </header>
+
+  <main class="main-content">
+    <div class="page-header">
+      <div>
+        <h2>Gestion des utilisateurs</h2>
+        <p class="page-sub">Promouvoir, modifier ou révoquer les organisateurs</p>
+      </div>
+      <div class="admin-search-wrap">
+        <input id="adminSearch" type="text" placeholder="Rechercher par email ou pseudo…" oninput="filterUsers()">
+      </div>
+    </div>
+
+    <div id="adminUserList" class="admin-user-list">
+      <div class="loading">Chargement…</div>
+    </div>
+  </main>
+</div>
+
+<!-- Modal promotion organisateur -->
+<div id="promoModal" class="modal-overlay hidden" onclick="closePromoModal(event)">
+  <div class="modal-card">
+    <h3 id="promoModalTitle">Promouvoir en organisateur</h3>
+    <p id="promoUserLabel" class="modal-sub"></p>
+    <input type="hidden" id="promoUserId">
+    <input type="hidden" id="promoOrgId">
+    <div class="form-group" style="margin-top:1rem">
+      <label>Nom de l'organisation *</label>
+      <input id="promoNom" type="text" placeholder="Mairie de Toulouse">
+    </div>
+    <div class="form-group">
+      <label>Ville</label>
+      <input id="promoVille" type="text" placeholder="Toulouse">
+    </div>
+    <div class="form-group">
+      <label>Quota de parcours</label>
+      <input id="promoMax" type="number" value="5" min="1" max="50">
+    </div>
+    <div class="form-group" id="promoAbonnementWrap" style="display:none">
+      <label>
+        <input id="promoAbonnement" type="checkbox" checked>
+        Abonnement actif
+      </label>
+    </div>
+    <p id="promoError" class="error hidden"></p>
+    <div class="modal-actions">
+      <button class="btn-outline" onclick="closePromoModal()">Annuler</button>
+      <button class="btn-primary" id="promoSaveBtn" onclick="savePromo()">Enregistrer</button>
+    </div>
+  </div>
 </div>
 
 <script src="js/backoffice.js"></script>
