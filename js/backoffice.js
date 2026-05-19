@@ -173,6 +173,7 @@ async function openEdit(id) {
     document.getElementById("fDuree").value = p.dureeMinutes || "";
     document.getElementById("fDescription").value = p.description || "";
     document.getElementById("fActif").checked = !!p.actif;
+    document.getElementById("fTransportMode").value = p.transportMode || "foot-walking";
     renderEtapes();
 
   } catch {
@@ -199,6 +200,7 @@ async function handleSave(e) {
     dureeMinutes: parseInt(document.getElementById("fDuree").value) || null,
     description: document.getElementById("fDescription").value.trim(),
     actif: document.getElementById("fActif").checked,
+    transportMode: document.getElementById("fTransportMode").value,
     etapes: etapes,
   };
 
