@@ -591,17 +591,17 @@ const CATEGORY_EXTRA_FIELDS = {
     { key: "mode_expert",   label: "Mode expert",      type: "textarea" },
   ],
   eglise: [
-    { key: "periode_construction", label: "Période de construction", type: "text" },
-    { key: "personnes",            label: "Personnes liées",         type: "text" },
+    { key: "periode_construction", label: "Période de construction", type: "text", full: true },
+    { key: "personnes",            label: "Personnes liées",         type: "text", full: true },
   ],
   cathedrale: [
-    { key: "periode_construction", label: "Période de construction", type: "text" },
-    { key: "personnes",            label: "Personnes liées",         type: "text" },
+    { key: "periode_construction", label: "Période de construction", type: "text", full: true },
+    { key: "personnes",            label: "Personnes liées",         type: "text", full: true },
     { key: "proprietaire",         label: "Propriétaire",            type: "text" },
   ],
   pont: [
-    { key: "periode_construction", label: "Période de construction", type: "text" },
-    { key: "personnes",            label: "Personnes liées",         type: "text" },
+    { key: "periode_construction", label: "Période de construction", type: "text", full: true },
+    { key: "personnes",            label: "Personnes liées",         type: "text", full: true },
   ],
   chateau: [
     { key: "important", label: "Monument important", type: "checkbox" },
@@ -639,7 +639,7 @@ function renderExtraFields(cat, extraData) {
         </label>
       </div>`;
     }
-    return `<div class="form-group">
+    return `<div class="form-group${f.full ? " full" : ""}">
       <label>${f.label}</label>
       <input type="text" id="poiExtra_${f.key}" value="${esc(String(val))}">
     </div>`;
