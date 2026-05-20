@@ -44,8 +44,9 @@ function showView(name) {
 function showDashboard() {
   showView("dashboard");
   loadParcours();
-  const adminBtn = document.getElementById("adminNavBtn");
-  if (adminBtn) adminBtn.classList.toggle("hidden", userRole !== "ROLE_ADMIN");
+  const isAdmin = userRole === "ROLE_ADMIN";
+  document.getElementById("adminNavBtn")?.classList.toggle("hidden", !isAdmin);
+  document.getElementById("dataNavBtn")?.classList.toggle("hidden", !isAdmin);
 }
 
 /* =========================
@@ -545,6 +546,244 @@ function renderEtapes() {
       </div>
     </div>
   `).join("");
+}
+
+/* =========================
+   DONNÉES — POI
+   ========================= */
+let currentDataCategory = null;
+let dataPage = 0;
+let dataSearchTimer = null;
+
+const CATEGORY_CONFIG = {
+  chateau:       { label: "Châteaux",       icon: "🏰" },
+  bataille:      { label: "Batailles",      icon: "⚔️" },
+  musee:         { label: "Musées",         icon: "🏛" },
+  eglise:        { label: "Églises",        icon: "⛪" },
+  cathedrale:    { label: "Cathédrales",    icon: "🕌" },
+  pont:          { label: "Ponts",          icon: "🌉" },
+  majeur:        { label: "Sites majeurs",  icon: "🗿" },
+  prehistoire:   { label: "Préhistoire",    icon: "🦴" },
+  antiquite:     { label: "Antiquités",     icon: "🏺" },
+  demeure:       { label: "Demeures",       icon: "🏠" },
+  fortification: { label: "Fortifications", icon: "🏯" },
+  personnage:    { label: "Personnages",    icon: "👤" },
+};
+
+function showData() {
+  showView("data");
+  showCategoryGrid();
+  loadCategories();
+}
+
+function showCategoryGrid() {
+  document.getElementById("dataCategoryView").classList.remove("hidden");
+  document.getElementById("dataPoiView").classList.add("hidden");
+  currentDataCategory = null;
+}
+
+async function loadCategories() {
+  const grid = document.getElementById("categoryGrid");
+  try {
+    const res = await apiFetch("/admin/data/categories");
+    const counts = await res.json();
+    grid.innerHTML = Object.entries(CATEGORY_CONFIG).map(([key, cfg]) => `
+      <div class="category-card" onclick="selectCategory('${key}')">
+        <div class="category-icon">${cfg.icon}</div>
+        <div class="category-nom">${cfg.label}</div>
+        <div class="category-count">${(counts[key] || 0).toLocaleString('fr-FR')}</div>
+      </div>
+    `).join("");
+  } catch {
+    grid.innerHTML = '<div class="loading">Erreur de chargement</div>';
+  }
+}
+
+function selectCategory(cat) {
+  currentDataCategory = cat;
+  dataPage = 0;
+  const cfg = CATEGORY_CONFIG[cat] || { label: cat, icon: "" };
+  document.getElementById("dataPoiTitle").textContent = cfg.icon + " " + cfg.label;
+  document.getElementById("dataPoiSearch").value = "";
+  document.getElementById("dataCategoryView").classList.add("hidden");
+  document.getElementById("dataPoiView").classList.remove("hidden");
+  loadPoiData();
+}
+
+async function loadPoiData() {
+  const q = document.getElementById("dataPoiSearch").value.trim();
+  const table = document.getElementById("dataPoiTable");
+  table.innerHTML = '<div class="loading">Chargement…</div>';
+  try {
+    const res = await apiFetch(`/admin/data/${currentDataCategory}?q=${encodeURIComponent(q)}&page=${dataPage}`);
+    const data = await res.json();
+    renderPoiTable(data);
+  } catch {
+    table.innerHTML = '<div class="loading">Erreur de chargement</div>';
+  }
+}
+
+function filterPoi() {
+  clearTimeout(dataSearchTimer);
+  dataSearchTimer = setTimeout(() => { dataPage = 0; loadPoiData(); }, 350);
+}
+
+function renderPoiTable(data) {
+  const table = document.getElementById("dataPoiTable");
+  const { items, page, totalPages, total } = data;
+  document.getElementById("dataPoiCount").textContent = `${total} entrée${total > 1 ? "s" : ""}`;
+
+  if (!items.length) {
+    table.innerHTML = '<div class="loading">Aucune donnée. Utilisez "Importer JSON" pour peupler cette catégorie.</div>';
+    return;
+  }
+
+  const rows = items.map(p => `
+    <tr>
+      <td class="poi-row-nom">${esc(p.nom)}</td>
+      <td>${esc(p.commune || "—")}</td>
+      <td>${esc(p.departement || "—")}</td>
+      <td class="poi-row-coords">${p.latitude.toFixed(4)}, ${p.longitude.toFixed(4)}</td>
+      <td>${esc(p.siecle || "—")}</td>
+      <td class="poi-row-actions">
+        <button class="btn-icon" onclick='openPoiEdit(${JSON.stringify(p)})' title="Modifier">✏</button>
+        <button class="btn-icon danger" onclick="deletePoi(${p.id})" title="Supprimer">✕</button>
+      </td>
+    </tr>
+  `).join("");
+
+  const pagination = totalPages > 1 ? `
+    <div class="admin-pagination">
+      <button class="btn-outline" onclick="changeDataPage(${page - 1})" ${page === 0 ? "disabled" : ""}>← Précédent</button>
+      <span>Page ${page + 1} / ${totalPages} · ${total} entrées</span>
+      <button class="btn-outline" onclick="changeDataPage(${page + 1})" ${page >= totalPages - 1 ? "disabled" : ""}>Suivant →</button>
+    </div>` : "";
+
+  table.innerHTML = `
+    <div class="poi-table-scroll">
+      <table class="poi-table">
+        <thead><tr>
+          <th>Nom</th><th>Commune</th><th>Département</th>
+          <th>Coordonnées</th><th>Siècle</th><th></th>
+        </tr></thead>
+        <tbody>${rows}</tbody>
+      </table>
+    </div>
+    ${pagination}`;
+}
+
+function changeDataPage(p) { dataPage = p; loadPoiData(); }
+
+async function importCategory() {
+  const cfg = CATEGORY_CONFIG[currentDataCategory] || { label: currentDataCategory };
+  if (!confirm(`Importer "${cfg.label}" depuis le JSON intégré ?\nLes entrées déjà importées (même Wikidata ID) seront ignorées.`)) return;
+  try {
+    const res = await apiFetch(`/admin/data/import/${currentDataCategory}`, { method: "POST" });
+    const data = await res.json();
+    alert(`Import terminé : ${data.imported} entrée(s) ajoutée(s).`);
+    loadPoiData();
+    loadCategories();
+  } catch { alert("Erreur lors de l'import"); }
+}
+
+async function exportCategory() {
+  try {
+    const res = await apiFetch(`/admin/data/${currentDataCategory}/export`);
+    const blob = await res.blob();
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `${currentDataCategory}.geojson`;
+    a.click();
+    URL.revokeObjectURL(url);
+  } catch { alert("Erreur lors de l'export"); }
+}
+
+function openPoiCreate() {
+  document.getElementById("poiModalTitle").textContent = "Nouveau POI";
+  ["poiId", "poiNom", "poiCommune", "poiDepartement", "poiLat", "poiLng",
+   "poiSiecle", "poiWikidata", "poiDescription"].forEach(id => {
+    document.getElementById(id).value = "";
+  });
+  document.getElementById("poiCategorie").value = currentDataCategory;
+  document.getElementById("poiError").classList.add("hidden");
+  document.getElementById("poiModal").classList.remove("hidden");
+}
+
+function openPoiEdit(poi) {
+  document.getElementById("poiModalTitle").textContent = "Modifier le POI";
+  document.getElementById("poiId").value = poi.id;
+  document.getElementById("poiCategorie").value = poi.categorie;
+  document.getElementById("poiNom").value = poi.nom || "";
+  document.getElementById("poiCommune").value = poi.commune || "";
+  document.getElementById("poiDepartement").value = poi.departement || "";
+  document.getElementById("poiLat").value = poi.latitude || "";
+  document.getElementById("poiLng").value = poi.longitude || "";
+  document.getElementById("poiSiecle").value = poi.siecle || "";
+  document.getElementById("poiWikidata").value = poi.wikidataId || "";
+  document.getElementById("poiDescription").value = poi.description || "";
+  document.getElementById("poiError").classList.add("hidden");
+  document.getElementById("poiModal").classList.remove("hidden");
+}
+
+function closePoiModal(e) {
+  if (e && e.target !== document.getElementById("poiModal")) return;
+  document.getElementById("poiModal").classList.add("hidden");
+}
+
+async function savePoi() {
+  const errEl = document.getElementById("poiError");
+  errEl.classList.add("hidden");
+  const nom = document.getElementById("poiNom").value.trim();
+  if (!nom) { errEl.textContent = "Le nom est requis"; errEl.classList.remove("hidden"); return; }
+
+  const id  = document.getElementById("poiId").value;
+  const cat = document.getElementById("poiCategorie").value;
+  const btn = document.getElementById("poiSaveBtn");
+  btn.disabled = true;
+  btn.textContent = "Enregistrement…";
+
+  const body = {
+    categorie:   cat,
+    nom,
+    commune:     document.getElementById("poiCommune").value.trim(),
+    departement: document.getElementById("poiDepartement").value.trim(),
+    latitude:    parseFloat(document.getElementById("poiLat").value) || 0,
+    longitude:   parseFloat(document.getElementById("poiLng").value) || 0,
+    siecle:      document.getElementById("poiSiecle").value.trim(),
+    wikidataId:  document.getElementById("poiWikidata").value.trim(),
+    description: document.getElementById("poiDescription").value.trim(),
+  };
+
+  try {
+    const res = await apiFetch(
+      id ? `/admin/data/${id}` : `/admin/data/${cat}`,
+      { method: id ? "PUT" : "POST", body: JSON.stringify(body) }
+    );
+    if (!res.ok) {
+      const d = await res.json().catch(() => ({}));
+      errEl.textContent = d.message || "Erreur serveur";
+      errEl.classList.remove("hidden");
+      return;
+    }
+    document.getElementById("poiModal").classList.add("hidden");
+    loadPoiData();
+  } catch {
+    errEl.textContent = "Serveur indisponible";
+    errEl.classList.remove("hidden");
+  } finally {
+    btn.disabled = false;
+    btn.textContent = "Enregistrer";
+  }
+}
+
+async function deletePoi(id) {
+  if (!confirm("Supprimer ce POI définitivement ?")) return;
+  try {
+    const res = await apiFetch(`/admin/data/${id}`, { method: "DELETE" });
+    if (res.ok) loadPoiData();
+    else alert("Erreur lors de la suppression");
+  } catch { alert("Erreur serveur"); }
 }
 
 /* =========================

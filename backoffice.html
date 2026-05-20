@@ -34,6 +34,7 @@
     </div>
     <div class="topbar-right">
       <span id="orgName" class="org-name"></span>
+      <button id="dataNavBtn" class="btn-outline hidden" onclick="showData()">🗃 Données</button>
       <button id="adminNavBtn" class="btn-outline hidden" onclick="showAdmin()">⚙ Administration</button>
       <button class="btn-outline" onclick="logout()">Déconnexion</button>
     </div>
@@ -134,6 +135,56 @@
   </main>
 </div>
 
+<!-- ========== DONNÉES ========== -->
+<div id="view-data" class="view hidden">
+  <header class="topbar">
+    <div class="topbar-brand">
+      <img src="assets/img/logo.png" alt="Explogo">
+      <span>Données POI</span>
+    </div>
+    <div class="topbar-right">
+      <button class="btn-outline" onclick="showAdmin()">⚙ Utilisateurs</button>
+      <button class="btn-outline" onclick="showDashboard()">← Parcours</button>
+      <button class="btn-outline" onclick="logout()">Déconnexion</button>
+    </div>
+  </header>
+
+  <main class="main-content">
+    <!-- Grille des catégories -->
+    <div id="dataCategoryView">
+      <div class="page-header">
+        <div>
+          <h2>Données géographiques</h2>
+          <p class="page-sub">Points d'intérêt par catégorie</p>
+        </div>
+      </div>
+      <div id="categoryGrid" class="category-grid">
+        <div class="loading">Chargement…</div>
+      </div>
+    </div>
+
+    <!-- Tableau POI d'une catégorie -->
+    <div id="dataPoiView" class="hidden">
+      <div class="page-header">
+        <div>
+          <button class="btn-outline" onclick="showCategoryGrid()" style="margin-bottom:.5rem;display:inline-block">← Catégories</button>
+          <h2 id="dataPoiTitle"></h2>
+          <p id="dataPoiCount" class="page-sub"></p>
+        </div>
+        <div class="data-poi-actions">
+          <input id="dataPoiSearch" type="text" placeholder="Rechercher…" oninput="filterPoi()">
+          <button class="btn-secondary" onclick="importCategory()">⬆ Importer JSON</button>
+          <button class="btn-secondary" onclick="exportCategory()">⬇ Exporter</button>
+          <button class="btn-primary" onclick="openPoiCreate()">+ Ajouter</button>
+        </div>
+      </div>
+      <div id="dataPoiTable" class="data-poi-table-wrap">
+        <div class="loading">Chargement…</div>
+      </div>
+    </div>
+  </main>
+</div>
+
 <!-- ========== ADMIN ========== -->
 <div id="view-admin" class="view hidden">
   <header class="topbar">
@@ -162,6 +213,54 @@
       <div class="loading">Chargement…</div>
     </div>
   </main>
+</div>
+
+<!-- Modal POI -->
+<div id="poiModal" class="modal-overlay hidden" onclick="closePoiModal(event)">
+  <div class="modal-card poi-modal-card">
+    <h3 id="poiModalTitle">Nouveau POI</h3>
+    <input type="hidden" id="poiId">
+    <input type="hidden" id="poiCategorie">
+    <div class="form-grid" style="margin-top:1rem">
+      <div class="form-group full">
+        <label>Nom *</label>
+        <input id="poiNom" type="text" placeholder="Nom du lieu">
+      </div>
+      <div class="form-group">
+        <label>Commune</label>
+        <input id="poiCommune" type="text">
+      </div>
+      <div class="form-group">
+        <label>Département</label>
+        <input id="poiDepartement" type="text">
+      </div>
+      <div class="form-group">
+        <label>Latitude *</label>
+        <input id="poiLat" type="number" step="any" placeholder="48.8566">
+      </div>
+      <div class="form-group">
+        <label>Longitude *</label>
+        <input id="poiLng" type="number" step="any" placeholder="2.3522">
+      </div>
+      <div class="form-group">
+        <label>Siècle</label>
+        <input id="poiSiecle" type="text" placeholder="XIIe">
+      </div>
+      <div class="form-group">
+        <label>Wikidata ID</label>
+        <input id="poiWikidata" type="text" placeholder="Q12345">
+      </div>
+      <div class="form-group full">
+        <label>Description</label>
+        <textarea id="poiDescription" rows="3"></textarea>
+      </div>
+    </div>
+    <p id="poiError" class="error hidden"></p>
+    <div class="modal-actions">
+      <button class="btn-outline" onclick="closePoiModal()">Annuler</button>
+      <button class="btn-primary" id="poiSaveBtn" onclick="savePoi()">Enregistrer</button>
+    </div>
+  </div>
 </div>
 
 <!-- Modal promotion organisateur -->

@@ -576,10 +576,108 @@ textarea { resize: vertical; }
   margin-top: 1.5rem;
 }
 
+/* ===== DONNÉES — CATÉGORIES ===== */
+.category-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 1rem;
+}
+
+.category-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.5rem 1rem;
+  text-align: center;
+  cursor: pointer;
+  box-shadow: var(--shadow);
+  transition: border-color 0.15s, transform 0.1s;
+}
+
+.category-card:hover {
+  border-color: var(--primary);
+  transform: translateY(-2px);
+}
+
+.category-icon {
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+  line-height: 1;
+}
+
+.category-nom {
+  font-weight: 600;
+  font-size: 0.9rem;
+  margin-bottom: 0.4rem;
+}
+
+.category-count {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--primary);
+}
+
+/* ===== DONNÉES — ACTIONS ===== */
+.data-poi-actions {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.data-poi-actions input {
+  padding: 0.55rem 0.85rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-size: 0.9rem;
+  width: 200px;
+}
+
+/* ===== DONNÉES — TABLEAU ===== */
+.data-poi-table-wrap { margin-top: 0.5rem; }
+
+.poi-table-scroll { overflow-x: auto; }
+
+.poi-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.88rem;
+}
+
+.poi-table th {
+  text-align: left;
+  padding: 0.65rem 0.85rem;
+  background: var(--bg);
+  border-bottom: 2px solid var(--border);
+  font-weight: 700;
+  font-size: 0.8rem;
+  white-space: nowrap;
+  color: var(--text-muted);
+}
+
+.poi-table td {
+  padding: 0.6rem 0.85rem;
+  border-bottom: 1px solid var(--border);
+  vertical-align: middle;
+}
+
+.poi-table tr:last-child td { border-bottom: none; }
+.poi-table tr:hover td { background: var(--bg); }
+
+.poi-row-nom { font-weight: 500; max-width: 280px; }
+.poi-row-coords { font-variant-numeric: tabular-nums; font-size: 0.82rem; color: var(--text-muted); white-space: nowrap; }
+.poi-row-actions { white-space: nowrap; }
+
+/* ===== POI MODAL ===== */
+.poi-modal-card { max-width: 600px; }
+
 @media (max-width: 600px) {
   .form-grid { grid-template-columns: 1fr; }
   .etape-fields { grid-template-columns: 1fr; }
   .page-header { flex-direction: column; }
   .admin-search-wrap input { width: 100%; }
   .admin-user-row { flex-direction: column; align-items: flex-start; }
+  .data-poi-actions { flex-direction: column; align-items: flex-start; }
+  .data-poi-actions input { width: 100%; }
+  .category-grid { grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); }
 }
