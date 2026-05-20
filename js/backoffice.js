@@ -605,17 +605,24 @@ function selectCategory(cat) {
   const cfg = CATEGORY_CONFIG[cat] || { label: cat, icon: "" };
   document.getElementById("dataPoiTitle").textContent = cfg.icon + " " + cfg.label;
   document.getElementById("dataPoiSearch").value = "";
+  document.getElementById("dataFilterDep").value = "";
+  document.getElementById("dataFilterCommune").value = "";
+  document.getElementById("dataFilterRegion").value = "";
   document.getElementById("dataCategoryView").classList.add("hidden");
   document.getElementById("dataPoiView").classList.remove("hidden");
   loadPoiData();
 }
 
 async function loadPoiData() {
-  const q = document.getElementById("dataPoiSearch").value.trim();
-  const table = document.getElementById("dataPoiTable");
+  const q       = document.getElementById("dataPoiSearch").value.trim();
+  const dep     = document.getElementById("dataFilterDep").value.trim();
+  const commune = document.getElementById("dataFilterCommune").value.trim();
+  const region  = document.getElementById("dataFilterRegion").value.trim();
+  const table   = document.getElementById("dataPoiTable");
   table.innerHTML = '<div class="loading">Chargement…</div>';
   try {
-    const res = await apiFetch(`/admin/data/${currentDataCategory}?q=${encodeURIComponent(q)}&page=${dataPage}`);
+    const params = new URLSearchParams({ q, dep, commune, region, page: dataPage });
+    const res = await apiFetch(`/admin/data/${currentDataCategory}?${params}`);
     const data = await res.json();
     renderPoiTable(data);
   } catch {

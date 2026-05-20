@@ -172,7 +172,10 @@
           <p id="dataPoiCount" class="page-sub"></p>
         </div>
         <div class="data-poi-actions">
-          <input id="dataPoiSearch" type="text" placeholder="Rechercher…" oninput="filterPoi()">
+          <input id="dataPoiSearch"   type="text" placeholder="Nom / commune…" oninput="filterPoi()">
+          <input id="dataFilterDep"   type="text" placeholder="Département…"   oninput="filterPoi()">
+          <input id="dataFilterCommune" type="text" placeholder="Commune…"     oninput="filterPoi()">
+          <input id="dataFilterRegion"  type="text" placeholder="Région…"      oninput="filterPoi()">
           <button class="btn-secondary" onclick="importCategory()">⬆ Importer JSON</button>
           <button class="btn-secondary" onclick="exportCategory()">⬇ Exporter</button>
           <button class="btn-primary" onclick="openPoiCreate()">+ Ajouter</button>

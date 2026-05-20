@@ -630,7 +630,7 @@ textarea { resize: vertical; }
   border: 1px solid var(--border);
   border-radius: 8px;
   font-size: 0.9rem;
-  width: 200px;
+  width: 140px;
 }
 
 /* ===== DONNÉES — TABLEAU ===== */
