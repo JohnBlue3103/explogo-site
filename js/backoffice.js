@@ -554,6 +554,7 @@ function renderEtapes() {
 let currentDataCategory = null;
 let dataPage = 0;
 let dataSearchTimer = null;
+let _poiCache = {};
 
 const CATEGORY_CONFIG = {
   chateau:       { label: "Châteaux",       icon: "🏰" },
@@ -738,6 +739,8 @@ function renderPoiTable(data) {
     return;
   }
 
+  items.forEach(p => { _poiCache[p.id] = p; });
+
   const rows = items.map(p => `
     <tr>
       <td class="poi-row-nom">${esc(p.nom)}</td>
@@ -746,7 +749,7 @@ function renderPoiTable(data) {
       <td class="poi-row-coords">${p.latitude.toFixed(4)}, ${p.longitude.toFixed(4)}</td>
       <td>${esc(p.siecle || "—")}</td>
       <td class="poi-row-actions">
-        <button class="btn-icon" onclick='openPoiEdit(${JSON.stringify(p)})' title="Modifier">✏</button>
+        <button class="btn-icon" onclick="openPoiEdit(_poiCache[${p.id}])" title="Modifier">✏</button>
         <button class="btn-icon danger" onclick="deletePoi(${p.id})" title="Supprimer">✕</button>
       </td>
     </tr>
