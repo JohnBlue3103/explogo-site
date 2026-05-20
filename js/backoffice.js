@@ -570,6 +570,99 @@ const CATEGORY_CONFIG = {
   personnage:    { label: "Personnages",    icon: "👤" },
 };
 
+const CATEGORY_EXTRA_FIELDS = {
+  bataille: [
+    { key: "conflit",        label: "Conflit",          type: "text" },
+    { key: "date",           label: "Date",             type: "text" },
+    { key: "theme",          label: "Thème",            type: "text" },
+    { key: "issue",          label: "Issue",            type: "text" },
+    { key: "epoque",         label: "Époque",           type: "text" },
+    { key: "annee_extraite", label: "Année extraite",   type: "text" },
+    { key: "bibliographie",  label: "Bibliographie",    type: "textarea" },
+    { key: "mode_expert",    label: "Mode expert",      type: "textarea" },
+  ],
+  personnage: [
+    { key: "theme",         label: "Thème",            type: "text" },
+    { key: "periode",       label: "Période",          type: "text" },
+    { key: "naissance",     label: "Naissance",        type: "text" },
+    { key: "sexe",          label: "Sexe",             type: "text" },
+    { key: "bibliographie", label: "Bibliographie",    type: "textarea" },
+    { key: "mode_expert",   label: "Mode expert",      type: "textarea" },
+  ],
+  eglise: [
+    { key: "periode_construction", label: "Période de construction", type: "text" },
+    { key: "personnes",            label: "Personnes liées",         type: "text" },
+  ],
+  cathedrale: [
+    { key: "periode_construction", label: "Période de construction", type: "text" },
+    { key: "personnes",            label: "Personnes liées",         type: "text" },
+    { key: "proprietaire",         label: "Propriétaire",            type: "text" },
+  ],
+  pont: [
+    { key: "periode_construction", label: "Période de construction", type: "text" },
+    { key: "personnes",            label: "Personnes liées",         type: "text" },
+  ],
+  chateau: [
+    { key: "important", label: "Monument important", type: "checkbox" },
+  ],
+  majeur:        [{ key: "proprietaire", label: "Propriétaire", type: "text" }],
+  prehistoire:   [{ key: "proprietaire", label: "Propriétaire", type: "text" }],
+  demeure:       [{ key: "proprietaire", label: "Propriétaire", type: "text" }],
+  fortification: [{ key: "proprietaire", label: "Propriétaire", type: "text" }],
+  antiquite: [
+    { key: "proprietaire", label: "Propriétaire",  type: "text" },
+    { key: "siecle2",      label: "Siècle (fin)",  type: "text" },
+  ],
+};
+
+let _poiExtraOriginal = {};
+
+function renderExtraFields(cat, extraData) {
+  const fields = CATEGORY_EXTRA_FIELDS[cat] || [];
+  const container = document.getElementById("poiExtraFields");
+  if (!fields.length) { container.innerHTML = ""; return; }
+
+  const html = fields.map(f => {
+    const val = extraData ? (extraData[f.key] ?? "") : "";
+    if (f.type === "textarea") {
+      return `<div class="form-group full">
+        <label>${f.label}</label>
+        <textarea id="poiExtra_${f.key}" rows="3">${esc(String(val))}</textarea>
+      </div>`;
+    }
+    if (f.type === "checkbox") {
+      const checked = val === true || val === "true" ? "checked" : "";
+      return `<div class="form-group">
+        <label class="checkbox-label">
+          <input type="checkbox" id="poiExtra_${f.key}" ${checked}> ${f.label}
+        </label>
+      </div>`;
+    }
+    return `<div class="form-group">
+      <label>${f.label}</label>
+      <input type="text" id="poiExtra_${f.key}" value="${esc(String(val))}">
+    </div>`;
+  }).join("");
+
+  container.innerHTML = `<div class="extra-fields-section"><p class="extra-fields-title">Champs spécifiques</p><div class="form-grid">${html}</div></div>`;
+}
+
+function collectExtraFromForm(cat) {
+  const fields = CATEGORY_EXTRA_FIELDS[cat] || [];
+  const extra = { ..._poiExtraOriginal };
+  fields.forEach(f => {
+    const el = document.getElementById("poiExtra_" + f.key);
+    if (!el) return;
+    if (f.type === "checkbox") {
+      if (el.checked) extra[f.key] = true; else delete extra[f.key];
+    } else {
+      const v = el.value.trim();
+      if (v) extra[f.key] = v; else delete extra[f.key];
+    }
+  });
+  return Object.keys(extra).length ? extra : null;
+}
+
 function showData() {
   showView("data");
   showCategoryGrid();
@@ -714,6 +807,8 @@ function openPoiCreate() {
   });
   document.getElementById("poiCategorie").value = currentDataCategory;
   document.getElementById("poiError").classList.add("hidden");
+  _poiExtraOriginal = {};
+  renderExtraFields(currentDataCategory, null);
   document.getElementById("poiModal").classList.remove("hidden");
 }
 
@@ -730,6 +825,8 @@ function openPoiEdit(poi) {
   document.getElementById("poiWikidata").value = poi.wikidataId || "";
   document.getElementById("poiDescription").value = poi.description || "";
   document.getElementById("poiError").classList.add("hidden");
+  _poiExtraOriginal = poi.extra || {};
+  renderExtraFields(poi.categorie, poi.extra);
   document.getElementById("poiModal").classList.remove("hidden");
 }
 
@@ -750,6 +847,8 @@ async function savePoi() {
   btn.disabled = true;
   btn.textContent = "Enregistrement…";
 
+  const extra = collectExtraFromForm(cat);
+
   const body = {
     categorie:   cat,
     nom,
@@ -760,6 +859,7 @@ async function savePoi() {
     siecle:      document.getElementById("poiSiecle").value.trim(),
     wikidataId:  document.getElementById("poiWikidata").value.trim(),
     description: document.getElementById("poiDescription").value.trim(),
+    extra,
   };
 
   try {
