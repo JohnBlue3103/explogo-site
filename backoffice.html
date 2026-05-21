@@ -168,18 +168,27 @@
       </div>
     </div>
 
-    <div id="collabSuccess" class="collab-success hidden">
-      ✅ Votre contribution a été envoyée, elle sera examinée prochainement.
-      <button class="btn-secondary" style="margin-top:.75rem" onclick="resetCollabForm()">Proposer un autre POI</button>
+    <!-- Onglets -->
+    <div class="collab-tabs">
+      <button class="collab-tab active" id="tabCreate" onclick="switchCollabTab('create')">+ Proposer un nouveau POI</button>
+      <button class="collab-tab" id="tabModif" onclick="switchCollabTab('modif')">✏ Proposer une modification</button>
     </div>
 
+    <div id="collabSuccess" class="collab-success hidden">
+      ✅ Votre contribution a été envoyée, elle sera examinée prochainement.
+      <button class="btn-secondary" style="margin-top:.75rem" onclick="resetCollabForm()">Nouvelle contribution</button>
+    </div>
+
+    <!-- Formulaire création / modification -->
     <form id="collabForm" class="parcours-form" onsubmit="submitCollab(event)">
+      <input type="hidden" id="cOriginalPoiId">
+      <div id="cModifBanner" class="collab-modif-banner hidden"></div>
       <div class="form-grid">
         <div class="form-group full">
           <label>Nom *</label>
           <input id="cNom" type="text" placeholder="Ex : Château de Pierrefonds" required>
         </div>
-        <div class="form-group">
+        <div class="form-group" id="cCategorieWrap">
           <label>Catégorie *</label>
           <select id="cCategorie" required>
             <option value="">— Choisir —</option>
@@ -225,9 +234,35 @@
       </div>
       <p id="collabError" class="error hidden"></p>
       <div class="form-actions">
+        <button type="button" class="btn-outline" id="cCancelModif" onclick="cancelModif()" style="display:none">Annuler</button>
         <button type="submit" class="btn-primary" id="collabBtn">Envoyer la contribution</button>
       </div>
     </form>
+
+    <!-- Onglet modification : liste des POI -->
+    <div id="collabModifPanel" class="hidden">
+      <div class="collab-modif-search">
+        <select id="cModifCat" onchange="loadCollabPoiList()">
+          <option value="">— Choisir une catégorie —</option>
+          <option value="chateau">Château</option>
+          <option value="eglise">Église</option>
+          <option value="cathedrale">Cathédrale</option>
+          <option value="musee">Musée</option>
+          <option value="bataille">Bataille</option>
+          <option value="personnage">Personnage</option>
+          <option value="pont">Pont</option>
+          <option value="majeur">Site majeur</option>
+          <option value="prehistoire">Préhistoire</option>
+          <option value="antiquite">Antiquité</option>
+          <option value="demeure">Demeure</option>
+          <option value="fortification">Fortification</option>
+        </select>
+        <input id="cModifSearch" type="text" placeholder="Rechercher par nom…" oninput="filterCollabPoi()">
+      </div>
+      <div id="collabPoiList" class="collab-poi-list">
+        <p class="loading">Choisissez une catégorie pour voir les POI.</p>
+      </div>
+    </div>
   </main>
 </div>
 

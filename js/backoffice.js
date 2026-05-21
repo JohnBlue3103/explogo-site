@@ -1009,6 +1009,72 @@ async function deletePoi(id) {
 /* =========================
    COLLABORATEUR
    ========================= */
+function switchCollabTab(tab) {
+  document.getElementById("tabCreate").classList.toggle("active", tab === "create");
+  document.getElementById("tabModif").classList.toggle("active", tab === "modif");
+  document.getElementById("collabForm").classList.toggle("hidden", tab === "modif");
+  document.getElementById("collabModifPanel").classList.toggle("hidden", tab === "create");
+  if (tab === "create") cancelModif();
+}
+
+let _collabPoiSearchTimer = null;
+
+async function loadCollabPoiList() {
+  const cat = document.getElementById("cModifCat").value;
+  const q   = document.getElementById("cModifSearch").value.trim();
+  const list = document.getElementById("collabPoiList");
+  if (!cat) { list.innerHTML = '<p class="loading">Choisissez une catégorie.</p>'; return; }
+  list.innerHTML = '<p class="loading">Chargement…</p>';
+  try {
+    const res = await apiFetch(`/collab/poi/${cat}?q=${encodeURIComponent(q)}`);
+    const data = await res.json();
+    if (!data.items.length) { list.innerHTML = '<p class="loading">Aucun résultat.</p>'; return; }
+    list.innerHTML = data.items.map(p => `
+      <div class="collab-poi-row">
+        <div class="collab-poi-info">
+          <span class="collab-poi-nom">${esc(p.nom)}</span>
+          ${p.commune ? `<span class="collab-poi-meta">${esc(p.commune)}${p.departement ? ` · ${esc(p.departement)}` : ""}</span>` : ""}
+        </div>
+        <button class="btn-secondary" onclick="openModifForm(${JSON.stringify(p).replace(/"/g, '&quot;')})">Proposer une modif</button>
+      </div>
+    `).join("");
+  } catch { list.innerHTML = '<p class="loading">Erreur de chargement.</p>'; }
+}
+
+function filterCollabPoi() {
+  clearTimeout(_collabPoiSearchTimer);
+  _collabPoiSearchTimer = setTimeout(loadCollabPoiList, 350);
+}
+
+function openModifForm(poi) {
+  switchCollabTab("create");
+  document.getElementById("cOriginalPoiId").value = poi.id;
+  document.getElementById("cNom").value        = poi.nom || "";
+  document.getElementById("cCategorie").value  = poi.categorie || "";
+  document.getElementById("cCommune").value    = poi.commune || "";
+  document.getElementById("cDepartement").value = poi.departement || "";
+  document.getElementById("cLat").value        = poi.latitude || "";
+  document.getElementById("cLng").value        = poi.longitude || "";
+  document.getElementById("cSiecle").value     = poi.siecle || "";
+  document.getElementById("cDescription").value = poi.description || "";
+  document.getElementById("cCategorieWrap").style.display = "none";
+  document.getElementById("cCancelModif").style.display = "inline-flex";
+  document.getElementById("collabBtn").textContent = "Soumettre la modification";
+  const banner = document.getElementById("cModifBanner");
+  banner.textContent = `✏ Modification proposée pour : ${esc(poi.nom)}`;
+  banner.classList.remove("hidden");
+  document.getElementById("collabForm").scrollIntoView({ behavior: "smooth" });
+}
+
+function cancelModif() {
+  document.getElementById("cOriginalPoiId").value = "";
+  document.getElementById("collabForm").reset();
+  document.getElementById("cCategorieWrap").style.display = "";
+  document.getElementById("cCancelModif").style.display = "none";
+  document.getElementById("collabBtn").textContent = "Envoyer la contribution";
+  document.getElementById("cModifBanner").classList.add("hidden");
+}
+
 async function submitCollab(e) {
   e.preventDefault();
   const btn = document.getElementById("collabBtn");
@@ -1018,17 +1084,19 @@ async function submitCollab(e) {
   btn.textContent = "Envoi…";
 
   try {
+    const origId = document.getElementById("cOriginalPoiId").value;
     const res = await apiFetch("/collab/poi", {
       method: "POST",
       body: JSON.stringify({
-        nom:         document.getElementById("cNom").value.trim(),
-        categorie:   document.getElementById("cCategorie").value,
-        commune:     document.getElementById("cCommune").value.trim(),
-        departement: document.getElementById("cDepartement").value.trim(),
-        latitude:    parseFloat(document.getElementById("cLat").value) || 0,
-        longitude:   parseFloat(document.getElementById("cLng").value) || 0,
-        siecle:      document.getElementById("cSiecle").value.trim(),
-        description: document.getElementById("cDescription").value.trim(),
+        nom:           document.getElementById("cNom").value.trim(),
+        categorie:     document.getElementById("cCategorie").value,
+        commune:       document.getElementById("cCommune").value.trim(),
+        departement:   document.getElementById("cDepartement").value.trim(),
+        latitude:      parseFloat(document.getElementById("cLat").value) || 0,
+        longitude:     parseFloat(document.getElementById("cLng").value) || 0,
+        siecle:        document.getElementById("cSiecle").value.trim(),
+        description:   document.getElementById("cDescription").value.trim(),
+        originalPoiId: origId ? parseInt(origId) : null,
       }),
     });
     if (!res.ok) {
@@ -1086,24 +1154,54 @@ async function loadContributions() {
       list.innerHTML = '<div class="loading">Aucune contribution en attente.</div>';
       return;
     }
-    list.innerHTML = data.items.map(p => `
+    list.innerHTML = data.items.map(p => {
+      const isModif = p.contributionType === "MODIFICATION" && p.original;
+      const orig = p.original || {};
+      const diffFields = [
+        { label: "Nom",        prop: "nom" },
+        { label: "Commune",    prop: "commune" },
+        { label: "Département",prop: "departement" },
+        { label: "Latitude",   prop: "latitude" },
+        { label: "Longitude",  prop: "longitude" },
+        { label: "Siècle",     prop: "siecle" },
+        { label: "Description",prop: "description" },
+      ];
+
+      const diffHtml = isModif ? `
+        <div class="contrib-diff">
+          <div class="diff-col diff-before"><div class="diff-label">Avant</div>
+            ${diffFields.filter(f => String(orig[f.prop] || "") !== String(p[f.prop] || "")).map(f => `
+              <div class="diff-row"><span class="diff-field">${f.label}</span>
+                <span class="diff-val old">${esc(String(orig[f.prop] || "—").slice(0, 80))}</span>
+              </div>`).join("")}
+          </div>
+          <div class="diff-col diff-after"><div class="diff-label">Après</div>
+            ${diffFields.filter(f => String(orig[f.prop] || "") !== String(p[f.prop] || "")).map(f => `
+              <div class="diff-row"><span class="diff-field">${f.label}</span>
+                <span class="diff-val new">${esc(String(p[f.prop] || "—").slice(0, 80))}</span>
+              </div>`).join("")}
+          </div>
+        </div>` : "";
+
+      return `
       <div class="contrib-card">
         <div class="contrib-info">
           <div class="contrib-header">
             <span class="contrib-nom">${esc(p.nom)}</span>
+            <span class="badge ${isModif ? "badge-orange" : "badge-blue"}">${isModif ? "Modification" : "Création"}</span>
             <span class="badge badge-gray">${esc(p.categorie)}</span>
           </div>
           ${p.commune ? `<div class="contrib-meta">📍 ${esc(p.commune)}${p.departement ? ` · ${esc(p.departement)}` : ""}</div>` : ""}
-          ${p.description ? `<div class="contrib-desc">${esc(p.description.slice(0, 120))}${p.description.length > 120 ? "…" : ""}</div>` : ""}
-          <div class="contrib-meta">🌐 ${p.latitude?.toFixed(4)}, ${p.longitude?.toFixed(4)}</div>
+          ${!isModif && p.description ? `<div class="contrib-desc">${esc(p.description.slice(0, 120))}${p.description.length > 120 ? "…" : ""}</div>` : ""}
+          ${diffHtml}
           <div class="contrib-contributor">👤 ${esc(p.contributeurEmail || p.contributeurId || "—")}</div>
         </div>
         <div class="contrib-actions">
           <button class="btn-primary" onclick="validerContrib(${p.id})">✓ Valider</button>
           <button class="btn-icon danger" onclick="refuserContrib(${p.id})">✕ Refuser</button>
         </div>
-      </div>
-    `).join("");
+      </div>`;
+    }).join("");
   } catch {
     list.innerHTML = '<div class="loading">Erreur de chargement</div>';
   }
