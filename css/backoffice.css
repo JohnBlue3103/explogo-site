@@ -504,6 +504,7 @@ textarea { resize: vertical; }
   align-items: center;
   justify-content: space-between;
   gap: 1rem;
+  flex-wrap: wrap;
   box-shadow: var(--shadow);
 }
 
@@ -532,7 +533,7 @@ textarea { resize: vertical; }
   margin-top: 0.25rem;
 }
 
-.admin-user-actions { display: flex; gap: 0.5rem; flex-shrink: 0; }
+.admin-user-actions { display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: center; }
 
 .admin-pagination {
   display: flex;
