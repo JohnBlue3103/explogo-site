@@ -55,13 +55,42 @@ function showDashboard() {
     return;
   }
   showView("dashboard");
-  loadParcours();
   const isAdmin = userRole === "ROLE_ADMIN";
   document.getElementById("adminNavBtn")?.classList.toggle("hidden", !isAdmin);
   document.getElementById("dataNavBtn")?.classList.toggle("hidden", !isAdmin);
   document.getElementById("contribNavBtn")?.classList.toggle("hidden", !isAdmin);
-  if (isAdmin) loadContribCount();
-  if (userRole === "ROLE_ORGANISATEUR") loadQuota();
+
+  if (isAdmin) {
+    document.getElementById("dashboardStats").classList.remove("hidden");
+    document.getElementById("dashboardOrg").classList.add("hidden");
+    document.getElementById("parcoursGridTitle").textContent = "Parcours récents";
+    loadDashboardStats();
+    loadContribCount();
+  } else {
+    document.getElementById("dashboardStats").classList.add("hidden");
+    document.getElementById("dashboardOrg").classList.remove("hidden");
+    document.getElementById("parcoursGridTitle").textContent = "Mes parcours";
+    loadQuota();
+  }
+  loadParcours();
+}
+
+async function loadDashboardStats() {
+  try {
+    const [resUsers, resStats] = await Promise.all([
+      apiFetch("/admin/users?q=&page=0"),
+      apiFetch("/api/parcours/admin/stats"),
+    ]);
+    const users  = await resUsers.json();
+    const stats  = await resStats.json();
+    document.getElementById("statUsersVal").textContent     = users.total ?? "—";
+    document.getElementById("statTotalVal").textContent     = stats.total ?? "—";
+    document.getElementById("statPublishedVal").textContent = stats.published ?? "—";
+    document.getElementById("statPendingVal").textContent   = stats.pending ?? "—";
+    const badge = document.getElementById("dashPendingBadge");
+    if (stats.pending > 0) { badge.textContent = stats.pending; badge.classList.remove("hidden"); }
+    else badge.classList.add("hidden");
+  } catch {}
 }
 
 /* =========================
@@ -191,8 +220,85 @@ let searchTimer = null;
 function showAdmin() {
   if (userRole !== "ROLE_ADMIN") return;
   showView("admin");
-  adminPage = 0;
-  loadAdminUsers();
+  switchAdminTab("users");
+}
+
+function switchAdminTab(tab) {
+  document.getElementById("tabAdminUsers").classList.toggle("active", tab === "users");
+  document.getElementById("tabAdminParcours").classList.toggle("active", tab === "parcours");
+  document.getElementById("panelAdminUsers").classList.toggle("hidden", tab !== "users");
+  document.getElementById("panelAdminParcours").classList.toggle("hidden", tab !== "parcours");
+  if (tab === "users") { adminPage = 0; loadAdminUsers(); }
+  else loadAdminAllParcours();
+}
+
+async function loadAdminAllParcours() {
+  const container = document.getElementById("adminParcoursOrgs");
+  container.innerHTML = '<div class="loading">Chargement…</div>';
+  try {
+    const res = await apiFetch("/api/parcours/admin/all");
+    const parcours = await res.json();
+
+    if (!parcours.length) {
+      container.innerHTML = '<div class="loading">Aucun parcours.</div>';
+      return;
+    }
+
+    // Grouper par organisateur
+    const byOrg = {};
+    parcours.forEach(p => {
+      const key = p.organisateurNom || "— Plateforme Explogo —";
+      if (!byOrg[key]) byOrg[key] = { nom: key, items: [] };
+      byOrg[key].items.push(p);
+    });
+
+    const TRANSPORT_LABELS = {
+      "foot-walking": "🚶 Pied", "cycling-regular": "🚴 Vélo", "driving-car": "🚗 Voiture",
+    };
+
+    container.innerHTML = Object.values(byOrg).map(org => `
+      <div class="admin-org-group">
+        <div class="admin-org-group-header">
+          <span class="admin-org-group-nom">${esc(org.nom)}</span>
+          <span class="badge badge-gray">${org.items.length} parcours</span>
+        </div>
+        <div class="admin-org-group-list">
+          ${org.items.map(p => {
+            const st = p.status || "EN_ATTENTE";
+            const badgeCls = st === "REFUSE" ? "badge-red" : st === "VALIDE" && p.actif ? "badge-green" : st === "VALIDE" ? "badge-blue" : "badge-orange";
+            const badgeTxt = st === "REFUSE" ? "Refusé" : st === "VALIDE" && p.actif ? "Publié" : st === "VALIDE" ? "Validé" : "En attente";
+            return `
+            <div class="admin-parcours-row">
+              <div class="admin-parcours-info">
+                <span class="admin-parcours-titre">${esc(p.titre)}</span>
+                <div class="admin-parcours-meta">
+                  <span class="badge ${badgeCls}">${badgeTxt}</span>
+                  <span class="badge badge-gray">📍 ${esc(p.ville || "—")}</span>
+                  ${p.etapes?.length ? `<span class="badge badge-gray">${p.etapes.length} étapes</span>` : ""}
+                  <span class="badge badge-gray">${TRANSPORT_LABELS[p.transportMode] || ""}</span>
+                </div>
+              </div>
+              <div class="admin-parcours-actions">
+                <button class="btn-secondary" onclick="openEditAdmin(${p.id})">Modifier</button>
+                <button class="btn-icon danger" onclick="deleteParcoursAdmin(${p.id})">Supprimer</button>
+              </div>
+            </div>`;
+          }).join("")}
+        </div>
+      </div>
+    `).join("");
+  } catch {
+    container.innerHTML = '<div class="loading">Erreur de chargement</div>';
+  }
+}
+
+async function deleteParcoursAdmin(id) {
+  if (!confirm("Supprimer ce parcours définitivement ?")) return;
+  try {
+    await apiFetch(`/api/parcours/${id}`, { method: "DELETE" });
+    loadAdminAllParcours();
+    loadDashboardStats();
+  } catch { alert("Erreur lors de la suppression."); }
 }
 
 async function loadAdminUsers() {
@@ -252,7 +358,11 @@ function renderUsers(users, page, totalPages) {
           <span class="admin-auth-badge">${authIcon}</span>
         </div>
         <div class="admin-user-email">${esc(u.email)}</div>
-        ${isOrg && org && org.nom ? `<div class="admin-org-info">${esc(org.nom)}${org.ville ? ` · ${esc(org.ville)}` : ""} · ${org.maxParcours} parcours · ${org.abonnementActif ? "✅ actif" : "⏸ suspendu"}</div>` : ""}
+        ${isOrg && org && org.nom ? `<div class="admin-org-info">
+          ${esc(org.nom)}${org.ville ? ` · ${esc(org.ville)}` : ""}
+          · <span class="parcours-quota-pill ${org.parcoursCount >= org.maxParcours ? 'quota-full' : ''}">${org.parcoursCount ?? 0} / ${org.maxParcours} parcours</span>
+          · ${org.abonnementActif ? "✅ actif" : "⏸ suspendu"}
+        </div>` : ""}
       </div>
       <div class="admin-user-actions">
         ${canPromote ? `<button class="btn-secondary" onclick="openPromoCreate(_userCache['${u.id}'])">Promouvoir</button>` : ""}
@@ -467,22 +577,27 @@ async function loadQuota() {
 /* =========================
    PARCOURS — CREATE / EDIT
    ========================= */
-function openCreate() {
+async function openCreate() {
   currentParcours = null;
   etapes = [];
   document.getElementById("formTitle").textContent = "Nouveau parcours";
+  document.getElementById("parcoursId").value = "";
+  document.getElementById("parcoursForm").reset();
+
   if (userRole === "ROLE_ADMIN") {
     document.getElementById("fActifWrap").classList.remove("hidden");
+    document.getElementById("fActif").checked = false;
     document.getElementById("fStatusInfo").classList.add("hidden");
+    document.getElementById("fOrgWrap").classList.remove("hidden");
+    await loadOrgOptions(null);
   } else {
     document.getElementById("fActifWrap").classList.add("hidden");
+    document.getElementById("fOrgWrap").classList.add("hidden");
     const statusInfo = document.getElementById("fStatusInfo");
     statusInfo.className = "form-status-info";
     statusInfo.textContent = "⏳ Votre parcours sera soumis pour validation avant d'être publié.";
     statusInfo.classList.remove("hidden");
   }
-  document.getElementById("parcoursId").value = "";
-  document.getElementById("parcoursForm").reset();
   renderEtapes();
   showView("form");
 }
@@ -490,45 +605,79 @@ function openCreate() {
 async function openEdit(id) {
   showView("form");
   document.getElementById("formTitle").textContent = "Modifier le parcours";
-
   try {
-    const res = await apiFetch(`/api/parcours/mes-parcours/${id}`);
+    const endpoint = userRole === "ROLE_ADMIN" ? `/api/parcours/mes-parcours/${id}` : `/api/parcours/mes-parcours/${id}`;
+    const res = await apiFetch(endpoint);
     const p = await res.json();
-    currentParcours = p;
-    etapes = p.etapes || [];
-
-    document.getElementById("parcoursId").value = p.id;
-    document.getElementById("fTitre").value = p.titre || "";
-    document.getElementById("fVille").value = p.ville || "";
-    document.getElementById("fTheme").value = p.theme || "GENERAL";
-    document.getElementById("fNiveau").value = p.niveau || "FACILE";
-    document.getElementById("fDescription").value = p.description || "";
-
-    if (userRole === "ROLE_ADMIN") {
-      document.getElementById("fActifWrap").classList.remove("hidden");
-      document.getElementById("fActif").checked = !!p.actif;
-      document.getElementById("fStatusInfo").classList.add("hidden");
-    } else {
-      document.getElementById("fActifWrap").classList.add("hidden");
-      const statusInfo = document.getElementById("fStatusInfo");
-      statusInfo.className = "form-status-info";
-      const st = p.status || "EN_ATTENTE";
-      if (st === "EN_ATTENTE") {
-        statusInfo.textContent = "⏳ Ce parcours est en attente de validation. Toute modification le soumettra à nouveau pour validation.";
-      } else if (st === "REFUSE") {
-        statusInfo.textContent = "✕ Ce parcours a été refusé. Modifiez-le et enregistrez pour le soumettre à nouveau.";
-        statusInfo.classList.add("danger");
-      } else {
-        statusInfo.textContent = "✓ Ce parcours est validé. Toute modification le soumettra à nouveau pour validation.";
-      }
-      statusInfo.classList.remove("hidden");
-    }
-    renderEtapes();
-
+    await _fillForm(p);
   } catch {
     alert("Erreur lors du chargement du parcours.");
     showDashboard();
   }
+}
+
+async function openEditAdmin(id) {
+  showView("form");
+  document.getElementById("formTitle").textContent = "Modifier le parcours";
+  try {
+    const res = await apiFetch(`/api/parcours/mes-parcours/${id}`);
+    const p = await res.json();
+    await _fillForm(p);
+  } catch {
+    alert("Erreur lors du chargement du parcours.");
+    showAdmin();
+  }
+}
+
+async function _fillForm(p) {
+  currentParcours = p;
+  etapes = p.etapes || [];
+  document.getElementById("parcoursId").value = p.id;
+  document.getElementById("fTitre").value = p.titre || "";
+  document.getElementById("fVille").value = p.ville || "";
+  document.getElementById("fTheme").value = p.theme || "GENERAL";
+  document.getElementById("fNiveau").value = p.niveau || "FACILE";
+  document.getElementById("fDescription").value = p.description || "";
+
+  if (userRole === "ROLE_ADMIN") {
+    document.getElementById("fActifWrap").classList.remove("hidden");
+    document.getElementById("fActif").checked = !!p.actif;
+    document.getElementById("fStatusInfo").classList.add("hidden");
+    document.getElementById("fOrgWrap").classList.remove("hidden");
+    await loadOrgOptions(p.organisateurId);
+  } else {
+    document.getElementById("fActifWrap").classList.add("hidden");
+    document.getElementById("fOrgWrap").classList.add("hidden");
+    const statusInfo = document.getElementById("fStatusInfo");
+    statusInfo.className = "form-status-info";
+    const st = p.status || "EN_ATTENTE";
+    if (st === "EN_ATTENTE") {
+      statusInfo.textContent = "⏳ Ce parcours est en attente de validation. Toute modification le soumettra à nouveau pour validation.";
+    } else if (st === "REFUSE") {
+      statusInfo.textContent = "✕ Ce parcours a été refusé. Modifiez-le et enregistrez pour le soumettre à nouveau.";
+      statusInfo.classList.add("danger");
+    } else {
+      statusInfo.textContent = "✓ Ce parcours est validé. Toute modification le soumettra à nouveau pour validation.";
+    }
+    statusInfo.classList.remove("hidden");
+  }
+  renderEtapes();
+}
+
+async function loadOrgOptions(selectedOrgId) {
+  const sel = document.getElementById("fOrganisateurId");
+  sel.innerHTML = '<option value="">— Aucun (contenu plateforme) —</option>';
+  try {
+    const res = await apiFetch("/admin/users?q=&page=0&size=200");
+    const data = await res.json();
+    (data.users || []).filter(u => u.role === "ROLE_ORGANISATEUR" && u.organisateur).forEach(u => {
+      const opt = document.createElement("option");
+      opt.value = u.organisateur.id;
+      opt.textContent = `${u.organisateur.nom} (${u.pseudo})`;
+      if (selectedOrgId && String(u.organisateur.id) === String(selectedOrgId)) opt.selected = true;
+      sel.appendChild(opt);
+    });
+  } catch {}
 }
 
 async function handleSave(e) {
@@ -549,6 +698,10 @@ async function handleSave(e) {
     actif: document.getElementById("fActif").checked,
     etapes: etapes,
   };
+  if (userRole === "ROLE_ADMIN") {
+    const orgVal = document.getElementById("fOrganisateurId").value;
+    body.organisateurId = orgVal ? parseInt(orgVal) : null;
+  }
 
   try {
     const res = await apiFetch(

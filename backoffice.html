@@ -53,17 +53,63 @@
   </header>
 
   <main class="main-content">
-    <div class="page-header">
-      <div>
-        <h2>Mes parcours</h2>
-        <p class="page-sub">Gérez vos itinéraires touristiques</p>
+
+    <!-- Stats admin uniquement -->
+    <div id="dashboardStats" class="hidden">
+      <div class="stats-grid">
+        <div class="stat-card stat-card-blue">
+          <div class="stat-icon">👥</div>
+          <div class="stat-body">
+            <div class="stat-val" id="statUsersVal">—</div>
+            <div class="stat-label">Utilisateurs</div>
+          </div>
+        </div>
+        <div class="stat-card stat-card-green">
+          <div class="stat-icon">✅</div>
+          <div class="stat-body">
+            <div class="stat-val" id="statPublishedVal">—</div>
+            <div class="stat-label">Publiés</div>
+          </div>
+        </div>
+        <div class="stat-card stat-card-orange">
+          <div class="stat-icon">⏳</div>
+          <div class="stat-body">
+            <div class="stat-val" id="statPendingVal">—</div>
+            <div class="stat-label">En attente</div>
+          </div>
+        </div>
+        <div class="stat-card stat-card-gray">
+          <div class="stat-icon">🗺</div>
+          <div class="stat-body">
+            <div class="stat-val" id="statTotalVal">—</div>
+            <div class="stat-label">Total parcours</div>
+          </div>
+        </div>
       </div>
-      <div style="display:flex;align-items:center;gap:1rem">
-        <span id="quotaInfo" class="quota-info hidden"></span>
-        <button class="btn-primary" id="newParcoursBtn" onclick="openCreate()">+ Nouveau parcours</button>
+      <div class="dashboard-actions">
+        <button class="btn-primary" onclick="openCreate()">+ Nouveau parcours</button>
+        <button class="btn-outline" onclick="showContributions()">📥 Validations <span id="dashPendingBadge" class="badge-count hidden"></span></button>
+        <button class="btn-outline" onclick="showAdmin()">⚙ Administration</button>
       </div>
     </div>
 
+    <!-- Header organisateur (non-admin) -->
+    <div id="dashboardOrg" class="hidden">
+      <div class="page-header">
+        <div>
+          <h2>Mes parcours</h2>
+          <p class="page-sub">Gérez vos itinéraires touristiques</p>
+        </div>
+        <div style="display:flex;align-items:center;gap:1rem">
+          <span id="quotaInfo" class="quota-info hidden"></span>
+          <button class="btn-primary" id="newParcoursBtn" onclick="openCreate()">+ Nouveau parcours</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="page-header" style="margin-top:1.5rem">
+      <h3 id="parcoursGridTitle">Parcours récents</h3>
+    </div>
     <div id="parcoursGrid" class="parcours-grid">
       <div class="loading">Chargement…</div>
     </div>
@@ -121,6 +167,13 @@
       <div class="form-group full">
         <label>Description</label>
         <textarea id="fDescription" rows="4" placeholder="Décrivez ce parcours…"></textarea>
+      </div>
+
+      <div id="fOrgWrap" class="form-group full hidden">
+        <label>Organisateur</label>
+        <select id="fOrganisateurId">
+          <option value="">— Aucun (contenu plateforme) —</option>
+        </select>
       </div>
 
       <div id="fActifWrap" class="form-group full hidden">
@@ -374,24 +427,45 @@
       <span>Administration</span>
     </div>
     <div class="topbar-right">
-      <button class="btn-outline" onclick="showDashboard()">← Mes parcours</button>
+      <button class="btn-outline" onclick="showDashboard()">← Tableau de bord</button>
       <button class="btn-outline" onclick="logout()">Déconnexion</button>
     </div>
   </header>
 
   <main class="main-content">
-    <div class="page-header">
-      <div>
-        <h2>Gestion des utilisateurs</h2>
-        <p class="page-sub">Promouvoir, modifier ou révoquer les organisateurs</p>
+    <div class="collab-tabs" style="margin-bottom:1.5rem">
+      <button class="collab-tab active" id="tabAdminUsers" onclick="switchAdminTab('users')">👥 Utilisateurs</button>
+      <button class="collab-tab" id="tabAdminParcours" onclick="switchAdminTab('parcours')">🗺 Parcours</button>
+    </div>
+
+    <!-- Onglet Utilisateurs -->
+    <div id="panelAdminUsers">
+      <div class="page-header">
+        <div>
+          <h2>Gestion des utilisateurs</h2>
+          <p class="page-sub">Promouvoir, modifier ou révoquer les organisateurs</p>
+        </div>
+        <div class="admin-search-wrap">
+          <input id="adminSearch" type="text" placeholder="Rechercher par email ou pseudo…" oninput="filterUsers()">
+        </div>
       </div>
-      <div class="admin-search-wrap">
-        <input id="adminSearch" type="text" placeholder="Rechercher par email ou pseudo…" oninput="filterUsers()">
+      <div id="adminUserList" class="admin-user-list">
+        <div class="loading">Chargement…</div>
       </div>
     </div>
 
-    <div id="adminUserList" class="admin-user-list">
-      <div class="loading">Chargement…</div>
+    <!-- Onglet Parcours -->
+    <div id="panelAdminParcours" class="hidden">
+      <div class="page-header">
+        <div>
+          <h2>Tous les parcours</h2>
+          <p class="page-sub">Vue globale par organisateur</p>
+        </div>
+        <button class="btn-primary" onclick="openCreate()">+ Nouveau parcours</button>
+      </div>
+      <div id="adminParcoursOrgs">
+        <div class="loading">Chargement…</div>
+      </div>
     </div>
   </main>
 </div>
