@@ -58,7 +58,10 @@
         <h2>Mes parcours</h2>
         <p class="page-sub">Gérez vos itinéraires touristiques</p>
       </div>
-      <button class="btn-primary" onclick="openCreate()">+ Nouveau parcours</button>
+      <div style="display:flex;align-items:center;gap:1rem">
+        <span id="quotaInfo" class="quota-info hidden"></span>
+        <button class="btn-primary" id="newParcoursBtn" onclick="openCreate()">+ Nouveau parcours</button>
+      </div>
     </div>
 
     <div id="parcoursGrid" class="parcours-grid">

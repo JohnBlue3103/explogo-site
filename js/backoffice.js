@@ -61,6 +61,7 @@ function showDashboard() {
   document.getElementById("dataNavBtn")?.classList.toggle("hidden", !isAdmin);
   document.getElementById("contribNavBtn")?.classList.toggle("hidden", !isAdmin);
   if (isAdmin) loadContribCount();
+  if (userRole === "ROLE_ORGANISATEUR") loadQuota();
 }
 
 /* =========================
@@ -447,6 +448,22 @@ async function loadParcours() {
   }
 }
 
+async function loadQuota() {
+  try {
+    const res = await apiFetch("/api/parcours/mes-parcours/quota");
+    if (!res.ok) return;
+    const { used, max } = await res.json();
+    const info  = document.getElementById("quotaInfo");
+    const btn   = document.getElementById("newParcoursBtn");
+    const full  = used >= max;
+    info.textContent  = `${used} / ${max} parcours`;
+    info.className    = `quota-info ${full ? "quota-full" : used >= max - 1 ? "quota-warn" : ""}`;
+    info.classList.remove("hidden");
+    btn.disabled      = full;
+    btn.title         = full ? `Quota atteint (${max} parcours max). Contactez-nous pour augmenter votre limite.` : "";
+  } catch {}
+}
+
 /* =========================
    PARCOURS — CREATE / EDIT
    ========================= */
@@ -541,7 +558,9 @@ async function handleSave(e) {
 
     if (!res.ok) {
       const txt = await res.text();
-      errEl.textContent = txt || "Erreur lors de l'enregistrement";
+      errEl.textContent = res.status === 403
+        ? (txt.includes("Quota") ? txt : "Quota de parcours atteint. Contactez-nous pour augmenter votre limite.")
+        : (txt || "Erreur lors de l'enregistrement");
       errEl.classList.remove("hidden");
       return;
     }
@@ -1288,28 +1307,46 @@ async function loadParcoursAdmin() {
     const badge = document.getElementById("contribParcoursBadge");
     badge.textContent = items.length;
     badge.classList.remove("hidden");
-    list.innerHTML = items.map(p => `
-      <div class="contrib-card">
+    list.innerHTML = items.map(p => {
+      const etapes = p.etapes || [];
+      const etapesHtml = etapes.length ? `
+        <ol class="parcours-admin-etapes">
+          ${etapes.map(e => `
+            <li class="parcours-admin-etape">
+              <span class="parcours-etape-nom">${esc(e.poiNom || e.poiId || "—")}</span>
+              <span class="parcours-etape-type">${esc(e.poiType || "")}</span>
+              ${e.descriptionEtape ? `<span class="parcours-etape-desc">${esc(e.descriptionEtape)}</span>` : ""}
+            </li>`).join("")}
+        </ol>` : '<p class="contrib-meta">Aucune étape définie.</p>';
+
+      return `
+      <div class="contrib-card parcours-admin-card">
         <div class="contrib-info">
           <div class="contrib-header">
             <span class="contrib-nom">${esc(p.titre)}</span>
             <span class="badge badge-orange">En attente</span>
             <span class="badge badge-gray">${esc(THEMES[p.theme] || p.theme)}</span>
+            <span class="badge badge-blue">${esc(p.niveau || "FACILE")}</span>
           </div>
-          <div class="contrib-meta">
-            📍 ${esc(p.ville)} · ${esc(p.niveau || "FACILE")}
-            ${p.dureeMinutes ? ` · ⏱ ${p.dureeMinutes} min` : ""}
-            ${p.distanceKm   ? ` · 📏 ${p.distanceKm.toFixed(1)} km` : ""}
+          <div class="contrib-meta" style="margin:.4rem 0">
+            📍 ${esc(p.ville)}
+            ${p.dureeMinutes ? ` &nbsp;·&nbsp; ⏱ ${p.dureeMinutes} min` : ""}
+            ${p.distanceKm   ? ` &nbsp;·&nbsp; 📏 ${p.distanceKm.toFixed(1)} km` : ""}
+            &nbsp;·&nbsp; 🚶 ${esc(p.transportMode || "foot-walking")}
           </div>
-          ${p.description ? `<div class="contrib-desc">${esc(p.description.slice(0, 150))}${p.description.length > 150 ? "…" : ""}</div>` : ""}
-          <div class="contrib-meta">🗺 ${(p.etapes || []).length} étape(s)</div>
+          ${p.description ? `<div class="parcours-admin-description">${esc(p.description)}</div>` : ""}
+          <div class="parcours-admin-etapes-header">
+            🗺 Itinéraire — ${etapes.length} étape(s)
+          </div>
+          ${etapesHtml}
         </div>
         <div class="contrib-actions">
           <button class="btn-primary" onclick="validerParcoursAdmin(${p.id}, true)">✓ Valider &amp; Publier</button>
-          <button class="btn-secondary" onclick="validerParcoursAdmin(${p.id}, false)">✓ Valider sans publier</button>
+          <button class="btn-secondary" onclick="validerParcoursAdmin(${p.id}, false)">✓ Valider (sans publier)</button>
           <button class="btn-icon danger" onclick="refuserParcoursAdmin(${p.id})">✕ Refuser</button>
         </div>
-      </div>`).join("");
+      </div>`;
+    }).join("");
   } catch {
     list.innerHTML = '<div class="loading">Erreur de chargement</div>';
   }
