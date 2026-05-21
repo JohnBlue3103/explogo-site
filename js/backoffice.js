@@ -934,6 +934,187 @@ async function deletePoi(id) {
 }
 
 /* =========================
+   CSV → GeoJSON
+   ========================= */
+const WIKIDATA_PREFIXES = {
+  chateau:       "CH",
+  bataille:      "B",
+  musee:         "MU",
+  eglise:        "EG",
+  cathedrale:    "CA",
+  pont:          "PT",
+  majeur:        "MJ",
+  prehistoire:   "PR",
+  antiquite:     "AQ",
+  demeure:       "DM",
+  fortification: "FT",
+  personnage:    "PN",
+};
+
+let _csvFeatures = [];
+let _csvFilename = "";
+
+function openCsvModal() {
+  const cfg = CATEGORY_CONFIG[currentDataCategory] || { label: currentDataCategory };
+  document.getElementById("csvModalCat").textContent = "Catégorie : " + cfg.label;
+  document.getElementById("csvFileInput").value = "";
+  document.getElementById("csvPreview").classList.add("hidden");
+  document.getElementById("csvError").classList.add("hidden");
+  document.getElementById("csvDownloadBtn").disabled = true;
+  document.getElementById("csvImportBtn").disabled = true;
+  _csvFeatures = [];
+  document.getElementById("csvModal").classList.remove("hidden");
+}
+
+function closeCsvModal(e) {
+  if (e && e.target !== document.getElementById("csvModal")) return;
+  document.getElementById("csvModal").classList.add("hidden");
+}
+
+function parseCSVLine(line, sep) {
+  const result = [];
+  let cur = "";
+  let inQuotes = false;
+  for (let i = 0; i < line.length; i++) {
+    const ch = line[i];
+    if (ch === '"') {
+      if (inQuotes && line[i + 1] === '"') { cur += '"'; i++; }
+      else { inQuotes = !inQuotes; }
+    } else if (ch === sep && !inQuotes) {
+      result.push(cur.trim());
+      cur = "";
+    } else {
+      cur += ch;
+    }
+  }
+  result.push(cur.trim());
+  return result;
+}
+
+function parseCsvToFeatures(text, categorie) {
+  const lines = text.replace(/\r\n/g, "\n").replace(/\r/g, "\n").split("\n").filter(l => l.trim());
+  if (lines.length < 2) throw new Error("Le fichier doit contenir au moins un en-tête et une ligne de données.");
+
+  const firstLine = lines[0];
+  const sep = firstLine.split(";").length > firstLine.split(",").length ? ";" : ",";
+
+  const headers = parseCSVLine(firstLine, sep).map(h => h.toLowerCase().replace(/['"]/g, "").trim());
+
+  const latCandidates = ["latitude", "lat", "y"];
+  const lngCandidates = ["longitude", "lon", "lng", "long", "x"];
+  const latCol = latCandidates.find(c => headers.includes(c));
+  const lngCol = lngCandidates.find(c => headers.includes(c));
+  if (!latCol || !lngCol) {
+    throw new Error(`Colonnes de coordonnées introuvables. Colonnes détectées : ${headers.join(", ")}`);
+  }
+
+  const prefix = WIKIDATA_PREFIXES[categorie] || categorie.toUpperCase().slice(0, 2);
+  const features = [];
+  let idCounter = 100000;
+
+  for (let i = 1; i < lines.length; i++) {
+    const vals = parseCSVLine(lines[i], sep);
+    if (vals.length < 2) continue;
+
+    const row = {};
+    headers.forEach((h, idx) => { row[h] = vals[idx] || ""; });
+
+    const lat = parseFloat(row[latCol]);
+    const lng = parseFloat(row[lngCol]);
+    if (isNaN(lat) || isNaN(lng)) continue;
+
+    let wikidataId = row["wikidata_id"] || row["wikidataid"] || "";
+    if (!wikidataId) wikidataId = `${prefix}${idCounter++}`;
+
+    const props = { wikidata_id: wikidataId };
+    headers.forEach(h => {
+      if (h !== latCol && h !== lngCol) props[h] = row[h];
+    });
+
+    features.push({
+      type: "Feature",
+      geometry: { type: "Point", coordinates: [lng, lat] },
+      properties: props,
+    });
+  }
+
+  return { features, headers, sep, latCol, lngCol };
+}
+
+function onCsvFileSelected(input) {
+  const file = input.files[0];
+  if (!file) return;
+  _csvFilename = file.name.replace(/\.[^.]+$/, "");
+  const errEl = document.getElementById("csvError");
+  errEl.classList.add("hidden");
+
+  const reader = new FileReader();
+  reader.onload = e => {
+    try {
+      const { features, headers, sep, latCol, lngCol } = parseCsvToFeatures(e.target.result, currentDataCategory);
+      _csvFeatures = features;
+      document.getElementById("csvStatRows").textContent = features.length;
+      document.getElementById("csvStatCols").textContent = headers.length;
+      document.getElementById("csvColInfo").textContent =
+        `Lat : "${latCol}" · Lng : "${lngCol}" · Séparateur : "${sep === ";" ? "point-virgule" : "virgule"}"`;
+      document.getElementById("csvPreview").classList.remove("hidden");
+      const hasData = features.length > 0;
+      document.getElementById("csvDownloadBtn").disabled = !hasData;
+      document.getElementById("csvImportBtn").disabled = !hasData;
+    } catch (err) {
+      errEl.textContent = err.message;
+      errEl.classList.remove("hidden");
+      _csvFeatures = [];
+    }
+  };
+  reader.readAsText(file, "UTF-8");
+}
+
+function downloadGeoJson() {
+  if (!_csvFeatures.length) return;
+  const geojson = { type: "FeatureCollection", features: _csvFeatures };
+  const blob = new Blob([JSON.stringify(geojson, null, 2)], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `${_csvFilename || currentDataCategory}.geojson`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+async function importCsvToDB() {
+  if (!_csvFeatures.length) return;
+  const btn = document.getElementById("csvImportBtn");
+  const errEl = document.getElementById("csvError");
+  btn.disabled = true;
+  btn.textContent = "Import…";
+  errEl.classList.add("hidden");
+
+  try {
+    const res = await apiFetch(`/admin/data/import-file/${currentDataCategory}`, {
+      method: "POST",
+      body: JSON.stringify(_csvFeatures),
+    });
+    const data = await res.json();
+    if (!res.ok) {
+      errEl.textContent = data.message || "Erreur serveur";
+      errEl.classList.remove("hidden");
+      return;
+    }
+    document.getElementById("csvModal").classList.add("hidden");
+    alert(`Import terminé : ${data.imported} entrée(s) ajoutée(s).`);
+    loadPoiData();
+    loadCategories();
+  } catch {
+    errEl.textContent = "Serveur indisponible";
+    errEl.classList.remove("hidden");
+  } finally {
+    btn.disabled = false;
+    btn.textContent = "⬆ Importer en DB";
+  }
+}
+
+/* =========================
    UTILS
    ========================= */
 function apiFetch(path, options = {}) {

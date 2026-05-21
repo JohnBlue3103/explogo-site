@@ -176,6 +176,7 @@
           <input id="dataFilterDep"   type="text" placeholder="Département…"   oninput="filterPoi()">
           <input id="dataFilterCommune" type="text" placeholder="Commune…"     oninput="filterPoi()">
           <input id="dataFilterRegion"  type="text" placeholder="Région…"      oninput="filterPoi()">
+          <button class="btn-secondary" onclick="openCsvModal()">📥 CSV</button>
           <button class="btn-secondary" onclick="importCategory()">⬆ Importer JSON</button>
           <button class="btn-secondary" onclick="exportCategory()">⬇ Exporter</button>
           <button class="btn-primary" onclick="openPoiCreate()">+ Ajouter</button>
@@ -314,6 +315,36 @@
     <div class="modal-actions">
       <button class="btn-outline" onclick="closePromoModal()">Annuler</button>
       <button class="btn-primary" id="promoSaveBtn" onclick="savePromo()">Enregistrer</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal CSV → GeoJSON -->
+<div id="csvModal" class="modal-overlay hidden" onclick="closeCsvModal(event)">
+  <div class="modal-card csv-modal-card">
+    <h3>CSV → GeoJSON</h3>
+    <p class="modal-sub" id="csvModalCat"></p>
+
+    <div class="form-group" style="margin-top:1rem">
+      <label>Fichier CSV</label>
+      <input type="file" id="csvFileInput" accept=".csv,.txt" onchange="onCsvFileSelected(this)" style="padding:.5rem 0">
+    </div>
+
+    <div id="csvPreview" class="csv-preview hidden">
+      <div class="csv-stats">
+        <div class="csv-stat"><span id="csvStatRows">0</span><small>lignes</small></div>
+        <div class="csv-stat"><span id="csvStatCols">0</span><small>colonnes</small></div>
+        <div class="csv-stat csv-stat-ok"><span>✓</span><small>Coordonnées</small></div>
+      </div>
+      <p id="csvColInfo" class="csv-col-info"></p>
+    </div>
+
+    <p id="csvError" class="error hidden"></p>
+
+    <div class="modal-actions">
+      <button class="btn-outline" onclick="closeCsvModal()">Annuler</button>
+      <button class="btn-secondary" id="csvDownloadBtn" onclick="downloadGeoJson()" disabled>⬇ Télécharger GeoJSON</button>
+      <button class="btn-primary" id="csvImportBtn" onclick="importCsvToDB()" disabled>⬆ Importer en DB</button>
     </div>
   </div>
 </div>

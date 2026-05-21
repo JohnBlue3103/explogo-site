@@ -263,6 +263,15 @@ input, select, textarea {
   width: 100%;
 }
 
+input[type="radio"],
+input[type="checkbox"] {
+  width: auto;
+  padding: 0;
+  border: none;
+  background: none;
+  cursor: pointer;
+}
+
 input:focus, select:focus, textarea:focus {
   outline: none;
   border-color: var(--primary);
@@ -696,6 +705,31 @@ textarea { resize: vertical; }
 .extra-fields-section { margin-top: 1rem; border-top: 1px solid var(--border); padding-top: 0.75rem; }
 .extra-fields-title { font-size: 0.8rem; font-weight: 600; text-transform: uppercase; color: var(--text-light); margin-bottom: 0.75rem; }
 .checkbox-label { display: flex; align-items: center; gap: 0.5rem; font-size: 0.9rem; cursor: pointer; }
+
+/* ===== CSV MODAL ===== */
+.csv-modal-card { max-width: 480px; }
+.csv-preview {
+  margin-top: 1rem;
+  background: #F0FAF2;
+  border: 1px solid #B7DFC1;
+  border-radius: 10px;
+  padding: 1rem;
+}
+.csv-stats {
+  display: flex;
+  gap: 1.5rem;
+  margin-bottom: 0.75rem;
+}
+.csv-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+}
+.csv-stat span { font-size: 1.5rem; font-weight: 700; color: var(--primary); }
+.csv-stat small { font-size: 0.75rem; color: var(--text-muted); }
+.csv-stat-ok span { color: #2e6336; }
+.csv-col-info { font-size: 0.82rem; color: var(--text-muted); margin: 0; }
 
 @media (max-width: 600px) {
   .form-grid { grid-template-columns: 1fr; }
