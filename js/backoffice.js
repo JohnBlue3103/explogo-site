@@ -517,22 +517,25 @@ async function loadParcours() {
   const grid = document.getElementById("parcoursGrid");
   grid.innerHTML = '<div class="loading">Chargement…</div>';
 
+  const isAdmin = userRole === "ROLE_ADMIN";
+  const endpoint = isAdmin ? "/api/parcours/admin/all" : "/api/parcours/mes-parcours";
+
   try {
-    const res = await apiFetch("/api/parcours/mes-parcours");
+    const res = await apiFetch(endpoint);
     const list = await res.json();
 
     if (!list.length) {
-      grid.innerHTML = '<p class="loading">Aucun parcours. Créez votre premier itinéraire.</p>';
+      grid.innerHTML = '<p class="loading">Aucun parcours.</p>';
       return;
     }
 
     grid.innerHTML = list.map(p => {
       const st = p.status || "EN_ATTENTE";
       let badgeCls, badgeTxt;
-      if (st === "REFUSE")             { badgeCls = "badge-red";    badgeTxt = "Refusé"; }
-      else if (st === "VALIDE" && p.actif) { badgeCls = "badge-green";  badgeTxt = "Publié"; }
-      else if (st === "VALIDE")        { badgeCls = "badge-blue";   badgeTxt = "Validé"; }
-      else                             { badgeCls = "badge-orange"; badgeTxt = "En attente"; }
+      if (st === "REFUSE")                  { badgeCls = "badge-red";    badgeTxt = "Refusé"; }
+      else if (st === "VALIDE" && p.actif)  { badgeCls = "badge-green";  badgeTxt = "Publié"; }
+      else if (st === "VALIDE")             { badgeCls = "badge-blue";   badgeTxt = "Validé"; }
+      else                                  { badgeCls = "badge-orange"; badgeTxt = "En attente"; }
       return `
       <div class="parcours-card">
         <div class="parcours-card-header">
@@ -543,9 +546,10 @@ async function loadParcours() {
           <span>📍 ${esc(p.ville)}</span>
           <span>🏷 ${THEMES[p.theme] || p.theme}</span>
           ${p.dureeMinutes ? `<span>⏱ ${p.dureeMinutes} min</span>` : ""}
+          ${isAdmin && p.organisateurNom ? `<span>🏢 ${esc(p.organisateurNom)}</span>` : ""}
         </div>
-        ${st === "EN_ATTENTE" ? '<div class="parcours-status-hint">⏳ En cours de validation par l\'équipe Explogo</div>' : ""}
-        ${st === "REFUSE" ? '<div class="parcours-status-hint danger">✕ Votre parcours a été refusé. Vous pouvez le modifier et le soumettre à nouveau.</div>' : ""}
+        ${!isAdmin && st === "EN_ATTENTE" ? '<div class="parcours-status-hint">⏳ En cours de validation par l\'équipe Explogo</div>' : ""}
+        ${!isAdmin && st === "REFUSE" ? '<div class="parcours-status-hint danger">✕ Votre parcours a été refusé. Vous pouvez le modifier et le soumettre à nouveau.</div>' : ""}
         <div class="parcours-card-actions">
           <button class="btn-secondary" onclick="openEdit(${p.id})">Modifier</button>
           <button class="btn-icon danger" onclick="deleteParcours(${p.id})">Supprimer</button>
