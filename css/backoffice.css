@@ -74,6 +74,29 @@ body {
   font-size: 1rem;
 }
 
+.btn-forgot {
+  background: none;
+  border: none;
+  color: var(--primary);
+  font-size: 0.85rem;
+  cursor: pointer;
+  padding: 0.25rem 0;
+  text-align: center;
+  width: 100%;
+  margin-top: 0.25rem;
+}
+.btn-forgot:hover { text-decoration: underline; }
+
+#forgotForm {
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+#forgotForm .btn-primary { margin-top: 0.5rem; width: 100%; padding: 0.75rem; font-size: 1rem; }
+.forgot-intro { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.5rem; }
+.forgot-success { color: var(--primary-dark); font-size: 0.9rem; font-weight: 600; padding: 0.5rem 0; }
+
 .login-divider {
   display: flex;
   align-items: center;

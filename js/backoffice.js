@@ -108,6 +108,55 @@ async function handleLogin(e) {
   }
 }
 
+function showForgotPassword() {
+  document.getElementById("loginForm").classList.add("hidden");
+  document.getElementById("forgotForm").classList.remove("hidden");
+  document.getElementById("forgotEmail").value = document.getElementById("loginEmail").value;
+  document.getElementById("forgotError").classList.add("hidden");
+  document.getElementById("forgotSuccess").classList.add("hidden");
+}
+
+function showLoginForm() {
+  document.getElementById("forgotForm").classList.add("hidden");
+  document.getElementById("loginForm").classList.remove("hidden");
+}
+
+async function sendResetEmail() {
+  const btn   = document.getElementById("forgotBtn");
+  const errEl = document.getElementById("forgotError");
+  const okEl  = document.getElementById("forgotSuccess");
+  const email = document.getElementById("forgotEmail").value.trim();
+
+  errEl.classList.add("hidden");
+  okEl.classList.add("hidden");
+
+  if (!email) {
+    errEl.textContent = "Veuillez saisir votre email.";
+    errEl.classList.remove("hidden");
+    return;
+  }
+
+  btn.disabled = true;
+  btn.textContent = "Envoi…";
+
+  try {
+    await fetch(`${API}/auth/forgot-password`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email }),
+    });
+    // Toujours afficher le succès (le backend ne révèle pas si l'email existe)
+    okEl.classList.remove("hidden");
+    btn.disabled = true;
+    btn.textContent = "Envoyé";
+  } catch {
+    errEl.textContent = "Serveur indisponible, réessayez plus tard.";
+    errEl.classList.remove("hidden");
+    btn.disabled = false;
+    btn.textContent = "Envoyer le lien";
+  }
+}
+
 function logout() {
   localStorage.removeItem("bo_token");
   localStorage.removeItem("bo_role");

@@ -21,7 +21,18 @@
       <input id="loginPassword" type="password" placeholder="••••••••" required>
       <p id="loginError" class="error hidden"></p>
       <button type="submit" class="btn-primary" id="loginBtn">Se connecter</button>
+      <button type="button" class="btn-forgot" onclick="showForgotPassword()">Mot de passe oublié ?</button>
     </form>
+
+    <div id="forgotForm" class="hidden">
+      <p class="forgot-intro">Saisissez votre email, nous vous enverrons un lien de réinitialisation.</p>
+      <label>Email</label>
+      <input id="forgotEmail" type="email" placeholder="contact@mairie.fr">
+      <p id="forgotError" class="error hidden"></p>
+      <p id="forgotSuccess" class="forgot-success hidden">✅ Lien envoyé ! Vérifiez votre boîte mail.</p>
+      <button class="btn-primary" id="forgotBtn" onclick="sendResetEmail()">Envoyer le lien</button>
+      <button type="button" class="btn-forgot" onclick="showLoginForm()">← Retour à la connexion</button>
+    </div>
   </div>
 </div>
 
