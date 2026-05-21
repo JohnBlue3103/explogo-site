@@ -64,7 +64,7 @@
       </div>
 
       <div class="dashboard-cards">
-        <div class="dash-card dash-card-blue" onclick="showAdmin(); switchAdminTab('users')">
+        <div class="dash-card dash-card-blue" onclick="showAdminUsers()">
           <div class="dash-card-icon">👥</div>
           <div class="dash-card-val" id="statUsersVal">—</div>
           <div class="dash-card-label">Utilisateurs</div>
@@ -424,44 +424,50 @@
     </div>
     <div class="topbar-right">
       <button class="btn-outline" onclick="showDashboard()">← Tableau de bord</button>
+      <button class="btn-outline" onclick="showAdminUsers()">👥 Utilisateurs</button>
       <button class="btn-outline" onclick="logout()">Déconnexion</button>
     </div>
   </header>
 
   <main class="main-content">
-    <div class="collab-tabs" style="margin-bottom:1.5rem">
-      <button class="collab-tab active" id="tabAdminUsers" onclick="switchAdminTab('users')">👥 Utilisateurs</button>
-      <button class="collab-tab" id="tabAdminParcours" onclick="switchAdminTab('parcours')">🗺 Parcours</button>
+    <div class="page-header">
+      <div>
+        <h2>Tous les parcours</h2>
+        <p class="page-sub">Vue globale par organisateur</p>
+      </div>
+      <button class="btn-primary" onclick="openCreate()">+ Nouveau parcours</button>
     </div>
+    <div id="adminParcoursOrgs">
+      <div class="loading">Chargement…</div>
+    </div>
+  </main>
+</div>
 
-    <!-- Onglet Utilisateurs -->
-    <div id="panelAdminUsers">
-      <div class="page-header">
-        <div>
-          <h2>Gestion des utilisateurs</h2>
-          <p class="page-sub">Promouvoir, modifier ou révoquer les organisateurs</p>
-        </div>
-        <div class="admin-search-wrap">
-          <input id="adminSearch" type="text" placeholder="Rechercher par email ou pseudo…" oninput="filterUsers()">
-        </div>
+<!-- ========== ADMIN UTILISATEURS ========== -->
+<div id="view-admin-users" class="view hidden">
+  <header class="topbar">
+    <div class="topbar-brand">
+      <img src="assets/img/logo.png" alt="Explogo">
+      <span>Utilisateurs</span>
+    </div>
+    <div class="topbar-right">
+      <button class="btn-outline" onclick="showAdmin()">← Parcours</button>
+      <button class="btn-outline" onclick="showDashboard()">Tableau de bord</button>
+      <button class="btn-outline" onclick="logout()">Déconnexion</button>
+    </div>
+  </header>
+  <main class="main-content">
+    <div class="page-header">
+      <div>
+        <h2>Gestion des utilisateurs</h2>
+        <p class="page-sub">Promouvoir, modifier ou révoquer les organisateurs</p>
       </div>
-      <div id="adminUserList" class="admin-user-list">
-        <div class="loading">Chargement…</div>
+      <div class="admin-search-wrap">
+        <input id="adminSearch" type="text" placeholder="Rechercher par email ou pseudo…" oninput="filterUsers()">
       </div>
     </div>
-
-    <!-- Onglet Parcours -->
-    <div id="panelAdminParcours" class="hidden">
-      <div class="page-header">
-        <div>
-          <h2>Tous les parcours</h2>
-          <p class="page-sub">Vue globale par organisateur</p>
-        </div>
-        <button class="btn-primary" onclick="openCreate()">+ Nouveau parcours</button>
-      </div>
-      <div id="adminParcoursOrgs">
-        <div class="loading">Chargement…</div>
-      </div>
+    <div id="adminUserList" class="admin-user-list">
+      <div class="loading">Chargement…</div>
     </div>
   </main>
 </div>

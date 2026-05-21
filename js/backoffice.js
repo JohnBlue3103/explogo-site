@@ -236,16 +236,19 @@ let searchTimer = null;
 function showAdmin() {
   if (userRole !== "ROLE_ADMIN") return;
   showView("admin");
-  switchAdminTab("users");
+  loadAdminAllParcours();
+}
+
+function showAdminUsers() {
+  if (userRole !== "ROLE_ADMIN") return;
+  showView("admin-users");
+  adminPage = 0;
+  loadAdminUsers();
 }
 
 function switchAdminTab(tab) {
-  document.getElementById("tabAdminUsers").classList.toggle("active", tab === "users");
-  document.getElementById("tabAdminParcours").classList.toggle("active", tab === "parcours");
-  document.getElementById("panelAdminUsers").classList.toggle("hidden", tab !== "users");
-  document.getElementById("panelAdminParcours").classList.toggle("hidden", tab !== "parcours");
-  if (tab === "users") { adminPage = 0; loadAdminUsers(); }
-  else loadAdminAllParcours();
+  if (tab === "users") showAdminUsers();
+  else showAdmin();
 }
 
 async function loadAdminAllParcours() {
