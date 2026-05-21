@@ -47,7 +47,22 @@ window.addEventListener("DOMContentLoaded", () => {
 function showView(name) {
   document.querySelectorAll(".view").forEach(v => v.classList.add("hidden"));
   document.getElementById("view-" + name).classList.remove("hidden");
+  if (history.state?.view !== name) {
+    history.pushState({ view: name }, "", "#" + name);
+  }
 }
+
+window.addEventListener("popstate", (e) => {
+  const view = e.state?.view;
+  if (view) {
+    document.querySelectorAll(".view").forEach(v => v.classList.add("hidden"));
+    const el = document.getElementById("view-" + view);
+    if (el) el.classList.remove("hidden");
+  } else {
+    if (token) showDashboard();
+    else showView("login");
+  }
+});
 
 function showDashboard() {
   if (userRole === "ROLE_COLLABORATEUR") {
@@ -63,16 +78,17 @@ function showDashboard() {
   if (isAdmin) {
     document.getElementById("dashboardStats").classList.remove("hidden");
     document.getElementById("dashboardOrg").classList.add("hidden");
-    document.getElementById("parcoursGridTitle").textContent = "Parcours récents";
+    document.getElementById("parcoursSection").classList.add("hidden");
     loadDashboardStats();
     loadContribCount();
   } else {
     document.getElementById("dashboardStats").classList.add("hidden");
     document.getElementById("dashboardOrg").classList.remove("hidden");
+    document.getElementById("parcoursSection").classList.remove("hidden");
     document.getElementById("parcoursGridTitle").textContent = "Mes parcours";
     loadQuota();
+    loadParcours();
   }
-  loadParcours();
 }
 
 async function loadDashboardStats() {
