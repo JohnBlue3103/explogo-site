@@ -325,10 +325,14 @@
     <h3>CSV → GeoJSON</h3>
     <p class="modal-sub" id="csvModalCat"></p>
 
-    <div class="form-group" style="margin-top:1rem">
-      <label>Fichier CSV</label>
-      <input type="file" id="csvFileInput" accept=".csv,.txt" onchange="onCsvFileSelected(this)" style="padding:.5rem 0">
+    <div id="csvDropZone" class="csv-drop-zone" onclick="document.getElementById('csvFileInput').click()"
+         ondragover="csvDragOver(event)" ondragleave="csvDragLeave(event)" ondrop="csvDrop(event)">
+      <div class="csv-drop-icon">📂</div>
+      <p class="csv-drop-label">Glisser-déposer un fichier CSV</p>
+      <p class="csv-drop-sub">ou cliquer pour parcourir</p>
+      <p id="csvFileName" class="csv-file-name hidden"></p>
     </div>
+    <input type="file" id="csvFileInput" accept=".csv,.txt" onchange="onCsvFileSelected(this)" style="display:none">
 
     <div id="csvPreview" class="csv-preview hidden">
       <div class="csv-stats">

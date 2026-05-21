@@ -960,6 +960,8 @@ function openCsvModal() {
   document.getElementById("csvFileInput").value = "";
   document.getElementById("csvPreview").classList.add("hidden");
   document.getElementById("csvError").classList.add("hidden");
+  document.getElementById("csvFileName").classList.add("hidden");
+  document.getElementById("csvDropZone").classList.remove("csv-drop-active");
   document.getElementById("csvDownloadBtn").disabled = true;
   document.getElementById("csvImportBtn").disabled = true;
   _csvFeatures = [];
@@ -1056,12 +1058,39 @@ function parseCsvToFeatures(text, categorie) {
   return { features, headers, sep, latCol, lngCol };
 }
 
+function csvDragOver(e) {
+  e.preventDefault();
+  document.getElementById("csvDropZone").classList.add("csv-drop-active");
+}
+
+function csvDragLeave(e) {
+  document.getElementById("csvDropZone").classList.remove("csv-drop-active");
+}
+
+function csvDrop(e) {
+  e.preventDefault();
+  document.getElementById("csvDropZone").classList.remove("csv-drop-active");
+  const file = e.dataTransfer.files[0];
+  if (file) processCsvFile(file);
+}
+
 function onCsvFileSelected(input) {
   const file = input.files[0];
   if (!file) return;
+  processCsvFile(file);
+}
+
+function processCsvFile(file) {
   _csvFilename = file.name.replace(/\.[^.]+$/, "");
   const errEl = document.getElementById("csvError");
   errEl.classList.add("hidden");
+  document.getElementById("csvPreview").classList.add("hidden");
+  document.getElementById("csvDownloadBtn").disabled = true;
+  document.getElementById("csvImportBtn").disabled = true;
+
+  const nameEl = document.getElementById("csvFileName");
+  nameEl.textContent = file.name;
+  nameEl.classList.remove("hidden");
 
   const reader = new FileReader();
   reader.onload = e => {

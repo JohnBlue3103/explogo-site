@@ -708,6 +708,23 @@ textarea { resize: vertical; }
 
 /* ===== CSV MODAL ===== */
 .csv-modal-card { max-width: 480px; }
+
+.csv-drop-zone {
+  margin-top: 1rem;
+  border: 2px dashed var(--border);
+  border-radius: 12px;
+  padding: 2rem 1rem;
+  text-align: center;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+}
+.csv-drop-zone:hover { border-color: var(--primary); background: #F8FBF8; }
+.csv-drop-active { border-color: var(--primary) !important; background: #EDF7EF !important; }
+.csv-drop-icon { font-size: 2rem; margin-bottom: 0.5rem; }
+.csv-drop-label { font-weight: 600; font-size: 0.95rem; color: var(--text); margin: 0; }
+.csv-drop-sub { font-size: 0.8rem; color: var(--text-muted); margin: 0.25rem 0 0; }
+.csv-file-name { font-size: 0.82rem; color: var(--primary); font-weight: 600; margin: 0.5rem 0 0; }
+
 .csv-preview {
   margin-top: 1rem;
   background: #F0FAF2;
