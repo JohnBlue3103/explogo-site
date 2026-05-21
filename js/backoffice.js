@@ -113,6 +113,7 @@ function logout() {
    ========================= */
 let adminPage = 0;
 let adminTotal = 0;
+let _userCache = {};
 let searchTimer = null;
 
 function showAdmin() {
@@ -151,16 +152,23 @@ function renderUsers(users, page, totalPages) {
   }
 
   const roleLabels = {
-    ROLE_USER:          { label: "Visiteur",      cls: "badge-gray" },
-    ROLE_ORGANISATEUR:  { label: "Organisateur",  cls: "badge-green" },
-    ROLE_ADMIN:         { label: "Admin",          cls: "badge-orange" },
+    ROLE_USER:          { label: "Visiteur",       cls: "badge-gray"   },
+    ROLE_ORGANISATEUR:  { label: "Organisateur",   cls: "badge-green"  },
+    ROLE_ADMIN:         { label: "Admin",           cls: "badge-orange" },
+    ROLE_COLLABORATEUR: { label: "Collaborateur",  cls: "badge-blue"   },
   };
+
+  _userCache = {};
+  users.forEach(u => { _userCache[u.id] = u; });
 
   const rows = users.map(u => {
     const r = roleLabels[u.role] || { label: u.role, cls: "badge-gray" };
-    const isOrg = u.role === "ROLE_ORGANISATEUR";
+    const isOrg   = u.role === "ROLE_ORGANISATEUR";
+    const isCollab = u.role === "ROLE_COLLABORATEUR";
+    const isAdmin  = u.role === "ROLE_ADMIN";
     const org = u.organisateur;
     const authIcon = u.appleAccount ? "🍎 Apple" : "🔑 Email";
+    const canPromote = !isOrg && !isAdmin && !isCollab;
 
     return `
     <div class="admin-user-row">
@@ -171,12 +179,13 @@ function renderUsers(users, page, totalPages) {
           <span class="admin-auth-badge">${authIcon}</span>
         </div>
         <div class="admin-user-email">${esc(u.email)}</div>
-        ${isOrg && org.nom ? `<div class="admin-org-info">${esc(org.nom)}${org.ville ? ` · ${esc(org.ville)}` : ""} · ${org.maxParcours} parcours · ${org.abonnementActif ? "✅ actif" : "⏸ suspendu"}</div>` : ""}
+        ${isOrg && org && org.nom ? `<div class="admin-org-info">${esc(org.nom)}${org.ville ? ` · ${esc(org.ville)}` : ""} · ${org.maxParcours} parcours · ${org.abonnementActif ? "✅ actif" : "⏸ suspendu"}</div>` : ""}
       </div>
       <div class="admin-user-actions">
-        ${!isOrg && u.role !== "ROLE_ADMIN" ? `<button class="btn-secondary" onclick='openPromoCreate(${JSON.stringify(u)})'>Promouvoir</button>` : ""}
-        ${isOrg ? `<button class="btn-secondary" onclick='openPromoEdit(${JSON.stringify(u)})'>Modifier</button>` : ""}
+        ${canPromote ? `<button class="btn-secondary" onclick="openPromoCreate(_userCache['${u.id}'])">Promouvoir</button>` : ""}
+        ${isOrg ? `<button class="btn-secondary" onclick="openPromoEdit(_userCache['${u.id}'])">Modifier org</button>` : ""}
         ${isOrg ? `<button class="btn-icon danger" onclick="revoquerOrg(${org.id}, '${esc(u.pseudo)}')">Révoquer</button>` : ""}
+        ${(isCollab || isAdmin) ? `<button class="btn-icon danger" onclick="revoquerRole('${u.id}', '${esc(u.pseudo)}')">Révoquer</button>` : ""}
       </div>
     </div>`;
   }).join("");
@@ -196,15 +205,23 @@ function changePage(p) {
   loadAdminUsers();
 }
 
+function onPromoRoleChange() {
+  const role = document.querySelector('input[name="promoRole"]:checked')?.value;
+  document.getElementById("promoOrgFields").style.display = role === "ROLE_ORGANISATEUR" ? "block" : "none";
+}
+
 function openPromoCreate(u) {
-  document.getElementById("promoModalTitle").textContent = "Promouvoir en organisateur";
-  document.getElementById("promoUserLabel").textContent = `${u.pseudo} · ${u.email}`;
+  document.getElementById("promoModalTitle").textContent = "Promouvoir " + esc(u.pseudo);
+  document.getElementById("promoUserLabel").textContent = u.email;
   document.getElementById("promoUserId").value = u.id;
   document.getElementById("promoOrgId").value = "";
   document.getElementById("promoNom").value = "";
   document.getElementById("promoVille").value = "";
   document.getElementById("promoMax").value = "5";
   document.getElementById("promoAbonnementWrap").style.display = "none";
+  document.getElementById("promoRoleChoice").style.display = "block";
+  document.getElementById("promoOrgFields").style.display = "none";
+  document.querySelector('input[name="promoRole"][value="ROLE_COLLABORATEUR"]').checked = true;
   document.getElementById("promoError").classList.add("hidden");
   document.getElementById("promoModal").classList.remove("hidden");
 }
@@ -220,6 +237,8 @@ function openPromoEdit(u) {
   document.getElementById("promoMax").value = org.maxParcours || 5;
   document.getElementById("promoAbonnement").checked = org.abonnementActif !== false;
   document.getElementById("promoAbonnementWrap").style.display = "block";
+  document.getElementById("promoRoleChoice").style.display = "none";
+  document.getElementById("promoOrgFields").style.display = "block";
   document.getElementById("promoError").classList.add("hidden");
   document.getElementById("promoModal").classList.remove("hidden");
 }
@@ -230,38 +249,48 @@ function closePromoModal(e) {
 }
 
 async function savePromo() {
-  const errEl = document.getElementById("promoError");
+  const errEl  = document.getElementById("promoError");
   errEl.classList.add("hidden");
-  const nom  = document.getElementById("promoNom").value.trim();
-  if (!nom) { errEl.textContent = "Le nom est requis"; errEl.classList.remove("hidden"); return; }
-
-  const orgId = document.getElementById("promoOrgId").value;
-  const btn   = document.getElementById("promoSaveBtn");
-  btn.disabled = true;
-  btn.textContent = "Enregistrement…";
+  const orgId  = document.getElementById("promoOrgId").value;
+  const userId = document.getElementById("promoUserId").value;
+  const btn    = document.getElementById("promoSaveBtn");
+  btn.disabled = true; btn.textContent = "Enregistrement…";
 
   try {
     let res;
+
     if (orgId) {
+      // Modifier un organisateur existant
       res = await apiFetch(`/admin/organisateurs/${orgId}`, {
         method: "PUT",
         body: JSON.stringify({
-          nom,
-          ville:            document.getElementById("promoVille").value.trim(),
-          maxParcours:      parseInt(document.getElementById("promoMax").value) || 5,
-          abonnementActif:  document.getElementById("promoAbonnement").checked,
+          nom:             document.getElementById("promoNom").value.trim(),
+          ville:           document.getElementById("promoVille").value.trim(),
+          maxParcours:     parseInt(document.getElementById("promoMax").value) || 5,
+          abonnementActif: document.getElementById("promoAbonnement").checked,
         }),
       });
     } else {
-      res = await apiFetch("/admin/organisateurs", {
-        method: "POST",
-        body: JSON.stringify({
-          utilisateurId: document.getElementById("promoUserId").value,
-          nom,
-          ville:       document.getElementById("promoVille").value.trim(),
-          maxParcours: parseInt(document.getElementById("promoMax").value) || 5,
-        }),
-      });
+      const role = document.querySelector('input[name="promoRole"]:checked')?.value;
+
+      if (role === "ROLE_ORGANISATEUR") {
+        const nom = document.getElementById("promoNom").value.trim();
+        if (!nom) { errEl.textContent = "Le nom est requis"; errEl.classList.remove("hidden"); btn.disabled = false; btn.textContent = "Enregistrer"; return; }
+        res = await apiFetch("/admin/organisateurs", {
+          method: "POST",
+          body: JSON.stringify({
+            utilisateurId: userId,
+            nom,
+            ville:       document.getElementById("promoVille").value.trim(),
+            maxParcours: parseInt(document.getElementById("promoMax").value) || 5,
+          }),
+        });
+      } else {
+        res = await apiFetch(`/admin/utilisateurs/${userId}/role`, {
+          method: "POST",
+          body: JSON.stringify({ role }),
+        });
+      }
     }
 
     if (!res.ok) {
@@ -277,9 +306,17 @@ async function savePromo() {
     errEl.textContent = "Serveur indisponible";
     errEl.classList.remove("hidden");
   } finally {
-    btn.disabled = false;
-    btn.textContent = "Enregistrer";
+    btn.disabled = false; btn.textContent = "Enregistrer";
   }
+}
+
+async function revoquerRole(userId, pseudo) {
+  if (!confirm(`Révoquer le rôle de ${pseudo} ? Il redeviendra visiteur.`)) return;
+  try {
+    const res = await apiFetch(`/admin/utilisateurs/${userId}/role`, { method: "DELETE" });
+    if (res.ok) loadAdminUsers();
+    else alert("Erreur lors de la révocation");
+  } catch { alert("Serveur indisponible"); }
 }
 
 async function revoquerOrg(orgId, pseudo) {

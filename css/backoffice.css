@@ -196,9 +196,16 @@ body {
   white-space: nowrap;
 }
 
-.badge-green { background: #E8F5E9; color: #2E7D32; }
+.badge-green  { background: #E8F5E9; color: #2E7D32; }
 .badge-orange { background: #FFF3E0; color: #E65100; }
-.badge-gray { background: #F5F5F5; color: #616161; }
+.badge-gray   { background: #F5F5F5; color: #616161; }
+.badge-blue   { background: #E3F2FD; color: #1565C0; }
+
+.promo-role-choice { display: flex; flex-direction: column; gap: 0.5rem; margin-top: 1rem; }
+.promo-role-option { display: flex; align-items: flex-start; gap: 0.5rem; padding: 0.6rem 0.75rem; border: 1px solid var(--border); border-radius: 8px; cursor: pointer; font-size: 0.9rem; }
+.promo-role-option:has(input:checked) { border-color: var(--primary); background: #F0F4FF; }
+.promo-role-option input { margin-top: 2px; flex-shrink: 0; }
+.promo-role-hint { display: block; font-size: 0.75rem; color: var(--text-light); margin-top: 1px; }
 
 .parcours-meta {
   display: flex;

@@ -270,28 +270,46 @@
 <!-- Modal promotion organisateur -->
 <div id="promoModal" class="modal-overlay hidden" onclick="closePromoModal(event)">
   <div class="modal-card">
-    <h3 id="promoModalTitle">Promouvoir en organisateur</h3>
+    <h3 id="promoModalTitle">Promouvoir</h3>
     <p id="promoUserLabel" class="modal-sub"></p>
     <input type="hidden" id="promoUserId">
     <input type="hidden" id="promoOrgId">
-    <div class="form-group" style="margin-top:1rem">
-      <label>Nom de l'organisation *</label>
-      <input id="promoNom" type="text" placeholder="Mairie de Toulouse">
-    </div>
-    <div class="form-group">
-      <label>Ville</label>
-      <input id="promoVille" type="text" placeholder="Toulouse">
-    </div>
-    <div class="form-group">
-      <label>Quota de parcours</label>
-      <input id="promoMax" type="number" value="5" min="1" max="50">
-    </div>
-    <div class="form-group" id="promoAbonnementWrap" style="display:none">
-      <label>
-        <input id="promoAbonnement" type="checkbox" checked>
-        Abonnement actif
+
+    <div id="promoRoleChoice" class="promo-role-choice" style="margin-top:1rem">
+      <label class="promo-role-option">
+        <input type="radio" name="promoRole" value="ROLE_COLLABORATEUR" onchange="onPromoRoleChange()"> Collaborateur
+        <span class="promo-role-hint">Peut soumettre des POI (validation admin requise)</span>
+      </label>
+      <label class="promo-role-option">
+        <input type="radio" name="promoRole" value="ROLE_ORGANISATEUR" onchange="onPromoRoleChange()"> Organisateur
+        <span class="promo-role-hint">Peut créer des parcours</span>
+      </label>
+      <label class="promo-role-option">
+        <input type="radio" name="promoRole" value="ROLE_ADMIN" onchange="onPromoRoleChange()"> Admin
+        <span class="promo-role-hint">Accès complet au backoffice</span>
       </label>
     </div>
+
+    <div id="promoOrgFields" style="display:none; margin-top:1rem">
+      <div class="form-group">
+        <label>Nom de l'organisation *</label>
+        <input id="promoNom" type="text" placeholder="Mairie de Toulouse">
+      </div>
+      <div class="form-group">
+        <label>Ville</label>
+        <input id="promoVille" type="text" placeholder="Toulouse">
+      </div>
+      <div class="form-group">
+        <label>Quota de parcours</label>
+        <input id="promoMax" type="number" value="5" min="1" max="50">
+      </div>
+      <div class="form-group" id="promoAbonnementWrap" style="display:none">
+        <label class="checkbox-label">
+          <input id="promoAbonnement" type="checkbox" checked> Abonnement actif
+        </label>
+      </div>
+    </div>
+
     <p id="promoError" class="error hidden"></p>
     <div class="modal-actions">
       <button class="btn-outline" onclick="closePromoModal()">Annuler</button>
