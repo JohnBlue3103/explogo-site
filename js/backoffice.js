@@ -971,34 +971,49 @@ function closeCsvModal(e) {
   document.getElementById("csvModal").classList.add("hidden");
 }
 
-function parseCSVLine(line, sep) {
-  const result = [];
-  let cur = "";
+function parseCsvFull(text, sep) {
+  const records = [];
   let inQuotes = false;
-  for (let i = 0; i < line.length; i++) {
-    const ch = line[i];
+  let field = [];
+  let record = [];
+
+  for (let i = 0; i < text.length; i++) {
+    const ch = text[i];
+
     if (ch === '"') {
-      if (inQuotes && line[i + 1] === '"') { cur += '"'; i++; }
+      if (inQuotes && text[i + 1] === '"') { field.push('"'); i++; }
       else { inQuotes = !inQuotes; }
-    } else if (ch === sep && !inQuotes) {
-      result.push(cur.trim());
-      cur = "";
+    } else if (!inQuotes && ch === sep) {
+      record.push(field.join("").trim());
+      field = [];
+    } else if (!inQuotes && ch === '\r' && text[i + 1] === '\n') {
+      // skip \r of CRLF — \n handled next iteration
+    } else if (!inQuotes && (ch === '\n' || ch === '\r')) {
+      record.push(field.join("").trim());
+      if (record.some(f => f)) records.push(record);
+      record = [];
+      field = [];
     } else {
-      cur += ch;
+      field.push(ch);
     }
   }
-  result.push(cur.trim());
-  return result;
+  if (field.length > 0 || record.length > 0) {
+    record.push(field.join("").trim());
+    if (record.some(f => f)) records.push(record);
+  }
+  return records;
 }
 
 function parseCsvToFeatures(text, categorie) {
-  const lines = text.replace(/\r\n/g, "\n").replace(/\r/g, "\n").split("\n").filter(l => l.trim());
-  if (lines.length < 2) throw new Error("Le fichier doit contenir au moins un en-tête et une ligne de données.");
-
-  const firstLine = lines[0];
+  // Detect separator from first line
+  const firstNl = text.indexOf('\n');
+  const firstLine = text.substring(0, firstNl > 0 ? firstNl : Math.min(500, text.length));
   const sep = firstLine.split(";").length > firstLine.split(",").length ? ";" : ",";
 
-  const headers = parseCSVLine(firstLine, sep).map(h => h.toLowerCase().replace(/['"]/g, "").trim());
+  const records = parseCsvFull(text, sep);
+  if (records.length < 2) throw new Error("Le fichier doit contenir au moins un en-tête et une ligne de données.");
+
+  const headers = records[0].map(h => h.toLowerCase().replace(/['"]/g, "").trim());
 
   const latCandidates = ["latitude", "lat", "y"];
   const lngCandidates = ["longitude", "lon", "lng", "long", "x"];
@@ -1012,8 +1027,8 @@ function parseCsvToFeatures(text, categorie) {
   const features = [];
   let idCounter = 100000;
 
-  for (let i = 1; i < lines.length; i++) {
-    const vals = parseCSVLine(lines[i], sep);
+  for (let i = 1; i < records.length; i++) {
+    const vals = records[i];
     if (vals.length < 2) continue;
 
     const row = {};
