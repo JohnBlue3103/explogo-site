@@ -77,16 +77,18 @@ function showDashboard() {
 
 async function loadDashboardStats() {
   try {
-    const [resUsers, resStats] = await Promise.all([
+    const [resUsers, resStats, resCats] = await Promise.all([
       apiFetch("/admin/users?q=&page=0"),
       apiFetch("/api/parcours/admin/stats"),
+      apiFetch("/admin/data/categories"),
     ]);
     const users  = await resUsers.json();
     const stats  = await resStats.json();
-    document.getElementById("statUsersVal").textContent     = users.total ?? "—";
-    document.getElementById("statTotalVal").textContent     = stats.total ?? "—";
-    document.getElementById("statPublishedVal").textContent = stats.published ?? "—";
-    document.getElementById("statPendingVal").textContent   = stats.pending ?? "—";
+    const cats   = await resCats.json();
+    const totalPoi = Object.values(cats).reduce((s, n) => s + (n || 0), 0);
+    document.getElementById("statUsersVal").textContent = users.total ?? "—";
+    document.getElementById("statTotalVal").textContent = stats.total ?? "—";
+    document.getElementById("statPoiVal").textContent   = totalPoi.toLocaleString("fr-FR");
     const badge = document.getElementById("dashPendingBadge");
     if (stats.pending > 0) { badge.textContent = stats.pending; badge.classList.remove("hidden"); }
     else badge.classList.add("hidden");
@@ -244,49 +246,72 @@ async function loadAdminAllParcours() {
       return;
     }
 
-    // Grouper par organisateur
-    const byOrg = {};
-    parcours.forEach(p => {
-      const key = p.organisateurNom || "— Plateforme Explogo —";
-      if (!byOrg[key]) byOrg[key] = { nom: key, items: [] };
-      byOrg[key].items.push(p);
-    });
-
     const TRANSPORT_LABELS = {
       "foot-walking": "🚶 Pied", "cycling-regular": "🚴 Vélo", "driving-car": "🚗 Voiture",
     };
 
-    container.innerHTML = Object.values(byOrg).map(org => `
-      <div class="admin-org-group">
-        <div class="admin-org-group-header">
-          <span class="admin-org-group-nom">${esc(org.nom)}</span>
-          <span class="badge badge-gray">${org.items.length} parcours</span>
-        </div>
-        <div class="admin-org-group-list">
-          ${org.items.map(p => {
-            const st = p.status || "EN_ATTENTE";
-            const badgeCls = st === "REFUSE" ? "badge-red" : st === "VALIDE" && p.actif ? "badge-green" : st === "VALIDE" ? "badge-blue" : "badge-orange";
-            const badgeTxt = st === "REFUSE" ? "Refusé" : st === "VALIDE" && p.actif ? "Publié" : st === "VALIDE" ? "Validé" : "En attente";
-            return `
-            <div class="admin-parcours-row">
-              <div class="admin-parcours-info">
-                <span class="admin-parcours-titre">${esc(p.titre)}</span>
-                <div class="admin-parcours-meta">
-                  <span class="badge ${badgeCls}">${badgeTxt}</span>
-                  <span class="badge badge-gray">📍 ${esc(p.ville || "—")}</span>
-                  ${p.etapes?.length ? `<span class="badge badge-gray">${p.etapes.length} étapes</span>` : ""}
-                  <span class="badge badge-gray">${TRANSPORT_LABELS[p.transportMode] || ""}</span>
-                </div>
+    const publies   = parcours.filter(p => p.actif && p.status === "VALIDE");
+    const attente   = parcours.filter(p => !p.actif || p.status !== "VALIDE");
+
+    function groupByOrg(list) {
+      const map = {};
+      list.forEach(p => {
+        const key = p.organisateurNom || "— Plateforme Explogo —";
+        if (!map[key]) map[key] = { nom: key, items: [] };
+        map[key].items.push(p);
+      });
+      return Object.values(map);
+    }
+
+    function renderParcoursRow(p) {
+      const st = p.status || "EN_ATTENTE";
+      const badgeCls = st === "REFUSE" ? "badge-red" : st === "VALIDE" && p.actif ? "badge-green" : st === "VALIDE" ? "badge-blue" : "badge-orange";
+      const badgeTxt = st === "REFUSE" ? "Refusé" : st === "VALIDE" && p.actif ? "Publié" : st === "VALIDE" ? "Validé" : "En attente";
+      return `
+        <div class="admin-parcours-row">
+          <div class="admin-parcours-info">
+            <span class="admin-parcours-titre">${esc(p.titre)}</span>
+            <div class="admin-parcours-meta">
+              <span class="badge ${badgeCls}">${badgeTxt}</span>
+              <span class="badge badge-gray">📍 ${esc(p.ville || "—")}</span>
+              ${p.etapes?.length ? `<span class="badge badge-gray">${p.etapes.length} étapes</span>` : ""}
+              <span class="badge badge-gray">${TRANSPORT_LABELS[p.transportMode] || ""}</span>
+            </div>
+          </div>
+          <div class="admin-parcours-actions">
+            <button class="btn-secondary" onclick="openEditAdmin(${p.id})">Modifier</button>
+            <button class="btn-icon danger" onclick="deleteParcoursAdmin(${p.id})">Supprimer</button>
+          </div>
+        </div>`;
+    }
+
+    function renderSection(title, badgeCls, groups) {
+      if (!groups.length) return "";
+      const totalItems = groups.reduce((s, g) => s + g.items.length, 0);
+      return `
+        <div class="admin-section">
+          <div class="admin-section-header">
+            <span class="admin-section-title">${title}</span>
+            <span class="badge ${badgeCls}">${totalItems}</span>
+          </div>
+          ${groups.map(org => `
+            <div class="admin-org-group">
+              <div class="admin-org-group-header">
+                <span class="admin-org-group-nom">${esc(org.nom)}</span>
+                <span class="badge badge-gray">${org.items.length} parcours</span>
               </div>
-              <div class="admin-parcours-actions">
-                <button class="btn-secondary" onclick="openEditAdmin(${p.id})">Modifier</button>
-                <button class="btn-icon danger" onclick="deleteParcoursAdmin(${p.id})">Supprimer</button>
+              <div class="admin-org-group-list">
+                ${org.items.map(renderParcoursRow).join("")}
               </div>
-            </div>`;
-          }).join("")}
-        </div>
-      </div>
-    `).join("");
+            </div>
+          `).join("")}
+        </div>`;
+    }
+
+    container.innerHTML =
+      renderSection("Publiés", "badge-green", groupByOrg(publies)) +
+      renderSection("En attente", "badge-orange", groupByOrg(attente));
+
   } catch {
     container.innerHTML = '<div class="loading">Erreur de chargement</div>';
   }

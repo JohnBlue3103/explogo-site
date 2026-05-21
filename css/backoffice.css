@@ -1118,6 +1118,27 @@ textarea { resize: vertical; }
 .admin-tab.active { color: var(--primary); border-bottom-color: var(--primary); }
 .admin-tab:hover:not(.active) { background: #f0f4f0; }
 
+/* ===== DASHBOARD STAT CARDS CLICKABLES ===== */
+.stat-card { cursor: default; }
+.stat-card.clickable { cursor: pointer; transition: transform 0.1s, box-shadow 0.15s; }
+.stat-card.clickable:hover { transform: translateY(-2px); box-shadow: 0 4px 18px rgba(0,0,0,0.12); }
+
+/* ===== ADMIN SECTIONS PUBLIÉS / EN ATTENTE ===== */
+.admin-section { margin-bottom: 2rem; }
+
+.admin-section-header {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-bottom: 0.75rem;
+}
+
+.admin-section-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
 /* ===== ADMIN PARCOURS PAR ORG ===== */
 .admin-parcours-orgs { display: flex; flex-direction: column; gap: 1rem; }
 
