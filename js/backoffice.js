@@ -833,7 +833,7 @@ async function exportCategory() {
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `${currentDataCategory}.geojson`;
+    a.download = `${currentDataCategory}.json`;
     a.click();
     URL.revokeObjectURL(url);
   } catch { alert("Erreur lors de l'export"); }
@@ -1121,7 +1121,7 @@ function downloadGeoJson() {
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
   a.href = url;
-  a.download = `${_csvFilename || currentDataCategory}.geojson`;
+  a.download = `${_csvFilename || currentDataCategory}.json`;
   a.click();
   URL.revokeObjectURL(url);
 }
