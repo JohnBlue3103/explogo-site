@@ -79,11 +79,9 @@
           </div>
         </div>
       </div>
-      <div class="dashboard-actions">
-        <button class="btn-primary" onclick="openCreate()">+ Nouveau parcours</button>
-        <button class="btn-outline" onclick="showContributions()">📥 Validations <span id="dashPendingBadge" class="badge-count hidden"></span></button>
-        <button class="btn-outline" onclick="showAdmin()">⚙ Administration</button>
-      </div>
+      <div style="height:.25rem"></div>
+      <!-- badge pending caché, utilisé par loadContribCount() -->
+      <span id="dashPendingBadge" class="badge-count hidden" style="display:none"></span>
     </div>
 
     <!-- Header organisateur (non-admin) -->
