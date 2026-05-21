@@ -57,14 +57,14 @@
     <!-- Stats admin uniquement -->
     <div id="dashboardStats" class="hidden">
       <div class="stats-grid">
-        <div class="stat-card stat-card-blue">
+        <div class="stat-card stat-card-blue clickable" onclick="showAdmin(); switchAdminTab('users')">
           <div class="stat-icon">👥</div>
           <div class="stat-body">
             <div class="stat-val" id="statUsersVal">—</div>
             <div class="stat-label">Utilisateurs</div>
           </div>
         </div>
-        <div class="stat-card stat-card-green">
+        <div class="stat-card stat-card-green clickable" onclick="showAdmin(); switchAdminTab('parcours')">
           <div class="stat-icon">🗺</div>
           <div class="stat-body">
             <div class="stat-val" id="statTotalVal">—</div>

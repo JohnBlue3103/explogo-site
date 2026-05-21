@@ -76,23 +76,21 @@ function showDashboard() {
 }
 
 async function loadDashboardStats() {
-  try {
-    const [resUsers, resStats, resCats] = await Promise.all([
-      apiFetch("/admin/users?q=&page=0"),
-      apiFetch("/api/parcours/admin/stats"),
-      apiFetch("/admin/data/categories"),
-    ]);
-    const users  = await resUsers.json();
-    const stats  = await resStats.json();
-    const cats   = await resCats.json();
-    const totalPoi = Object.values(cats).reduce((s, n) => s + (n || 0), 0);
-    document.getElementById("statUsersVal").textContent = users.total ?? "—";
+  apiFetch("/admin/users?q=&page=0").then(r => r.json()).then(data => {
+    document.getElementById("statUsersVal").textContent = data.total ?? "—";
+  }).catch(() => {});
+
+  apiFetch("/api/parcours/admin/stats").then(r => r.json()).then(stats => {
     document.getElementById("statTotalVal").textContent = stats.total ?? "—";
-    document.getElementById("statPoiVal").textContent   = totalPoi.toLocaleString("fr-FR");
     const badge = document.getElementById("dashPendingBadge");
     if (stats.pending > 0) { badge.textContent = stats.pending; badge.classList.remove("hidden"); }
     else badge.classList.add("hidden");
-  } catch {}
+  }).catch(() => {});
+
+  apiFetch("/admin/data/categories").then(r => r.json()).then(cats => {
+    const total = Object.values(cats).reduce((s, n) => s + (n || 0), 0);
+    document.getElementById("statPoiVal").textContent = total.toLocaleString("fr-FR");
+  }).catch(() => {});
 }
 
 /* =========================
