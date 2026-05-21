@@ -223,6 +223,31 @@ body {
 .badge-orange { background: #FFF3E0; color: #E65100; }
 .badge-gray   { background: #F5F5F5; color: #616161; }
 .badge-blue   { background: #E3F2FD; color: #1565C0; }
+.badge-red    { background: #FFEBEE; color: #C62828; }
+
+/* Statut parcours dans le formulaire et la grille */
+.form-status-info {
+  padding: .75rem 1rem;
+  background: #FFF3E0;
+  border: 1px solid #FFB74D;
+  border-radius: 8px;
+  color: #E65100;
+  font-size: .9rem;
+  margin-bottom: 1rem;
+}
+.form-status-info.danger {
+  background: #FFEBEE;
+  border-color: #EF9A9A;
+  color: #C62828;
+}
+.parcours-status-hint {
+  font-size: .82rem;
+  color: #E65100;
+  margin: .25rem 0 .5rem;
+}
+.parcours-status-hint.danger {
+  color: #C62828;
+}
 
 .promo-role-choice { display: flex; flex-direction: column; gap: 0.5rem; margin-top: 1rem; }
 .promo-role-option { display: flex; align-items: flex-start; gap: 0.5rem; padding: 0.6rem 0.75rem; border: 1px solid var(--border); border-radius: 8px; cursor: pointer; font-size: 0.9rem; width: 100%; box-sizing: border-box; }

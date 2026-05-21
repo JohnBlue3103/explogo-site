@@ -415,25 +415,32 @@ async function loadParcours() {
       return;
     }
 
-    grid.innerHTML = list.map(p => `
+    grid.innerHTML = list.map(p => {
+      const st = p.status || "EN_ATTENTE";
+      let badgeCls, badgeTxt;
+      if (st === "REFUSE")             { badgeCls = "badge-red";    badgeTxt = "Refusé"; }
+      else if (st === "VALIDE" && p.actif) { badgeCls = "badge-green";  badgeTxt = "Publié"; }
+      else if (st === "VALIDE")        { badgeCls = "badge-blue";   badgeTxt = "Validé"; }
+      else                             { badgeCls = "badge-orange"; badgeTxt = "En attente"; }
+      return `
       <div class="parcours-card">
         <div class="parcours-card-header">
           <h3>${esc(p.titre)}</h3>
-          <span class="badge ${p.actif ? "badge-green" : "badge-gray"}">
-            ${p.actif ? "Publié" : "Brouillon"}
-          </span>
+          <span class="badge ${badgeCls}">${badgeTxt}</span>
         </div>
         <div class="parcours-meta">
           <span>📍 ${esc(p.ville)}</span>
           <span>🏷 ${THEMES[p.theme] || p.theme}</span>
           ${p.dureeMinutes ? `<span>⏱ ${p.dureeMinutes} min</span>` : ""}
         </div>
+        ${st === "EN_ATTENTE" ? '<div class="parcours-status-hint">⏳ En cours de validation par l\'équipe Explogo</div>' : ""}
+        ${st === "REFUSE" ? '<div class="parcours-status-hint danger">✕ Votre parcours a été refusé. Vous pouvez le modifier et le soumettre à nouveau.</div>' : ""}
         <div class="parcours-card-actions">
           <button class="btn-secondary" onclick="openEdit(${p.id})">Modifier</button>
           <button class="btn-icon danger" onclick="deleteParcours(${p.id})">Supprimer</button>
         </div>
-      </div>
-    `).join("");
+      </div>`;
+    }).join("");
 
   } catch {
     grid.innerHTML = '<p class="loading">Erreur de chargement.</p>';
@@ -447,6 +454,16 @@ function openCreate() {
   currentParcours = null;
   etapes = [];
   document.getElementById("formTitle").textContent = "Nouveau parcours";
+  if (userRole === "ROLE_ADMIN") {
+    document.getElementById("fActifWrap").classList.remove("hidden");
+    document.getElementById("fStatusInfo").classList.add("hidden");
+  } else {
+    document.getElementById("fActifWrap").classList.add("hidden");
+    const statusInfo = document.getElementById("fStatusInfo");
+    statusInfo.className = "form-status-info";
+    statusInfo.textContent = "⏳ Votre parcours sera soumis pour validation avant d'être publié.";
+    statusInfo.classList.remove("hidden");
+  }
   document.getElementById("parcoursId").value = "";
   document.getElementById("parcoursForm").reset();
   renderEtapes();
@@ -469,7 +486,26 @@ async function openEdit(id) {
     document.getElementById("fTheme").value = p.theme || "GENERAL";
     document.getElementById("fNiveau").value = p.niveau || "FACILE";
     document.getElementById("fDescription").value = p.description || "";
-    document.getElementById("fActif").checked = !!p.actif;
+
+    if (userRole === "ROLE_ADMIN") {
+      document.getElementById("fActifWrap").classList.remove("hidden");
+      document.getElementById("fActif").checked = !!p.actif;
+      document.getElementById("fStatusInfo").classList.add("hidden");
+    } else {
+      document.getElementById("fActifWrap").classList.add("hidden");
+      const statusInfo = document.getElementById("fStatusInfo");
+      statusInfo.className = "form-status-info";
+      const st = p.status || "EN_ATTENTE";
+      if (st === "EN_ATTENTE") {
+        statusInfo.textContent = "⏳ Ce parcours est en attente de validation. Toute modification le soumettra à nouveau pour validation.";
+      } else if (st === "REFUSE") {
+        statusInfo.textContent = "✕ Ce parcours a été refusé. Modifiez-le et enregistrez pour le soumettre à nouveau.";
+        statusInfo.classList.add("danger");
+      } else {
+        statusInfo.textContent = "✓ Ce parcours est validé. Toute modification le soumettra à nouveau pour validation.";
+      }
+      statusInfo.classList.remove("hidden");
+    }
     renderEtapes();
 
   } catch {
@@ -1127,21 +1163,31 @@ function resetCollabForm() {
    ========================= */
 async function loadContribCount() {
   try {
-    const res = await apiFetch("/admin/data/contributions/count");
-    const data = await res.json();
+    const [resPoi, resParcours] = await Promise.all([
+      apiFetch("/admin/data/contributions/count"),
+      apiFetch("/api/parcours/admin/en-attente/count"),
+    ]);
+    const poi      = (await resPoi.json()).count      || 0;
+    const parcours = (await resParcours.json()).count || 0;
+    const total = poi + parcours;
     const badge = document.getElementById("contribBadge");
-    if (data.count > 0) {
-      badge.textContent = data.count;
-      badge.classList.remove("hidden");
-    } else {
-      badge.classList.add("hidden");
-    }
+    if (total > 0) { badge.textContent = total; badge.classList.remove("hidden"); }
+    else badge.classList.add("hidden");
   } catch {}
 }
 
 function showContributions() {
   showView("contributions");
-  loadContributions();
+  switchValidationTab("poi");
+}
+
+function switchValidationTab(tab) {
+  document.getElementById("tabContribPoi").classList.toggle("active", tab === "poi");
+  document.getElementById("tabContribParcours").classList.toggle("active", tab === "parcours");
+  document.getElementById("panelContribPoi").classList.toggle("hidden", tab !== "poi");
+  document.getElementById("panelContribParcours").classList.toggle("hidden", tab !== "parcours");
+  if (tab === "poi") loadContributions();
+  else loadParcoursAdmin();
 }
 
 async function loadContributions() {
@@ -1150,6 +1196,9 @@ async function loadContributions() {
   try {
     const res = await apiFetch("/admin/data/contributions");
     const data = await res.json();
+    const poiBadge = document.getElementById("contribPoiBadge");
+    if (data.items.length > 0) { poiBadge.textContent = data.items.length; poiBadge.classList.remove("hidden"); }
+    else poiBadge.classList.add("hidden");
     if (!data.items.length) {
       list.innerHTML = '<div class="loading">Aucune contribution en attente.</div>';
       return;
@@ -1220,6 +1269,65 @@ async function refuserContrib(id) {
   try {
     const res = await apiFetch(`/admin/data/contributions/${id}`, { method: "DELETE" });
     if (res.ok) { loadContributions(); loadContribCount(); }
+    else alert("Erreur lors du refus");
+  } catch { alert("Serveur indisponible"); }
+}
+
+async function loadParcoursAdmin() {
+  const list = document.getElementById("parcoursAdminList");
+  list.innerHTML = '<div class="loading">Chargement…</div>';
+  try {
+    const res = await apiFetch("/api/parcours/admin/en-attente");
+    const items = await res.json();
+    if (!items.length) {
+      list.innerHTML = '<div class="loading">Aucun parcours en attente de validation.</div>';
+      const badge = document.getElementById("contribParcoursBadge");
+      badge.classList.add("hidden");
+      return;
+    }
+    const badge = document.getElementById("contribParcoursBadge");
+    badge.textContent = items.length;
+    badge.classList.remove("hidden");
+    list.innerHTML = items.map(p => `
+      <div class="contrib-card">
+        <div class="contrib-info">
+          <div class="contrib-header">
+            <span class="contrib-nom">${esc(p.titre)}</span>
+            <span class="badge badge-orange">En attente</span>
+            <span class="badge badge-gray">${esc(THEMES[p.theme] || p.theme)}</span>
+          </div>
+          <div class="contrib-meta">
+            📍 ${esc(p.ville)} · ${esc(p.niveau || "FACILE")}
+            ${p.dureeMinutes ? ` · ⏱ ${p.dureeMinutes} min` : ""}
+            ${p.distanceKm   ? ` · 📏 ${p.distanceKm.toFixed(1)} km` : ""}
+          </div>
+          ${p.description ? `<div class="contrib-desc">${esc(p.description.slice(0, 150))}${p.description.length > 150 ? "…" : ""}</div>` : ""}
+          <div class="contrib-meta">🗺 ${(p.etapes || []).length} étape(s)</div>
+        </div>
+        <div class="contrib-actions">
+          <button class="btn-primary" onclick="validerParcoursAdmin(${p.id}, true)">✓ Valider &amp; Publier</button>
+          <button class="btn-secondary" onclick="validerParcoursAdmin(${p.id}, false)">✓ Valider sans publier</button>
+          <button class="btn-icon danger" onclick="refuserParcoursAdmin(${p.id})">✕ Refuser</button>
+        </div>
+      </div>`).join("");
+  } catch {
+    list.innerHTML = '<div class="loading">Erreur de chargement</div>';
+  }
+}
+
+async function validerParcoursAdmin(id, publier) {
+  try {
+    const res = await apiFetch(`/api/parcours/admin/${id}/valider?publier=${publier}`, { method: "POST" });
+    if (res.ok) { loadParcoursAdmin(); loadContribCount(); }
+    else alert("Erreur lors de la validation");
+  } catch { alert("Serveur indisponible"); }
+}
+
+async function refuserParcoursAdmin(id) {
+  if (!confirm("Refuser ce parcours ? L'organisateur sera notifié et pourra le modifier.")) return;
+  try {
+    const res = await apiFetch(`/api/parcours/admin/${id}/refuser`, { method: "POST" });
+    if (res.ok) { loadParcoursAdmin(); loadContribCount(); }
     else alert("Erreur lors du refus");
   } catch { alert("Serveur indisponible"); }
 }

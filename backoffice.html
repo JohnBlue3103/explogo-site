@@ -46,7 +46,7 @@
     <div class="topbar-right">
       <span id="orgName" class="org-name"></span>
       <button id="dataNavBtn" class="btn-outline hidden" onclick="showData()">🗃 Données</button>
-      <button id="contribNavBtn" class="btn-outline hidden" onclick="showContributions()">📥 Contributions <span id="contribBadge" class="badge-count hidden"></span></button>
+      <button id="contribNavBtn" class="btn-outline hidden" onclick="showContributions()">📥 Validations <span id="contribBadge" class="badge-count hidden"></span></button>
       <button id="adminNavBtn" class="btn-outline hidden" onclick="showAdmin()">⚙ Administration</button>
       <button class="btn-outline" onclick="logout()">Déconnexion</button>
     </div>
@@ -120,12 +120,13 @@
         <textarea id="fDescription" rows="4" placeholder="Décrivez ce parcours…"></textarea>
       </div>
 
-      <div class="form-group full">
+      <div id="fActifWrap" class="form-group full hidden">
         <label style="display:flex;align-items:center;gap:10px;cursor:pointer;">
           <input type="checkbox" id="fActif" style="width:18px;height:18px;cursor:pointer;">
           <span>Publier le parcours (visible dans l'app)</span>
         </label>
       </div>
+      <div id="fStatusInfo" class="form-status-info hidden"></div>
 
       <!-- ETAPES -->
       <div class="etapes-section">
@@ -320,12 +321,12 @@
   </main>
 </div>
 
-<!-- ========== CONTRIBUTIONS ========== -->
+<!-- ========== CONTRIBUTIONS / VALIDATIONS ========== -->
 <div id="view-contributions" class="view hidden">
   <header class="topbar">
     <div class="topbar-brand">
       <img src="assets/img/logo.png" alt="Explogo">
-      <span>Contributions en attente</span>
+      <span>Validations</span>
     </div>
     <div class="topbar-right">
       <button class="btn-outline" onclick="showDashboard()">← Mes parcours</button>
@@ -335,12 +336,29 @@
   <main class="main-content">
     <div class="page-header">
       <div>
-        <h2>Contributions en attente</h2>
-        <p class="page-sub">POI soumis par les collaborateurs, à valider ou refuser</p>
+        <h2>Validations en attente</h2>
+        <p class="page-sub">Contributions POI et parcours à valider ou refuser</p>
       </div>
     </div>
-    <div id="contribList" class="contrib-list">
-      <div class="loading">Chargement…</div>
+
+    <!-- Onglets -->
+    <div class="collab-tabs" style="margin-bottom:1.5rem">
+      <button class="collab-tab active" id="tabContribPoi" onclick="switchValidationTab('poi')">📥 Contributions POI <span id="contribPoiBadge" class="badge-count hidden"></span></button>
+      <button class="collab-tab" id="tabContribParcours" onclick="switchValidationTab('parcours')">🗺 Parcours <span id="contribParcoursBadge" class="badge-count hidden"></span></button>
+    </div>
+
+    <!-- POI contributions -->
+    <div id="panelContribPoi">
+      <div id="contribList" class="contrib-list">
+        <div class="loading">Chargement…</div>
+      </div>
+    </div>
+
+    <!-- Parcours en attente -->
+    <div id="panelContribParcours" class="hidden">
+      <div id="parcoursAdminList" class="contrib-list">
+        <div class="loading">Chargement…</div>
+      </div>
     </div>
   </main>
 </div>
