@@ -163,6 +163,11 @@ body {
   padding: 2rem 1.5rem;
 }
 
+#view-dashboard .main-content {
+  max-width: 100%;
+  padding: 0;
+}
+
 .page-header {
   display: flex;
   align-items: flex-start;
@@ -1042,55 +1047,91 @@ textarea { resize: vertical; }
 .csv-stat-ok span { color: #2e6336; }
 .csv-col-info { font-size: 0.82rem; color: var(--text-muted); margin: 0; }
 
-/* ===== DASHBOARD STATS ===== */
-.stats-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-  gap: 1rem;
-  margin-bottom: 1.75rem;
+/* ===== DASHBOARD ADMIN ===== */
+.dashboard-hero {
+  text-align: center;
+  padding: 3.5rem 1rem 2rem;
 }
 
-.stat-card {
-  background: var(--surface);
-  border-radius: var(--radius);
-  border: 1px solid var(--border);
-  padding: 1.25rem 1.5rem;
-  box-shadow: var(--shadow);
-  display: flex;
-  flex-direction: column;
-  gap: 0.35rem;
-}
-
-.stat-card-blue  { border-left: 4px solid #1565C0; }
-.stat-card-green { border-left: 4px solid #2E7D32; }
-.stat-card-orange{ border-left: 4px solid #E65100; }
-.stat-card-gray  { border-left: 4px solid #616161; }
-
-.stat-val {
+.dashboard-title {
   font-size: 2rem;
   font-weight: 800;
-  line-height: 1;
   color: var(--text);
+  margin-bottom: 0.5rem;
 }
 
-.stat-card-blue  .stat-val  { color: #1565C0; }
-.stat-card-green .stat-val  { color: #2E7D32; }
-.stat-card-orange .stat-val { color: #E65100; }
-.stat-card-gray  .stat-val  { color: #616161; }
-
-.stat-label {
-  font-size: 0.8rem;
-  font-weight: 600;
+.dashboard-sub {
+  font-size: 1rem;
   color: var(--text-muted);
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
 }
 
-.dashboard-actions {
+.dashboard-cards {
   display: flex;
-  gap: 0.75rem;
+  justify-content: center;
+  gap: 1.75rem;
   flex-wrap: wrap;
-  margin-bottom: 2rem;
+  padding: 0 1rem 4rem;
+}
+
+.dash-card {
+  background: var(--surface);
+  border-radius: 20px;
+  border: 1px solid var(--border);
+  box-shadow: 0 4px 20px rgba(0,0,0,0.07);
+  padding: 2.5rem 2rem 2rem;
+  width: 210px;
+  text-align: center;
+  cursor: pointer;
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.dash-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 4px;
+}
+
+.dash-card-blue::before  { background: linear-gradient(90deg, #1565C0, #42A5F5); }
+.dash-card-green::before { background: linear-gradient(90deg, #2E7D32, #66BB6A); }
+.dash-card-orange::before{ background: linear-gradient(90deg, #E65100, #FFA726); }
+
+.dash-card:hover {
+  transform: translateY(-7px);
+  box-shadow: 0 16px 36px rgba(0,0,0,0.14);
+}
+
+.dash-card-icon {
+  font-size: 2.75rem;
+  line-height: 1;
+  margin-bottom: 1.1rem;
+}
+
+.dash-card-val {
+  font-size: 3.25rem;
+  font-weight: 800;
+  line-height: 1;
+  margin-bottom: 0.4rem;
+  letter-spacing: -0.02em;
+}
+
+.dash-card-blue  .dash-card-val  { color: #1565C0; }
+.dash-card-green .dash-card-val  { color: #2E7D32; }
+.dash-card-orange .dash-card-val { color: #E65100; }
+
+.dash-card-label {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 0.6rem;
+}
+
+.dash-card-hint {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  font-weight: 500;
 }
 
 /* ===== ADMIN TABS ===== */
@@ -1118,10 +1159,6 @@ textarea { resize: vertical; }
 .admin-tab.active { color: var(--primary); border-bottom-color: var(--primary); }
 .admin-tab:hover:not(.active) { background: #f0f4f0; }
 
-/* ===== DASHBOARD STAT CARDS CLICKABLES ===== */
-.stat-card { cursor: default; }
-.stat-card.clickable { cursor: pointer; transition: transform 0.1s, box-shadow 0.15s; }
-.stat-card.clickable:hover { transform: translateY(-2px); box-shadow: 0 4px 18px rgba(0,0,0,0.12); }
 
 /* ===== ADMIN SECTIONS PUBLIÉS / EN ATTENTE ===== */
 .admin-section { margin-bottom: 2rem; }

@@ -54,38 +54,41 @@
 
   <main class="main-content">
 
-    <!-- Stats admin uniquement -->
+    <!-- Dashboard admin -->
     <div id="dashboardStats" class="hidden">
-      <div class="stats-grid">
-        <div class="stat-card stat-card-blue clickable" onclick="showAdmin(); switchAdminTab('users')">
-          <div class="stat-icon">👥</div>
-          <div class="stat-body">
-            <div class="stat-val" id="statUsersVal">—</div>
-            <div class="stat-label">Utilisateurs</div>
-          </div>
-        </div>
-        <div class="stat-card stat-card-green clickable" onclick="showAdmin(); switchAdminTab('parcours')">
-          <div class="stat-icon">🗺</div>
-          <div class="stat-body">
-            <div class="stat-val" id="statTotalVal">—</div>
-            <div class="stat-label">Parcours</div>
-          </div>
-        </div>
-        <div class="stat-card stat-card-orange clickable" onclick="showData()">
-          <div class="stat-icon">📍</div>
-          <div class="stat-body">
-            <div class="stat-val" id="statPoiVal">—</div>
-            <div class="stat-label">Points d'intérêt</div>
-          </div>
+      <div class="dashboard-hero">
+        <div class="dashboard-welcome">
+          <h1 class="dashboard-title">Tableau de bord</h1>
+          <p class="dashboard-sub">Bienvenue sur l'interface d'administration Explogo</p>
         </div>
       </div>
-      <div style="height:.25rem"></div>
-      <!-- badge pending caché, utilisé par loadContribCount() -->
+
+      <div class="dashboard-cards">
+        <div class="dash-card dash-card-blue" onclick="showAdmin(); switchAdminTab('users')">
+          <div class="dash-card-icon">👥</div>
+          <div class="dash-card-val" id="statUsersVal">—</div>
+          <div class="dash-card-label">Utilisateurs</div>
+          <div class="dash-card-hint">Gérer les comptes →</div>
+        </div>
+        <div class="dash-card dash-card-green" onclick="showAdmin(); switchAdminTab('parcours')">
+          <div class="dash-card-icon">🗺</div>
+          <div class="dash-card-val" id="statTotalVal">—</div>
+          <div class="dash-card-label">Parcours</div>
+          <div class="dash-card-hint">Voir tous les parcours →</div>
+        </div>
+        <div class="dash-card dash-card-orange" onclick="showData()">
+          <div class="dash-card-icon">📍</div>
+          <div class="dash-card-val" id="statPoiVal">—</div>
+          <div class="dash-card-label">Points d'intérêt</div>
+          <div class="dash-card-hint">Gérer les données →</div>
+        </div>
+      </div>
+
       <span id="dashPendingBadge" class="badge-count hidden" style="display:none"></span>
     </div>
 
     <!-- Header organisateur (non-admin) -->
-    <div id="dashboardOrg" class="hidden">
+    <div id="dashboardOrg" class="hidden" style="max-width:900px;margin:0 auto;padding:2rem 1.5rem 0">
       <div class="page-header">
         <div>
           <h2>Mes parcours</h2>
@@ -98,7 +101,7 @@
       </div>
     </div>
 
-    <div id="parcoursSection">
+    <div id="parcoursSection" style="max-width:900px;margin:0 auto;padding:0 1.5rem 2rem">
       <div class="page-header" style="margin-top:1.5rem">
         <h3 id="parcoursGridTitle">Mes parcours</h3>
       </div>
