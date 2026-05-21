@@ -1307,43 +1307,61 @@ async function loadParcoursAdmin() {
     const badge = document.getElementById("contribParcoursBadge");
     badge.textContent = items.length;
     badge.classList.remove("hidden");
+    const TRANSPORT_LABELS = {
+      "foot-walking": "🚶 À pied",
+      "cycling-regular": "🚴 Vélo",
+      "driving-car": "🚗 Voiture",
+    };
+    const NIVEAU_CLS = { FACILE: "badge-green", MOYEN: "badge-orange", DIFFICILE: "badge-red" };
+
     list.innerHTML = items.map(p => {
       const etapes = p.etapes || [];
-      const etapesHtml = etapes.length ? `
-        <ol class="parcours-admin-etapes">
-          ${etapes.map(e => `
-            <li class="parcours-admin-etape">
-              <span class="parcours-etape-nom">${esc(e.poiNom || e.poiId || "—")}</span>
-              <span class="parcours-etape-type">${esc(e.poiType || "")}</span>
-              ${e.descriptionEtape ? `<span class="parcours-etape-desc">${esc(e.descriptionEtape)}</span>` : ""}
-            </li>`).join("")}
-        </ol>` : '<p class="contrib-meta">Aucune étape définie.</p>';
+
+      const etapesHtml = etapes.length ? etapes.map((e, i) => `
+        <div class="pa-etape">
+          <div class="pa-etape-dot">${i + 1}</div>
+          ${i < etapes.length - 1 ? '<div class="pa-etape-line"></div>' : ""}
+          <div class="pa-etape-content">
+            <span class="pa-etape-nom">${esc(e.poiNom || e.poiId || "—")}</span>
+            <span class="pa-etape-type">${esc(e.poiType || "")}</span>
+            ${e.descriptionEtape ? `<span class="pa-etape-desc">${esc(e.descriptionEtape)}</span>` : ""}
+          </div>
+        </div>`).join("")
+      : '<p class="contrib-meta" style="padding:.5rem 0">Aucune étape définie.</p>';
 
       return `
-      <div class="contrib-card parcours-admin-card">
-        <div class="contrib-info">
-          <div class="contrib-header">
-            <span class="contrib-nom">${esc(p.titre)}</span>
-            <span class="badge badge-orange">En attente</span>
-            <span class="badge badge-gray">${esc(THEMES[p.theme] || p.theme)}</span>
-            <span class="badge badge-blue">${esc(p.niveau || "FACILE")}</span>
+      <div class="parcours-admin-card">
+        <div class="pa-left-bar"></div>
+        <div class="pa-body">
+          <div class="pa-header">
+            <div class="pa-title-row">
+              <span class="pa-titre">${esc(p.titre)}</span>
+              <div class="pa-badges">
+                <span class="badge badge-orange">En attente</span>
+                <span class="badge badge-gray">${esc(THEMES[p.theme] || p.theme)}</span>
+                <span class="badge ${NIVEAU_CLS[p.niveau] || "badge-gray"}">${esc(p.niveau || "FACILE")}</span>
+              </div>
+            </div>
+            <div class="pa-stats">
+              <span class="pa-stat">📍 <strong>${esc(p.ville)}</strong></span>
+              ${p.dureeMinutes ? `<span class="pa-stat">⏱ <strong>${p.dureeMinutes} min</strong></span>` : ""}
+              ${p.distanceKm   ? `<span class="pa-stat">📏 <strong>${p.distanceKm.toFixed(1)} km</strong></span>` : ""}
+              <span class="pa-stat">${TRANSPORT_LABELS[p.transportMode] || esc(p.transportMode || "")}</span>
+              <span class="pa-stat">🗺 <strong>${etapes.length}</strong> étape${etapes.length > 1 ? "s" : ""}</span>
+            </div>
           </div>
-          <div class="contrib-meta" style="margin:.4rem 0">
-            📍 ${esc(p.ville)}
-            ${p.dureeMinutes ? ` &nbsp;·&nbsp; ⏱ ${p.dureeMinutes} min` : ""}
-            ${p.distanceKm   ? ` &nbsp;·&nbsp; 📏 ${p.distanceKm.toFixed(1)} km` : ""}
-            &nbsp;·&nbsp; 🚶 ${esc(p.transportMode || "foot-walking")}
+
+          ${p.description ? `<p class="pa-description">${esc(p.description)}</p>` : ""}
+
+          <div class="pa-etapes-section">
+            <div class="pa-etapes-title">Itinéraire</div>
+            <div class="pa-etapes">${etapesHtml}</div>
           </div>
-          ${p.description ? `<div class="parcours-admin-description">${esc(p.description)}</div>` : ""}
-          <div class="parcours-admin-etapes-header">
-            🗺 Itinéraire — ${etapes.length} étape(s)
-          </div>
-          ${etapesHtml}
         </div>
-        <div class="contrib-actions">
+        <div class="pa-actions">
           <button class="btn-primary" onclick="validerParcoursAdmin(${p.id}, true)">✓ Valider &amp; Publier</button>
-          <button class="btn-secondary" onclick="validerParcoursAdmin(${p.id}, false)">✓ Valider (sans publier)</button>
-          <button class="btn-icon danger" onclick="refuserParcoursAdmin(${p.id})">✕ Refuser</button>
+          <button class="btn-secondary" onclick="validerParcoursAdmin(${p.id}, false)">Valider sans publier</button>
+          <button class="btn-danger" onclick="refuserParcoursAdmin(${p.id})">✕ Refuser</button>
         </div>
       </div>`;
     }).join("");

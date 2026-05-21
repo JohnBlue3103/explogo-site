@@ -828,55 +828,134 @@ textarea { resize: vertical; }
 .contrib-contributor { font-size: 0.8rem; color: var(--text-muted); }
 .contrib-actions { display: flex; flex-direction: column; gap: .5rem; flex-shrink: 0; }
 
-/* Parcours admin — détail */
-.parcours-admin-card { flex-direction: column; }
-.parcours-admin-card .contrib-actions { flex-direction: row; flex-wrap: wrap; justify-content: flex-end; border-top: 1px solid var(--border); padding-top: .75rem; margin-top: .5rem; }
-.parcours-admin-description {
-  font-size: .88rem;
-  color: var(--text);
-  background: #FAFAF8;
-  border-left: 3px solid var(--border);
-  padding: .6rem .9rem;
-  border-radius: 0 6px 6px 0;
-  margin: .4rem 0;
-  white-space: pre-wrap;
+/* ===== PARCOURS ADMIN CARD ===== */
+.parcours-admin-card {
+  display: flex;
+  background: var(--surface);
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow);
+  overflow: hidden;
 }
-.parcours-admin-etapes-header {
-  font-size: .8rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: .04em;
-  color: var(--text-muted);
-  margin: .75rem 0 .35rem;
+.pa-left-bar {
+  width: 5px;
+  background: var(--primary);
+  flex-shrink: 0;
 }
-.parcours-admin-etapes {
-  list-style: none;
+.pa-body {
+  flex: 1;
+  padding: 1.25rem 1.5rem;
+  min-width: 0;
+}
+.pa-actions {
   display: flex;
   flex-direction: column;
-  gap: .4rem;
-  padding: 0;
-}
-.parcours-admin-etape {
-  display: flex;
-  align-items: baseline;
   gap: .5rem;
-  font-size: .88rem;
-  background: #F5F2EC;
-  border-radius: 6px;
-  padding: .4rem .75rem;
-  counter-increment: etape-cnt;
+  padding: 1.25rem 1.25rem 1.25rem .75rem;
+  justify-content: center;
+  flex-shrink: 0;
+  border-left: 1px solid var(--border);
 }
-.parcours-admin-etapes { counter-reset: etape-cnt; }
-.parcours-admin-etape::before {
-  content: counter(etape-cnt);
+.pa-header { margin-bottom: .75rem; }
+.pa-title-row {
+  display: flex;
+  align-items: center;
+  gap: .6rem;
+  flex-wrap: wrap;
+  margin-bottom: .5rem;
+}
+.pa-titre { font-size: 1.1rem; font-weight: 700; }
+.pa-badges { display: flex; gap: .35rem; flex-wrap: wrap; }
+.pa-stats {
+  display: flex;
+  gap: .5rem 1.25rem;
+  flex-wrap: wrap;
+  font-size: .83rem;
+  color: var(--text-muted);
+}
+.pa-stat { display: flex; align-items: center; gap: .25rem; }
+.pa-stat strong { color: var(--text); }
+.pa-description {
+  font-size: .88rem;
+  color: var(--text);
+  background: #F5F2EC;
+  border-left: 3px solid var(--primary);
+  padding: .6rem .9rem;
+  border-radius: 0 6px 6px 0;
+  margin-bottom: 1rem;
+  white-space: pre-wrap;
+  line-height: 1.5;
+}
+.pa-etapes-section { margin-top: .5rem; }
+.pa-etapes-title {
   font-size: .75rem;
   font-weight: 700;
-  color: var(--primary);
-  min-width: 18px;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  color: var(--text-muted);
+  margin-bottom: .75rem;
 }
-.parcours-etape-nom { font-weight: 600; }
-.parcours-etape-type { font-size: .75rem; color: var(--text-muted); background: var(--surface); border: 1px solid var(--border); border-radius: 4px; padding: .1rem .4rem; }
-.parcours-etape-desc { font-size: .8rem; color: var(--text-muted); font-style: italic; }
+.pa-etapes { display: flex; flex-direction: column; }
+.pa-etape {
+  display: flex;
+  align-items: stretch;
+  gap: 0;
+  position: relative;
+}
+.pa-etape-dot {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--primary);
+  color: #fff;
+  font-size: .75rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  z-index: 1;
+  margin-top: 2px;
+}
+.pa-etape-line {
+  position: absolute;
+  left: 13px;
+  top: 30px;
+  bottom: -8px;
+  width: 2px;
+  background: #C8E6C9;
+}
+.pa-etape-content {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  flex-wrap: wrap;
+  padding: .3rem 0 .9rem .75rem;
+  min-width: 0;
+}
+.pa-etape-nom { font-weight: 600; font-size: .9rem; }
+.pa-etape-type {
+  font-size: .72rem;
+  color: var(--text-muted);
+  background: #F5F2EC;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: .1rem .4rem;
+}
+.pa-etape-desc { font-size: .8rem; color: var(--text-muted); font-style: italic; width: 100%; }
+
+.btn-danger {
+  padding: .55rem 1rem;
+  border-radius: 8px;
+  border: 1.5px solid #EF9A9A;
+  background: #fff;
+  color: #C62828;
+  font-size: .85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background .15s;
+}
+.btn-danger:hover { background: #FFEBEE; }
 
 /* Diff avant/après */
 .contrib-diff { display: flex; gap: .75rem; margin: .6rem 0; flex-wrap: wrap; }
