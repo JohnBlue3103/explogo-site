@@ -43,14 +43,22 @@
       <img src="assets/img/logo.png" alt="Explogo">
       <span>Explogo Tourisme</span>
     </div>
-    <div class="topbar-right">
+    <div class="topbar-right topbar-desktop">
       <span id="orgName" class="org-name"></span>
       <button id="dataNavBtn" class="btn-outline hidden" onclick="showData()">🗃 Données</button>
       <button id="contribNavBtn" class="btn-outline hidden" onclick="showContributions()">📥 Validations <span id="contribBadge" class="badge-count hidden"></span></button>
       <button id="adminNavBtn" class="btn-outline hidden" onclick="showAdmin()">⚙ Administration</button>
       <button class="btn-outline" onclick="logout()">Déconnexion</button>
     </div>
+    <button class="topbar-hamburger" id="menuToggle" onclick="toggleMobileMenu()" aria-label="Menu">☰</button>
   </header>
+  <div id="mobileNavMenu" class="mobile-nav-menu hidden">
+    <span id="orgNameMobile" class="mobile-nav-org"></span>
+    <button id="dataNavBtnM" class="mobile-nav-btn hidden" onclick="showData(); closeMobileMenu()">🗃 Données</button>
+    <button id="contribNavBtnM" class="mobile-nav-btn hidden" onclick="showContributions(); closeMobileMenu()">📥 Validations <span id="contribBadgeM" class="badge-count hidden"></span></button>
+    <button id="adminNavBtnM" class="mobile-nav-btn hidden" onclick="showAdmin(); closeMobileMenu()">⚙ Administration</button>
+    <button class="mobile-nav-btn mobile-nav-logout" onclick="logout()">↪ Déconnexion</button>
+  </div>
 
   <main class="main-content">
 

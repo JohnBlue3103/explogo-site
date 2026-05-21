@@ -47,6 +47,7 @@ window.addEventListener("DOMContentLoaded", () => {
 function showView(name) {
   document.querySelectorAll(".view").forEach(v => v.classList.add("hidden"));
   document.getElementById("view-" + name).classList.remove("hidden");
+  document.getElementById("mobileNavMenu")?.classList.add("hidden");
   if (history.state?.view !== name) {
     history.pushState({ view: name }, "", "#" + name);
   }
@@ -64,16 +65,35 @@ window.addEventListener("popstate", (e) => {
   }
 });
 
+/* ===== MENU MOBILE ===== */
+function toggleMobileMenu() {
+  const menu = document.getElementById("mobileNavMenu");
+  menu.classList.toggle("hidden");
+}
+function closeMobileMenu() {
+  document.getElementById("mobileNavMenu")?.classList.add("hidden");
+}
+function syncMobileNav(isAdmin) {
+  const pseudo = localStorage.getItem("bo_pseudo") || "";
+  const orgMob = document.getElementById("orgNameMobile");
+  if (orgMob) orgMob.textContent = pseudo;
+  document.getElementById("dataNavBtnM")?.classList.toggle("hidden", !isAdmin);
+  document.getElementById("contribNavBtnM")?.classList.toggle("hidden", !isAdmin);
+  document.getElementById("adminNavBtnM")?.classList.toggle("hidden", !isAdmin);
+}
+
 function showDashboard() {
   if (userRole === "ROLE_COLLABORATEUR") {
     showView("collab");
     return;
   }
   showView("dashboard");
+  closeMobileMenu();
   const isAdmin = userRole === "ROLE_ADMIN";
   document.getElementById("adminNavBtn")?.classList.toggle("hidden", !isAdmin);
   document.getElementById("dataNavBtn")?.classList.toggle("hidden", !isAdmin);
   document.getElementById("contribNavBtn")?.classList.toggle("hidden", !isAdmin);
+  syncMobileNav(isAdmin);
 
   if (isAdmin) {
     document.getElementById("dashboardStats").classList.remove("hidden");
@@ -1389,8 +1409,14 @@ async function loadContribCount() {
     const parcours = (await resParcours.json()).count || 0;
     const total = poi + parcours;
     const badge = document.getElementById("contribBadge");
-    if (total > 0) { badge.textContent = total; badge.classList.remove("hidden"); }
-    else badge.classList.add("hidden");
+    const badgeM = document.getElementById("contribBadgeM");
+    if (total > 0) {
+      badge.textContent = total; badge.classList.remove("hidden");
+      if (badgeM) { badgeM.textContent = total; badgeM.classList.remove("hidden"); }
+    } else {
+      badge.classList.add("hidden");
+      if (badgeM) badgeM.classList.add("hidden");
+    }
   } catch {}
 }
 
