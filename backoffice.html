@@ -35,6 +35,7 @@
     <div class="topbar-right">
       <span id="orgName" class="org-name"></span>
       <button id="dataNavBtn" class="btn-outline hidden" onclick="showData()">🗃 Données</button>
+      <button id="contribNavBtn" class="btn-outline hidden" onclick="showContributions()">📥 Contributions <span id="contribBadge" class="badge-count hidden"></span></button>
       <button id="adminNavBtn" class="btn-outline hidden" onclick="showAdmin()">⚙ Administration</button>
       <button class="btn-outline" onclick="logout()">Déconnexion</button>
     </div>
@@ -135,6 +136,90 @@
   </main>
 </div>
 
+<!-- ========== COLLABORATEUR ========== -->
+<div id="view-collab" class="view hidden">
+  <header class="topbar">
+    <div class="topbar-brand">
+      <img src="assets/img/logo.png" alt="Explogo">
+      <span>Explogo Tourisme</span>
+    </div>
+    <div class="topbar-right">
+      <span id="collabName" class="org-name"></span>
+      <button class="btn-outline" onclick="logout()">Déconnexion</button>
+    </div>
+  </header>
+
+  <main class="main-content">
+    <div class="page-header">
+      <div>
+        <h2>Proposer un point d'intérêt</h2>
+        <p class="page-sub">Votre contribution sera vérifiée par un administrateur avant publication</p>
+      </div>
+    </div>
+
+    <div id="collabSuccess" class="collab-success hidden">
+      ✅ Votre contribution a été envoyée, elle sera examinée prochainement.
+      <button class="btn-secondary" style="margin-top:.75rem" onclick="resetCollabForm()">Proposer un autre POI</button>
+    </div>
+
+    <form id="collabForm" class="parcours-form" onsubmit="submitCollab(event)">
+      <div class="form-grid">
+        <div class="form-group full">
+          <label>Nom *</label>
+          <input id="cNom" type="text" placeholder="Ex : Château de Pierrefonds" required>
+        </div>
+        <div class="form-group">
+          <label>Catégorie *</label>
+          <select id="cCategorie" required>
+            <option value="">— Choisir —</option>
+            <option value="chateau">Château</option>
+            <option value="eglise">Église</option>
+            <option value="cathedrale">Cathédrale</option>
+            <option value="musee">Musée</option>
+            <option value="monument">Monument</option>
+            <option value="bataille">Bataille</option>
+            <option value="personnage">Personnage</option>
+            <option value="pont">Pont</option>
+            <option value="majeur">Site majeur</option>
+            <option value="prehistoire">Préhistoire</option>
+            <option value="antiquite">Antiquité</option>
+            <option value="demeure">Demeure</option>
+            <option value="fortification">Fortification</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Commune</label>
+          <input id="cCommune" type="text" placeholder="Ex : Compiègne">
+        </div>
+        <div class="form-group">
+          <label>Département</label>
+          <input id="cDepartement" type="text" placeholder="Ex : Oise">
+        </div>
+        <div class="form-group">
+          <label>Latitude *</label>
+          <input id="cLat" type="number" step="any" placeholder="49.3944" required>
+        </div>
+        <div class="form-group">
+          <label>Longitude *</label>
+          <input id="cLng" type="number" step="any" placeholder="2.9797" required>
+        </div>
+        <div class="form-group">
+          <label>Siècle</label>
+          <input id="cSiecle" type="text" placeholder="XIIe">
+        </div>
+      </div>
+      <div class="form-group full" style="margin-top:1rem">
+        <label>Description</label>
+        <textarea id="cDescription" rows="5" placeholder="Décrivez ce lieu, son histoire…"></textarea>
+      </div>
+      <p id="collabError" class="error hidden"></p>
+      <div class="form-actions">
+        <button type="submit" class="btn-primary" id="collabBtn">Envoyer la contribution</button>
+      </div>
+    </form>
+  </main>
+</div>
+
 <!-- ========== DONNÉES ========== -->
 <div id="view-data" class="view hidden">
   <header class="topbar">
@@ -189,6 +274,31 @@
   </main>
 </div>
 
+<!-- ========== CONTRIBUTIONS ========== -->
+<div id="view-contributions" class="view hidden">
+  <header class="topbar">
+    <div class="topbar-brand">
+      <img src="assets/img/logo.png" alt="Explogo">
+      <span>Contributions en attente</span>
+    </div>
+    <div class="topbar-right">
+      <button class="btn-outline" onclick="showDashboard()">← Mes parcours</button>
+      <button class="btn-outline" onclick="logout()">Déconnexion</button>
+    </div>
+  </header>
+  <main class="main-content">
+    <div class="page-header">
+      <div>
+        <h2>Contributions en attente</h2>
+        <p class="page-sub">POI soumis par les collaborateurs, à valider ou refuser</p>
+      </div>
+    </div>
+    <div id="contribList" class="contrib-list">
+      <div class="loading">Chargement…</div>
+    </div>
+  </main>
+</div>
+
 <!-- ========== ADMIN ========== -->
 <div id="view-admin" class="view hidden">
   <header class="topbar">
@@ -228,7 +338,7 @@
     <div class="form-grid" style="margin-top:1rem">
       <div class="form-group full">
         <label>Nom *</label>
-        <input id="poiNom" type="text" placeholder="Nom du lieu">
+        <input id="poiNom" type="text" placeholder="Nom du POI">
       </div>
       <div class="form-group">
         <label>Commune</label>

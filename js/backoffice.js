@@ -47,6 +47,8 @@ function showDashboard() {
   const isAdmin = userRole === "ROLE_ADMIN";
   document.getElementById("adminNavBtn")?.classList.toggle("hidden", !isAdmin);
   document.getElementById("dataNavBtn")?.classList.toggle("hidden", !isAdmin);
+  document.getElementById("contribNavBtn")?.classList.toggle("hidden", !isAdmin);
+  if (isAdmin) loadContribCount();
 }
 
 /* =========================
@@ -78,8 +80,9 @@ async function handleLogin(e) {
       return;
     }
 
-    if (data.role !== "ROLE_ORGANISATEUR" && data.role !== "ROLE_ADMIN") {
-      errEl.textContent = "Accès réservé aux organisateurs.";
+    const allowed = ["ROLE_ORGANISATEUR", "ROLE_ADMIN", "ROLE_COLLABORATEUR"];
+    if (!allowed.includes(data.role)) {
+      errEl.textContent = "Accès réservé aux organisateurs et collaborateurs.";
       errEl.classList.remove("hidden");
       return;
     }
@@ -88,8 +91,13 @@ async function handleLogin(e) {
     userRole = data.role;
     localStorage.setItem("bo_token", token);
     localStorage.setItem("bo_role", userRole);
-    document.getElementById("orgName").textContent = data.pseudo || data.email;
-    showDashboard();
+    if (userRole === "ROLE_COLLABORATEUR") {
+      document.getElementById("collabName").textContent = data.pseudo || data.email;
+      showView("collab");
+    } else {
+      document.getElementById("orgName").textContent = data.pseudo || data.email;
+      showDashboard();
+    }
 
   } catch {
     errEl.textContent = "Serveur indisponible";
@@ -931,6 +939,126 @@ async function deletePoi(id) {
     if (res.ok) loadPoiData();
     else alert("Erreur lors de la suppression");
   } catch { alert("Erreur serveur"); }
+}
+
+/* =========================
+   COLLABORATEUR
+   ========================= */
+async function submitCollab(e) {
+  e.preventDefault();
+  const btn = document.getElementById("collabBtn");
+  const errEl = document.getElementById("collabError");
+  errEl.classList.add("hidden");
+  btn.disabled = true;
+  btn.textContent = "Envoi…";
+
+  try {
+    const res = await apiFetch("/collab/poi", {
+      method: "POST",
+      body: JSON.stringify({
+        nom:         document.getElementById("cNom").value.trim(),
+        categorie:   document.getElementById("cCategorie").value,
+        commune:     document.getElementById("cCommune").value.trim(),
+        departement: document.getElementById("cDepartement").value.trim(),
+        latitude:    parseFloat(document.getElementById("cLat").value) || 0,
+        longitude:   parseFloat(document.getElementById("cLng").value) || 0,
+        siecle:      document.getElementById("cSiecle").value.trim(),
+        description: document.getElementById("cDescription").value.trim(),
+      }),
+    });
+    if (!res.ok) {
+      const d = await res.json().catch(() => ({}));
+      errEl.textContent = d.message || "Erreur serveur";
+      errEl.classList.remove("hidden");
+      return;
+    }
+    document.getElementById("collabForm").classList.add("hidden");
+    document.getElementById("collabSuccess").classList.remove("hidden");
+  } catch {
+    errEl.textContent = "Serveur indisponible";
+    errEl.classList.remove("hidden");
+  } finally {
+    btn.disabled = false;
+    btn.textContent = "Envoyer la contribution";
+  }
+}
+
+function resetCollabForm() {
+  document.getElementById("collabForm").reset();
+  document.getElementById("collabForm").classList.remove("hidden");
+  document.getElementById("collabSuccess").classList.add("hidden");
+}
+
+/* =========================
+   CONTRIBUTIONS (admin)
+   ========================= */
+async function loadContribCount() {
+  try {
+    const res = await apiFetch("/admin/data/contributions/count");
+    const data = await res.json();
+    const badge = document.getElementById("contribBadge");
+    if (data.count > 0) {
+      badge.textContent = data.count;
+      badge.classList.remove("hidden");
+    } else {
+      badge.classList.add("hidden");
+    }
+  } catch {}
+}
+
+function showContributions() {
+  showView("contributions");
+  loadContributions();
+}
+
+async function loadContributions() {
+  const list = document.getElementById("contribList");
+  list.innerHTML = '<div class="loading">Chargement…</div>';
+  try {
+    const res = await apiFetch("/admin/data/contributions");
+    const data = await res.json();
+    if (!data.items.length) {
+      list.innerHTML = '<div class="loading">Aucune contribution en attente.</div>';
+      return;
+    }
+    list.innerHTML = data.items.map(p => `
+      <div class="contrib-card">
+        <div class="contrib-info">
+          <div class="contrib-header">
+            <span class="contrib-nom">${esc(p.nom)}</span>
+            <span class="badge badge-gray">${esc(p.categorie)}</span>
+          </div>
+          ${p.commune ? `<div class="contrib-meta">📍 ${esc(p.commune)}${p.departement ? ` · ${esc(p.departement)}` : ""}</div>` : ""}
+          ${p.description ? `<div class="contrib-desc">${esc(p.description.slice(0, 120))}${p.description.length > 120 ? "…" : ""}</div>` : ""}
+          <div class="contrib-meta">🌐 ${p.latitude?.toFixed(4)}, ${p.longitude?.toFixed(4)}</div>
+          <div class="contrib-contributor">👤 ${esc(p.contributeurEmail || p.contributeurId || "—")}</div>
+        </div>
+        <div class="contrib-actions">
+          <button class="btn-primary" onclick="validerContrib(${p.id})">✓ Valider</button>
+          <button class="btn-icon danger" onclick="refuserContrib(${p.id})">✕ Refuser</button>
+        </div>
+      </div>
+    `).join("");
+  } catch {
+    list.innerHTML = '<div class="loading">Erreur de chargement</div>';
+  }
+}
+
+async function validerContrib(id) {
+  try {
+    const res = await apiFetch(`/admin/data/contributions/${id}/valider`, { method: "POST" });
+    if (res.ok) { loadContributions(); loadContribCount(); }
+    else alert("Erreur lors de la validation");
+  } catch { alert("Serveur indisponible"); }
+}
+
+async function refuserContrib(id) {
+  if (!confirm("Refuser et supprimer cette contribution ?")) return;
+  try {
+    const res = await apiFetch(`/admin/data/contributions/${id}`, { method: "DELETE" });
+    if (res.ok) { loadContributions(); loadContribCount(); }
+    else alert("Erreur lors du refus");
+  } catch { alert("Serveur indisponible"); }
 }
 
 /* =========================
