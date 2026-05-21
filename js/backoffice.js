@@ -24,7 +24,15 @@ const POI_TYPES = [
    ========================= */
 window.addEventListener("DOMContentLoaded", () => {
   if (token) {
-    showDashboard();
+    if (userRole === "ROLE_COLLABORATEUR") {
+      const pseudo = localStorage.getItem("bo_pseudo") || "";
+      document.getElementById("collabName").textContent = pseudo;
+      showView("collab");
+    } else {
+      const pseudo = localStorage.getItem("bo_pseudo") || "";
+      document.getElementById("orgName").textContent = pseudo;
+      showDashboard();
+    }
   } else {
     showView("login");
   }
@@ -42,6 +50,10 @@ function showView(name) {
 }
 
 function showDashboard() {
+  if (userRole === "ROLE_COLLABORATEUR") {
+    showView("collab");
+    return;
+  }
   showView("dashboard");
   loadParcours();
   const isAdmin = userRole === "ROLE_ADMIN";
@@ -91,6 +103,7 @@ async function handleLogin(e) {
     userRole = data.role;
     localStorage.setItem("bo_token", token);
     localStorage.setItem("bo_role", userRole);
+    localStorage.setItem("bo_pseudo", data.pseudo || data.email);
     if (userRole === "ROLE_COLLABORATEUR") {
       document.getElementById("collabName").textContent = data.pseudo || data.email;
       showView("collab");
@@ -160,6 +173,7 @@ async function sendResetEmail() {
 function logout() {
   localStorage.removeItem("bo_token");
   localStorage.removeItem("bo_role");
+  localStorage.removeItem("bo_pseudo");
   token = null;
   userRole = null;
   showView("login");
@@ -174,6 +188,7 @@ let _userCache = {};
 let searchTimer = null;
 
 function showAdmin() {
+  if (userRole !== "ROLE_ADMIN") return;
   showView("admin");
   adminPage = 0;
   loadAdminUsers();
@@ -759,6 +774,7 @@ function collectExtraFromForm(cat) {
 }
 
 function showData() {
+  if (userRole !== "ROLE_ADMIN") return;
   showView("data");
   showCategoryGrid();
   loadCategories();
