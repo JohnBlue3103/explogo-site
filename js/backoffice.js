@@ -57,8 +57,14 @@ window.addEventListener("popstate", (e) => {
   const view = e.state?.view;
   if (view) {
     document.querySelectorAll(".view").forEach(v => v.classList.add("hidden"));
+    document.getElementById("mobileNavMenu")?.classList.add("hidden");
     const el = document.getElementById("view-" + view);
     if (el) el.classList.remove("hidden");
+    if (view === "dashboard")     showDashboard();
+    else if (view === "admin")    loadAdminAllParcours();
+    else if (view === "admin-users") loadAdminUsers();
+    else if (view === "data")     loadCategories();
+    else if (view === "contributions") switchValidationTab("poi");
   } else {
     if (token) showDashboard();
     else showView("login");
@@ -76,7 +82,10 @@ function closeMobileMenu() {
 function syncMobileNav(isAdmin) {
   const pseudo = localStorage.getItem("bo_pseudo") || "";
   const orgMob = document.getElementById("orgNameMobile");
-  if (orgMob) orgMob.textContent = pseudo;
+  if (orgMob) {
+    orgMob.textContent = pseudo;
+    orgMob.style.display = pseudo ? "" : "none";
+  }
   document.getElementById("dataNavBtnM")?.classList.toggle("hidden", !isAdmin);
   document.getElementById("contribNavBtnM")?.classList.toggle("hidden", !isAdmin);
   document.getElementById("adminNavBtnM")?.classList.toggle("hidden", !isAdmin);
@@ -112,7 +121,7 @@ function showDashboard() {
 }
 
 async function loadDashboardStats() {
-  apiFetch("/admin/users?q=&page=0").then(r => r.json()).then(data => {
+  apiFetch("/admin/users?q=&page=0&size=1").then(r => r.json()).then(data => {
     document.getElementById("statUsersVal").textContent = data.total ?? "—";
   }).catch(() => {});
 
@@ -167,14 +176,15 @@ async function handleLogin(e) {
 
     token = data.token;
     userRole = data.role;
+    const pseudo = data.pseudo || data.email;
     localStorage.setItem("bo_token", token);
     localStorage.setItem("bo_role", userRole);
-    localStorage.setItem("bo_pseudo", data.pseudo || data.email);
+    localStorage.setItem("bo_pseudo", pseudo);
     if (userRole === "ROLE_COLLABORATEUR") {
-      document.getElementById("collabName").textContent = data.pseudo || data.email;
+      document.getElementById("collabName").textContent = pseudo;
       showView("collab");
     } else {
-      document.getElementById("orgName").textContent = data.pseudo || data.email;
+      document.getElementById("orgName").textContent = pseudo;
       showDashboard();
     }
 
@@ -643,7 +653,10 @@ async function loadQuota() {
 /* =========================
    PARCOURS — CREATE / EDIT
    ========================= */
+let _formOriginView = null;
+
 async function openCreate() {
+  _formOriginView = history.state?.view || null;
   currentParcours = null;
   etapes = [];
   document.getElementById("formTitle").textContent = "Nouveau parcours";
@@ -669,10 +682,13 @@ async function openCreate() {
 }
 
 async function openEdit(id) {
+  _formOriginView = history.state?.view || null;
   showView("form");
   document.getElementById("formTitle").textContent = "Modifier le parcours";
+  const endpoint = userRole === "ROLE_ADMIN"
+    ? `/api/parcours/${id}`
+    : `/api/parcours/mes-parcours/${id}`;
   try {
-    const endpoint = userRole === "ROLE_ADMIN" ? `/api/parcours/mes-parcours/${id}` : `/api/parcours/mes-parcours/${id}`;
     const res = await apiFetch(endpoint);
     const p = await res.json();
     await _fillForm(p);
@@ -682,17 +698,8 @@ async function openEdit(id) {
   }
 }
 
-async function openEditAdmin(id) {
-  showView("form");
-  document.getElementById("formTitle").textContent = "Modifier le parcours";
-  try {
-    const res = await apiFetch(`/api/parcours/mes-parcours/${id}`);
-    const p = await res.json();
-    await _fillForm(p);
-  } catch {
-    alert("Erreur lors du chargement du parcours.");
-    showAdmin();
-  }
+function openEditAdmin(id) {
+  return openEdit(id);
 }
 
 async function _fillForm(p) {
@@ -734,7 +741,7 @@ async function loadOrgOptions(selectedOrgId) {
   const sel = document.getElementById("fOrganisateurId");
   sel.innerHTML = '<option value="">— Aucun (contenu plateforme) —</option>';
   try {
-    const res = await apiFetch("/admin/users?q=&page=0&size=200");
+    const res = await apiFetch("/admin/users?q=&page=0&size=500&role=ROLE_ORGANISATEUR");
     const data = await res.json();
     (data.users || []).filter(u => u.role === "ROLE_ORGANISATEUR" && u.organisateur).forEach(u => {
       const opt = document.createElement("option");
@@ -784,7 +791,8 @@ async function handleSave(e) {
       return;
     }
 
-    showDashboard();
+    if (_formOriginView === "admin") showAdmin();
+    else showDashboard();
 
   } catch {
     errEl.textContent = "Serveur indisponible";
@@ -1421,6 +1429,7 @@ async function loadContribCount() {
 }
 
 function showContributions() {
+  if (userRole !== "ROLE_ADMIN") return;
   showView("contributions");
   switchValidationTab("poi");
 }
@@ -1742,7 +1751,7 @@ function csvDragOver(e) {
   document.getElementById("csvDropZone").classList.add("csv-drop-active");
 }
 
-function csvDragLeave(e) {
+function csvDragLeave(_e) {
   document.getElementById("csvDropZone").classList.remove("csv-drop-active");
 }
 
