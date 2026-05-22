@@ -1311,9 +1311,38 @@ textarea { resize: vertical; }
 @media (max-width: 600px) {
 
   /* ── TOPBAR ── */
-  .topbar { padding: 0 0.75rem; height: 52px; }
+  .topbar {
+    padding: 0.5rem 0.75rem;
+    height: auto;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+  }
+  .topbar-brand { flex: 1; }
   .topbar-brand span { font-size: 0.85rem; }
   .topbar-brand img { width: 26px; height: 26px; }
+
+  /* Boutons de nav dans les vues autres que dashboard */
+  .topbar-right:not(.topbar-desktop) {
+    width: 100%;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+  }
+  .topbar-right:not(.topbar-desktop) .btn-outline {
+    flex: 1;
+    min-width: 0;
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-size: 0.75rem;
+    padding: 0.35rem 0.5rem;
+    border-radius: 8px;
+  }
+  .topbar-right:not(.topbar-desktop) .org-name {
+    display: none;
+  }
+
+  /* Dashboard garde son hamburger */
   .topbar-desktop { display: none; }
   .topbar-hamburger { display: flex; align-items: center; }
 
