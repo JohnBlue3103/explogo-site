@@ -966,7 +966,19 @@ const CATEGORY_EXTRA_FIELDS = {
   bataille: [
     { key: "conflit",        label: "Conflit",          type: "text" },
     { key: "date",           label: "Date",             type: "text" },
-    { key: "theme",          label: "Thème",            type: "text" },
+    { key: "theme",          label: "Thème",            type: "select", options: [
+        { value: "",                label: "— Choisir —" },
+        { value: "ANTIQUITE",       label: "Antiquité" },
+        { value: "MOYEN_AGE",       label: "Moyen Âge" },
+        { value: "CROISADES",       label: "Croisades" },
+        { value: "GUERRES_RELIGION",label: "Guerres de Religion" },
+        { value: "GUERRE_100_ANS",  label: "Guerre de Cent Ans" },
+        { value: "REVOLUTION",      label: "Révolution française" },
+        { value: "EMPIRE",          label: "Empire napoléonien" },
+        { value: "PREMIERE_GUERRE", label: "Première Guerre mondiale" },
+        { value: "DEUXIEME_GUERRE", label: "Seconde Guerre mondiale" },
+        { value: "GENERAL",         label: "Général" },
+    ]},
     { key: "issue",          label: "Issue",            type: "text" },
     { key: "epoque",         label: "Époque",           type: "text" },
     { key: "annee_extraite", label: "Année extraite",   type: "text" },
@@ -974,10 +986,37 @@ const CATEGORY_EXTRA_FIELDS = {
     { key: "mode_expert",    label: "Mode expert",      type: "textarea" },
   ],
   personnage: [
-    { key: "theme",         label: "Thème",            type: "text" },
-    { key: "periode",       label: "Période",          type: "text" },
+    { key: "theme",         label: "Thème",            type: "select", options: [
+        { value: "",              label: "— Choisir —" },
+        { value: "POLITIQUE",     label: "Politique" },
+        { value: "MILITAIRE",     label: "Militaire" },
+        { value: "RELIGIEUX",     label: "Religieux" },
+        { value: "SCIENTIFIQUE",  label: "Scientifique / Explorateur" },
+        { value: "ARTISTIQUE",    label: "Artistique / Culturel" },
+        { value: "LITTERATURE",   label: "Littérature" },
+        { value: "ECONOMIE",      label: "Économie / Commerce" },
+        { value: "SPORT",         label: "Sport" },
+        { value: "GENERAL",       label: "Général" },
+    ]},
+    { key: "periode",       label: "Période",          type: "select", options: [
+        { value: "",                   label: "— Choisir —" },
+        { value: "ANTIQUITE",          label: "Antiquité (jusqu'à 476)" },
+        { value: "HAUT_MOYEN_AGE",     label: "Haut Moyen Âge (476–1000)" },
+        { value: "MOYEN_AGE",          label: "Moyen Âge (1000–1492)" },
+        { value: "RENAISSANCE",        label: "Renaissance (1492–1610)" },
+        { value: "ANCIEN_REGIME",      label: "Ancien Régime (1610–1789)" },
+        { value: "REVOLUTION_EMPIRE",  label: "Révolution & Empire (1789–1815)" },
+        { value: "XIXe",               label: "XIXe siècle (1815–1914)" },
+        { value: "XXe",                label: "XXe siècle (1914–2000)" },
+        { value: "XXIe",               label: "XXIe siècle (depuis 2000)" },
+    ]},
     { key: "naissance",     label: "Naissance",        type: "text" },
-    { key: "sexe",          label: "Sexe",             type: "text" },
+    { key: "sexe",          label: "Sexe",             type: "select", options: [
+        { value: "",             label: "— Choisir —" },
+        { value: "HOMME",        label: "Homme" },
+        { value: "FEMME",        label: "Femme" },
+        { value: "INDETERMINE",  label: "Indéterminé" },
+    ]},
     { key: "bibliographie", label: "Bibliographie",    type: "textarea" },
     { key: "mode_expert",   label: "Mode expert",      type: "textarea" },
   ],
@@ -1028,6 +1067,15 @@ function renderExtraFields(cat, extraData) {
         <label class="checkbox-label">
           <input type="checkbox" id="poiExtra_${f.key}" ${checked}> ${f.label}
         </label>
+      </div>`;
+    }
+    if (f.type === "select") {
+      const opts = (f.options || []).map(o =>
+        `<option value="${esc(o.value)}"${String(val) === o.value ? " selected" : ""}>${esc(o.label)}</option>`
+      ).join("");
+      return `<div class="form-group${f.full ? " full" : ""}">
+        <label>${f.label}</label>
+        <select id="poiExtra_${f.key}">${opts}</select>
       </div>`;
     }
     return `<div class="form-group${f.full ? " full" : ""}">
