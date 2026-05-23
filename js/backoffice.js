@@ -1197,7 +1197,7 @@ async function exportCategory() {
 function openPoiCreate() {
   document.getElementById("poiModalTitle").textContent = "Nouveau POI";
   ["poiId", "poiNom", "poiCommune", "poiDepartement", "poiLat", "poiLng",
-   "poiSiecle", "poiWikidata", "poiDescription"].forEach(id => {
+   "poiSiecle", "poiWikidata", "poiDescription", "poiCommentaire"].forEach(id => {
     document.getElementById(id).value = "";
   });
   document.getElementById("poiCategorie").value = currentDataCategory;
@@ -1219,6 +1219,7 @@ function openPoiEdit(poi) {
   document.getElementById("poiSiecle").value = poi.siecle || "";
   document.getElementById("poiWikidata").value = poi.wikidataId || "";
   document.getElementById("poiDescription").value = poi.description || "";
+  document.getElementById("poiCommentaire").value = poi.commentaire || "";
   document.getElementById("poiError").classList.add("hidden");
   _poiExtraOriginal = poi.extra || {};
   renderExtraFields(poi.categorie, poi.extra);
@@ -1253,7 +1254,8 @@ async function savePoi() {
     longitude:   parseFloat(document.getElementById("poiLng").value) || 0,
     siecle:      document.getElementById("poiSiecle").value.trim(),
     wikidataId:  document.getElementById("poiWikidata").value.trim(),
-    description: document.getElementById("poiDescription").value.trim(),
+    description:  document.getElementById("poiDescription").value.trim(),
+    commentaire:  document.getElementById("poiCommentaire").value.trim() || null,
     extra,
   };
 
