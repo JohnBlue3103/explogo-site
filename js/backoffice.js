@@ -685,9 +685,7 @@ async function openEdit(id) {
   _formOriginView = history.state?.view || null;
   showView("form");
   document.getElementById("formTitle").textContent = "Modifier le parcours";
-  const endpoint = userRole === "ROLE_ADMIN"
-    ? `/api/parcours/${id}`
-    : `/api/parcours/mes-parcours/${id}`;
+  const endpoint = `/api/parcours/mes-parcours/${id}`;
   try {
     const res = await apiFetch(endpoint);
     const p = await res.json();
