@@ -823,7 +823,7 @@ function addEtape() {
     document.getElementById("fVille").focus();
     return;
   }
-  etapes.push({ poiType: "", poiId: "", poiNom: "", descriptionEtape: "" });
+  etapes.push({ poiType: "", poiId: "", poiNom: "", descriptionEtape: "", qrCode: "", videoKey: "" });
   renderEtapes();
 }
 
@@ -929,6 +929,22 @@ function renderEtapes() {
             placeholder="Texte affiché à l'utilisateur sur cette étape…"
             onchange="updateEtape(${i}, 'descriptionEtape', this.value)">${esc(e.descriptionEtape || '')}</textarea>
         </div>
+        <div style="display:flex;gap:10px;margin-top:4px;padding:10px 12px;background:${userRole === 'ROLE_ADMIN' ? '#f0f7ff' : '#f8f8f8'};border-radius:8px;border:1px solid ${userRole === 'ROLE_ADMIN' ? '#c5dff8' : '#e0e0e0'}">
+          <div class="form-group" style="flex:1;margin:0">
+            <label style="font-size:11px;color:${userRole === 'ROLE_ADMIN' ? '#2563eb' : '#aaa'};font-weight:700;text-transform:uppercase;letter-spacing:.5px">🔑 QR Code</label>
+            <input type="text" placeholder="${userRole === 'ROLE_ADMIN' ? 'ex: bataille-pech-david' : 'À remplir par l\'administrateur'}"
+              value="${esc(e.qrCode || '')}"
+              ${userRole !== 'ROLE_ADMIN' ? 'disabled style="background:#f0f0f0;color:#aaa;cursor:not-allowed"' : ''}
+              onchange="updateEtape(${i}, 'qrCode', this.value)">
+          </div>
+          <div class="form-group" style="flex:1;margin:0">
+            <label style="font-size:11px;color:${userRole === 'ROLE_ADMIN' ? '#2563eb' : '#aaa'};font-weight:700;text-transform:uppercase;letter-spacing:.5px">🎬 Clé vidéo</label>
+            <input type="text" placeholder="${userRole === 'ROLE_ADMIN' ? 'ex: pech-david' : 'À remplir par l\'administrateur'}"
+              value="${esc(e.videoKey || '')}"
+              ${userRole !== 'ROLE_ADMIN' ? 'disabled style="background:#f0f0f0;color:#aaa;cursor:not-allowed"' : ''}
+              onchange="updateEtape(${i}, 'videoKey', this.value)">
+          </div>
+        </div>
       </div>
       <div class="etape-actions">
         <button type="button" class="btn-icon" onclick="moveEtape(${i}, -1)" title="Monter">↑</button>
@@ -1019,6 +1035,7 @@ const CATEGORY_EXTRA_FIELDS = {
     ]},
     { key: "bibliographie", label: "Bibliographie",    type: "textarea" },
     { key: "mode_expert",   label: "Mode expert",      type: "textarea" },
+    { key: "audio_file",    label: "Narration AR (clé audio)",  type: "text" },
   ],
   eglise: [
     { key: "periode_construction", label: "Période de construction", type: "text", full: true },
