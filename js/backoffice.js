@@ -821,7 +821,7 @@ function addEtape() {
     document.getElementById("fVille").focus();
     return;
   }
-  etapes.push({ poiType: "", poiId: "", poiNom: "", descriptionEtape: "", qrCode: "", videoKey: "" });
+  etapes.push({ poiType: "", poiId: "", poiNom: "", descriptionEtape: "", qrCode: "", videoKey: "", indice: "" });
   renderEtapes();
 }
 
@@ -926,6 +926,12 @@ function renderEtapes() {
           <textarea rows="2"
             placeholder="Texte affiché à l'utilisateur sur cette étape…"
             onchange="updateEtape(${i}, 'descriptionEtape', this.value)">${esc(e.descriptionEtape || '')}</textarea>
+        </div>
+        <div class="form-group full">
+          <label>💡 Indice (optionnel)</label>
+          <textarea rows="2"
+            placeholder="Ex : Le QR code est collé sous le banc face à la fontaine…"
+            onchange="updateEtape(${i}, 'indice', this.value)">${esc(e.indice || '')}</textarea>
         </div>
         ${userRole === 'ROLE_ADMIN' ? `
         <div style="display:flex;gap:10px;margin-top:4px;padding:10px 12px;background:#f0f7ff;border-radius:8px;border:1px solid #c5dff8">
