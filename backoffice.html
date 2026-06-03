@@ -48,6 +48,7 @@
       <button id="dataNavBtn" class="btn-outline hidden" onclick="showData()">🗃 Données</button>
       <button id="contribNavBtn" class="btn-outline hidden" onclick="showContributions()">📥 Validations <span id="contribBadge" class="badge-count hidden"></span></button>
       <button id="adminNavBtn" class="btn-outline hidden" onclick="showAdmin()">⚙ Administration</button>
+      <button id="commercialNavBtn" class="btn-outline hidden" onclick="showCommercial()">💼 Commercial</button>
       <button class="btn-outline" onclick="logout()">Déconnexion</button>
     </div>
     <button class="topbar-hamburger" id="menuToggle" onclick="toggleMobileMenu()" aria-label="Menu">☰</button>
@@ -57,6 +58,7 @@
     <button id="dataNavBtnM" class="mobile-nav-btn hidden" onclick="showData(); closeMobileMenu()">🗃 Données</button>
     <button id="contribNavBtnM" class="mobile-nav-btn hidden" onclick="showContributions(); closeMobileMenu()">📥 Validations <span id="contribBadgeM" class="badge-count hidden"></span></button>
     <button id="adminNavBtnM" class="mobile-nav-btn hidden" onclick="showAdmin(); closeMobileMenu()">⚙ Administration</button>
+    <button id="commercialNavBtnM" class="mobile-nav-btn hidden" onclick="showCommercial(); closeMobileMenu()">💼 Commercial</button>
     <button class="mobile-nav-btn mobile-nav-logout" onclick="logout()">↪ Déconnexion</button>
   </div>
 
@@ -621,6 +623,93 @@
       <button class="btn-primary" id="csvImportBtn" onclick="importCsvToDB()" disabled>⬆ Importer en DB</button>
     </div>
   </div>
+</div>
+
+<!-- ========== COMMERCIAL ========== -->
+<div id="view-commercial" class="view hidden">
+  <header class="topbar">
+    <div class="topbar-brand">
+      <img src="assets/img/logo.png" alt="Explogo">
+      <span>Commercial</span>
+    </div>
+    <div class="topbar-right">
+      <button class="btn-outline" onclick="showDashboard()">← Accueil</button>
+      <button class="btn-outline" onclick="logout()">Déconnexion</button>
+    </div>
+  </header>
+
+  <main class="main-content">
+
+    <!-- Onglets -->
+    <div class="commercial-tabs">
+      <button class="commercial-tab active" id="tab-prospection" onclick="switchCommercialTab('prospection')">🎯 Prospection</button>
+      <button class="commercial-tab" id="tab-suivi" onclick="switchCommercialTab('suivi')">📋 Suivi des prospects</button>
+    </div>
+
+    <!-- ---- Onglet Prospection ---- -->
+    <div id="commercial-prospection" class="commercial-panel">
+      <div class="page-header">
+        <div>
+          <h2>Lancer une prospection</h2>
+          <p class="page-sub">L'agent IA trouve les contacts et génère les emails</p>
+        </div>
+      </div>
+
+      <div class="prospect-form-card">
+        <div class="form-row">
+          <div class="form-group">
+            <label>Type d'organisation</label>
+            <select id="prosp-type">
+              <option value="OFFICE_TOURISME">Office de tourisme</option>
+              <option value="MAIRIE">Mairie</option>
+              <option value="MUSEE">Musée</option>
+              <option value="SITE_PATRIMONIAL">Site patrimonial</option>
+              <option value="ECOLE">École</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Zone géographique</label>
+            <input id="prosp-zone" type="text" placeholder="ex : Finistère, Toulouse, Bretagne…">
+          </div>
+          <div class="form-group">
+            <label>Nombre de prospects</label>
+            <input id="prosp-nombre" type="number" min="1" max="10" value="3">
+          </div>
+        </div>
+        <button class="btn-primary" id="prosp-btn" onclick="lancerProspection()">🚀 Lancer la prospection</button>
+        <p id="prosp-error" class="error hidden"></p>
+      </div>
+
+      <div id="prosp-results" class="hidden">
+        <div class="page-header">
+          <h3>Prospects trouvés <span id="prosp-count" class="badge-count"></span></h3>
+        </div>
+        <div id="prosp-cards"></div>
+      </div>
+    </div>
+
+    <!-- ---- Onglet Suivi ---- -->
+    <div id="commercial-suivi" class="commercial-panel hidden">
+      <div class="page-header">
+        <div>
+          <h2>Suivi des prospects</h2>
+          <p class="page-sub">Historique de toutes les organisations identifiées</p>
+        </div>
+        <select id="suivi-filtre" onchange="loadSuivi()">
+          <option value="">Tous les statuts</option>
+          <option value="A_CONTACTER">À contacter</option>
+          <option value="CONTACTE">Contacté</option>
+          <option value="INTERESSE">Intéressé</option>
+          <option value="CLIENT">Client</option>
+          <option value="SANS_SUITE">Sans suite</option>
+        </select>
+      </div>
+      <div id="suivi-list">
+        <div class="loading">Chargement…</div>
+      </div>
+    </div>
+
+  </main>
 </div>
 
 <script src="js/backoffice.js"></script>

@@ -1,4 +1,5 @@
 const API = "https://api.explogo.fr";
+const AGENT_API = "http://localhost:8001"; // microservice agent IA (à changer pour le VPS en prod)
 
 let token    = localStorage.getItem("bo_token") || null;
 let userRole = localStorage.getItem("bo_role")  || null;
@@ -89,6 +90,7 @@ function syncMobileNav(isAdmin) {
   document.getElementById("dataNavBtnM")?.classList.toggle("hidden", !isAdmin);
   document.getElementById("contribNavBtnM")?.classList.toggle("hidden", !isAdmin);
   document.getElementById("adminNavBtnM")?.classList.toggle("hidden", !isAdmin);
+  document.getElementById("commercialNavBtnM")?.classList.toggle("hidden", !isAdmin);
 }
 
 function showDashboard() {
@@ -100,6 +102,7 @@ function showDashboard() {
   closeMobileMenu();
   const isAdmin = userRole === "ROLE_ADMIN";
   document.getElementById("adminNavBtn")?.classList.toggle("hidden", !isAdmin);
+  document.getElementById("commercialNavBtn")?.classList.toggle("hidden", !isAdmin);
   document.getElementById("dataNavBtn")?.classList.toggle("hidden", !isAdmin);
   document.getElementById("contribNavBtn")?.classList.toggle("hidden", !isAdmin);
   syncMobileNav(isAdmin);
@@ -1930,6 +1933,164 @@ function apiFetch(path, options = {}) {
     },
   });
 }
+
+/* =============================================================
+   COMMERCIAL — Prospection & Suivi
+   ============================================================= */
+
+function showCommercial() {
+  if (userRole !== "ROLE_ADMIN") return;
+  showView("commercial");
+  switchCommercialTab("prospection");
+}
+
+function switchCommercialTab(tab) {
+  document.querySelectorAll(".commercial-tab").forEach(t => t.classList.remove("active"));
+  document.querySelectorAll(".commercial-panel").forEach(p => p.classList.add("hidden"));
+  document.getElementById("tab-" + tab)?.classList.add("active");
+  document.getElementById("commercial-" + tab)?.classList.remove("hidden");
+  if (tab === "suivi") loadSuivi();
+}
+
+// --- Prospection ---
+
+async function lancerProspection() {
+  const type = document.getElementById("prosp-type").value;
+  const zone = document.getElementById("prosp-zone").value.trim();
+  const nombre = parseInt(document.getElementById("prosp-nombre").value) || 3;
+  const errEl = document.getElementById("prosp-error");
+  const btn = document.getElementById("prosp-btn");
+
+  if (!zone) { errEl.textContent = "Saisissez une zone géographique."; errEl.classList.remove("hidden"); return; }
+  errEl.classList.add("hidden");
+  btn.disabled = true;
+  btn.textContent = "Recherche en cours…";
+  document.getElementById("prosp-results").classList.add("hidden");
+
+  try {
+    const res = await fetch(`${AGENT_API}/agents/prospecting/run`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ type_organisation: type, zone_geographique: zone, nombre_prospects: nombre }),
+    });
+    if (!res.ok) throw new Error(await res.text());
+    const data = await res.json();
+    afficherProspectsBO(data);
+  } catch (e) {
+    errEl.textContent = "Erreur : " + e.message;
+    errEl.classList.remove("hidden");
+  } finally {
+    btn.disabled = false;
+    btn.textContent = "🚀 Lancer la prospection";
+  }
+}
+
+function afficherProspectsBO(data) {
+  const container = document.getElementById("prosp-cards");
+  const emailsMap = {};
+  (data.emails_drafts || []).forEach(e => { emailsMap[e.prospect.nom] = e; });
+
+  document.getElementById("prosp-count").textContent = data.prospects.length;
+  container.innerHTML = "";
+
+  data.prospects.forEach((p, i) => {
+    const email = emailsMap[p.nom];
+    container.insertAdjacentHTML("beforeend", `
+      <div class="prospect-card-bo">
+        <div class="prospect-card-head">
+          <strong>${esc(p.nom)}</strong>
+          <span class="prospect-type-badge">${typeLabel(p.type_organisation)}</span>
+        </div>
+        <div class="prospect-card-info">
+          <span>📍 ${esc(p.ville || "—")}</span>
+          <span>👤 ${esc(p.responsable || "—")}</span>
+          ${p.email_contact ? `<span>📧 <a href="mailto:${esc(p.email_contact)}">${esc(p.email_contact)}</a></span>` : "<span>📧 —</span>"}
+          ${p.site_web ? `<span>🌐 <a href="${esc(p.site_web)}" target="_blank">Site web</a></span>` : ""}
+        </div>
+        ${p.pourquoi_explogo ? `<p class="prospect-argument">${esc(p.pourquoi_explogo)}</p>` : ""}
+        ${email ? `
+          <details class="email-details">
+            <summary>📧 Voir le draft d'email</summary>
+            <p class="email-objet"><strong>Objet :</strong> ${esc(email.objet)}</p>
+            <pre class="email-corps">${esc(email.corps)}</pre>
+            <button class="btn-outline btn-sm" onclick="copierEmailBO(\`${esc(email.objet)}\`, \`${esc(email.corps)}\`, this)">Copier</button>
+          </details>
+        ` : ""}
+      </div>
+    `);
+  });
+
+  document.getElementById("prosp-results").classList.remove("hidden");
+}
+
+function copierEmailBO(objet, corps, btn) {
+  navigator.clipboard.writeText(`Objet : ${objet}\n\n${corps}`).then(() => {
+    btn.textContent = "✓ Copié !";
+    setTimeout(() => btn.textContent = "Copier", 2000);
+  });
+}
+
+// --- Suivi ---
+
+async function loadSuivi() {
+  const statut = document.getElementById("suivi-filtre").value;
+  const list = document.getElementById("suivi-list");
+  list.innerHTML = "<div class='loading'>Chargement…</div>";
+  try {
+    const url = statut ? `${AGENT_API}/prospects?statut=${statut}` : `${AGENT_API}/prospects`;
+    const res = await fetch(url);
+    const prospects = await res.json();
+
+    if (!prospects.length) { list.innerHTML = "<p class='page-sub'>Aucun prospect trouvé.</p>"; return; }
+
+    const statutColors = { A_CONTACTER: "#2b8ea0", CONTACTE: "#f39c12", INTERESSE: "#27ae60", CLIENT: "#8e44ad", SANS_SUITE: "#95a5a6" };
+    const statutLabels = { A_CONTACTER: "À contacter", CONTACTE: "Contacté", INTERESSE: "Intéressé", CLIENT: "Client", SANS_SUITE: "Sans suite" };
+
+    list.innerHTML = `<table class="suivi-table">
+      <thead><tr><th>Organisation</th><th>Ville</th><th>Email</th><th>Responsable</th><th>Statut</th><th>Actions</th></tr></thead>
+      <tbody>
+        ${prospects.map(p => `
+          <tr>
+            <td><strong>${esc(p.nom)}</strong></td>
+            <td>${esc(p.ville || "—")}</td>
+            <td>${p.email_contact ? `<a href="mailto:${esc(p.email_contact)}">${esc(p.email_contact)}</a>` : "—"}</td>
+            <td>${esc(p.responsable || "—")}</td>
+            <td>
+              <select class="statut-select" data-id="${p.id}" onchange="updateStatut(${p.id}, this.value)" style="border-color:${statutColors[p.statut] || '#ccc'}">
+                ${Object.entries(statutLabels).map(([v, l]) => `<option value="${v}" ${p.statut === v ? "selected" : ""}>${l}</option>`).join("")}
+              </select>
+            </td>
+            <td><button class="btn-outline btn-sm" onclick="voirEmailProspect(${p.id})">Email</button></td>
+          </tr>
+        `).join("")}
+      </tbody>
+    </table>`;
+  } catch (e) {
+    list.innerHTML = `<p class="error">Erreur : ${e.message}</p>`;
+  }
+}
+
+async function updateStatut(id, statut) {
+  await fetch(`${AGENT_API}/prospects/${id}/statut?statut=${statut}`, { method: "PATCH" });
+}
+
+async function voirEmailProspect(id) {
+  const res = await fetch(`${AGENT_API}/prospects/${id}/email`);
+  const data = await res.json();
+  if (!data.corps) return alert("Pas de draft d'email pour ce prospect.");
+  const txt = `Objet : ${data.objet}\n\n${data.corps}`;
+  navigator.clipboard.writeText(txt);
+  alert("Email copié dans le presse-papier !\n\nObjet : " + data.objet);
+}
+
+function typeLabel(t) {
+  const m = { OFFICE_TOURISME: "Office de tourisme", MAIRIE: "Mairie", MUSEE: "Musée", SITE_PATRIMONIAL: "Site patrimonial", ECOLE: "École", AUTRE: "Autre" };
+  return m[t] || t;
+}
+
+/* =============================================================
+   FIN COMMERCIAL
+   ============================================================= */
 
 function esc(str) {
   return String(str || "")
