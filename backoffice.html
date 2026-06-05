@@ -693,8 +693,22 @@
       <div class="page-header">
         <div>
           <h2>Suivi des prospects</h2>
-          <p class="page-sub">Historique de toutes les organisations identifiées</p>
+          <p class="page-sub">Filtrez par type, puis par statut</p>
         </div>
+        <button class="btn-primary" onclick="showAjouterProspect()">➕ Ajouter un prospect</button>
+      </div>
+
+      <!-- Sélecteur de type obligatoire -->
+      <div class="type-pills">
+        <button class="type-pill" id="pill-tous" onclick="setTypeSuivi('')">Tous</button>
+        <button class="type-pill" id="pill-OFFICE_TOURISME" onclick="setTypeSuivi('OFFICE_TOURISME')">Office de tourisme</button>
+        <button class="type-pill" id="pill-ELUS" onclick="setTypeSuivi('ELUS')">Élus</button>
+        <button class="type-pill" id="pill-MUSEE" onclick="setTypeSuivi('MUSEE')">Musée</button>
+        <button class="type-pill" id="pill-SITE_PATRIMONIAL" onclick="setTypeSuivi('SITE_PATRIMONIAL')">Site patrimonial</button>
+        <button class="type-pill" id="pill-ECOLE" onclick="setTypeSuivi('ECOLE')">École</button>
+      </div>
+
+      <div style="margin-bottom:1rem">
         <select id="suivi-filtre" onchange="loadSuivi()">
           <option value="">Tous les statuts</option>
           <option value="A_CONTACTER">À contacter</option>
@@ -704,12 +718,66 @@
           <option value="SANS_SUITE">Sans suite</option>
         </select>
       </div>
+
       <div id="suivi-list">
-        <div class="loading">Chargement…</div>
+        <p class="page-sub">Sélectionnez un type ci-dessus pour afficher les prospects.</p>
       </div>
     </div>
 
   </main>
+</div>
+
+<!-- ===== MODAL ÉDITION CONTACT ===== -->
+<div id="modal-edit-contact" class="modal-overlay hidden">
+  <div class="modal-card">
+    <h3>Modifier le contact</h3>
+    <p class="modal-sub">Les champs vides ne sont pas modifiés.</p>
+    <input type="hidden" id="edit-id">
+    <label>Responsable</label>
+    <input id="edit-responsable" type="text" placeholder="Prénom Nom">
+    <label>Email</label>
+    <input id="edit-email" type="email" placeholder="contact@organisation.fr">
+    <label>Téléphone</label>
+    <input id="edit-telephone" type="text" placeholder="06 00 00 00 00">
+    <label>Site web</label>
+    <input id="edit-site" type="url" placeholder="https://...">
+    <div class="modal-actions">
+      <button class="btn-outline" onclick="closeModal('modal-edit-contact')">Annuler</button>
+      <button class="btn-primary" onclick="saveContact()">Enregistrer</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== MODAL AJOUT PROSPECT ===== -->
+<div id="modal-add-prospect" class="modal-overlay hidden">
+  <div class="modal-card">
+    <h3>Ajouter un prospect</h3>
+    <p class="modal-sub">Un draft d'email sera généré automatiquement.</p>
+    <label>Nom de l'organisation *</label>
+    <input id="add-nom" type="text" placeholder="Office de tourisme de…">
+    <label>Type *</label>
+    <select id="add-type">
+      <option value="OFFICE_TOURISME">Office de tourisme</option>
+      <option value="ELUS">Élus (adjoint patrimoine)</option>
+      <option value="MUSEE">Musée</option>
+      <option value="SITE_PATRIMONIAL">Site patrimonial</option>
+      <option value="ECOLE">École</option>
+    </select>
+    <label>Ville</label>
+    <input id="add-ville" type="text" placeholder="Nom de la ville">
+    <label>Responsable</label>
+    <input id="add-responsable" type="text" placeholder="Prénom Nom">
+    <label>Email</label>
+    <input id="add-email" type="email" placeholder="contact@organisation.fr">
+    <label>Téléphone</label>
+    <input id="add-telephone" type="text" placeholder="05 00 00 00 00">
+    <label>Site web</label>
+    <input id="add-site" type="url" placeholder="https://...">
+    <div class="modal-actions">
+      <button class="btn-outline" onclick="closeModal('modal-add-prospect')">Annuler</button>
+      <button class="btn-primary" onclick="saveNouveauProspect()">Ajouter</button>
+    </div>
+  </div>
 </div>
 
 <script src="js/backoffice.js"></script>

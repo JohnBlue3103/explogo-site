@@ -2032,14 +2032,36 @@ function copierEmailBO(objet, corps, btn) {
 
 // --- Suivi ---
 
+let currentTypeSuivi = null;
+let _suiviProspects = {};
+
+function setTypeSuivi(type) {
+  currentTypeSuivi = type;
+  document.querySelectorAll('.type-pill').forEach(b => b.classList.remove('active'));
+  const pillId = type ? `pill-${type}` : 'pill-tous';
+  document.getElementById(pillId)?.classList.add('active');
+  loadSuivi();
+}
+
 async function loadSuivi() {
-  const statut = document.getElementById("suivi-filtre").value;
   const list = document.getElementById("suivi-list");
+  if (currentTypeSuivi === null) {
+    list.innerHTML = "<p class='page-sub'>Sélectionnez un type ci-dessus pour afficher les prospects.</p>";
+    return;
+  }
+
+  const statut = document.getElementById("suivi-filtre").value;
   list.innerHTML = "<div class='loading'>Chargement…</div>";
+
   try {
-    const url = statut ? `${AGENT_API}/prospects?statut=${statut}` : `${AGENT_API}/prospects`;
-    const res = await fetch(url);
+    const params = new URLSearchParams();
+    if (statut) params.set('statut', statut);
+    if (currentTypeSuivi) params.set('type_organisation', currentTypeSuivi);
+    const res = await fetch(`${AGENT_API}/prospects?${params}`);
     const prospects = await res.json();
+
+    _suiviProspects = {};
+    prospects.forEach(p => { _suiviProspects[p.id] = p; });
 
     if (!prospects.length) { list.innerHTML = "<p class='page-sub'>Aucun prospect trouvé.</p>"; return; }
 
@@ -2061,7 +2083,8 @@ async function loadSuivi() {
               </select>
             </td>
             <td>
-              <button class="btn-outline btn-sm" onclick="voirEmailProspect(${p.id})">Copier</button>
+              <button class="btn-outline btn-sm" onclick="editContact(${p.id})">✏️ Modifier</button>
+              <button class="btn-outline btn-sm" onclick="voirEmailProspect(${p.id})" style="margin-left:4px">📋 Email</button>
               <button class="btn-primary btn-sm" onclick="envoyerEmailProspect(${p.id}, this)" style="margin-left:4px">Envoyer</button>
             </td>
           </tr>
@@ -2075,6 +2098,80 @@ async function loadSuivi() {
 
 async function updateStatut(id, statut) {
   await fetch(`${AGENT_API}/prospects/${id}/statut?statut=${statut}`, { method: "PATCH" });
+}
+
+function editContact(id) {
+  const p = _suiviProspects[id];
+  if (!p) return;
+  document.getElementById('edit-id').value = id;
+  document.getElementById('edit-responsable').value = p.responsable || '';
+  document.getElementById('edit-email').value = p.email_contact || '';
+  document.getElementById('edit-telephone').value = p.telephone || '';
+  document.getElementById('edit-site').value = p.site_web || '';
+  document.getElementById('modal-edit-contact').classList.remove('hidden');
+}
+
+async function saveContact() {
+  const id = document.getElementById('edit-id').value;
+  const body = {
+    responsable: document.getElementById('edit-responsable').value || null,
+    email_contact: document.getElementById('edit-email').value || null,
+    telephone: document.getElementById('edit-telephone').value || null,
+    site_web: document.getElementById('edit-site').value || null,
+  };
+  try {
+    const res = await fetch(`${AGENT_API}/prospects/${id}/contact`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    });
+    if (!res.ok) throw new Error(await res.text());
+    closeModal('modal-edit-contact');
+    loadSuivi();
+  } catch (e) {
+    alert('Erreur : ' + e.message);
+  }
+}
+
+function showAjouterProspect() {
+  document.getElementById('add-nom').value = '';
+  document.getElementById('add-type').value = 'OFFICE_TOURISME';
+  document.getElementById('add-ville').value = '';
+  document.getElementById('add-responsable').value = '';
+  document.getElementById('add-email').value = '';
+  document.getElementById('add-telephone').value = '';
+  document.getElementById('add-site').value = '';
+  document.getElementById('modal-add-prospect').classList.remove('hidden');
+}
+
+async function saveNouveauProspect() {
+  const nom = document.getElementById('add-nom').value.trim();
+  if (!nom) { alert('Le nom de l\'organisation est obligatoire.'); return; }
+  const body = {
+    nom,
+    type_organisation: document.getElementById('add-type').value,
+    ville: document.getElementById('add-ville').value || null,
+    responsable: document.getElementById('add-responsable').value || null,
+    email_contact: document.getElementById('add-email').value || null,
+    telephone: document.getElementById('add-telephone').value || null,
+    site_web: document.getElementById('add-site').value || null,
+  };
+  try {
+    const res = await fetch(`${AGENT_API}/prospects`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    });
+    if (!res.ok) throw new Error(await res.text());
+    closeModal('modal-add-prospect');
+    loadSuivi();
+  } catch (e) {
+    alert('Erreur : ' + e.message);
+  }
+}
+
+function closeModal(id) {
+  document.getElementById(id)?.classList.add('hidden');
 }
 
 async function voirEmailProspect(id) {
@@ -2096,7 +2193,7 @@ async function envoyerEmailProspect(id, btn) {
     if (res.ok) {
       btn.textContent = "✓ Envoyé";
       btn.style.color = "green";
-      loadSuivi(); // rafraîchir le tableau
+      loadSuivi();
     } else {
       alert("Erreur : " + data.detail);
       btn.disabled = false;

@@ -1622,3 +1622,24 @@ textarea { resize: vertical; }
   font-weight: 600;
   cursor: pointer;
 }
+
+/* ===== TYPE PILLS (suivi des prospects) ===== */
+.type-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+.type-pill {
+  background: none;
+  border: 1.5px solid var(--border);
+  border-radius: 20px;
+  padding: 0.35rem 1.1rem;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.type-pill:hover { border-color: var(--primary); color: var(--primary); }
+.type-pill.active { background: var(--primary); border-color: var(--primary); color: #fff; }
