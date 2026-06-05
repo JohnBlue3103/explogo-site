@@ -2060,7 +2060,10 @@ async function loadSuivi() {
                 ${Object.entries(statutLabels).map(([v, l]) => `<option value="${v}" ${p.statut === v ? "selected" : ""}>${l}</option>`).join("")}
               </select>
             </td>
-            <td><button class="btn-outline btn-sm" onclick="voirEmailProspect(${p.id})">Email</button></td>
+            <td>
+              <button class="btn-outline btn-sm" onclick="voirEmailProspect(${p.id})">Copier</button>
+              <button class="btn-primary btn-sm" onclick="envoyerEmailProspect(${p.id}, this)" style="margin-left:4px">Envoyer</button>
+            </td>
           </tr>
         `).join("")}
       </tbody>
@@ -2081,6 +2084,29 @@ async function voirEmailProspect(id) {
   const txt = `Objet : ${data.objet}\n\n${data.corps}`;
   navigator.clipboard.writeText(txt);
   alert("Email copié dans le presse-papier !\n\nObjet : " + data.objet);
+}
+
+async function envoyerEmailProspect(id, btn) {
+  if (!confirm("Envoyer l'email de prospection à ce contact ?")) return;
+  btn.disabled = true;
+  btn.textContent = "Envoi…";
+  try {
+    const res = await fetch(`${AGENT_API}/prospects/${id}/envoyer-email`, { method: "POST" });
+    const data = await res.json();
+    if (res.ok) {
+      btn.textContent = "✓ Envoyé";
+      btn.style.color = "green";
+      loadSuivi(); // rafraîchir le tableau
+    } else {
+      alert("Erreur : " + data.detail);
+      btn.disabled = false;
+      btn.textContent = "Envoyer";
+    }
+  } catch (e) {
+    alert("Erreur : " + e.message);
+    btn.disabled = false;
+    btn.textContent = "Envoyer";
+  }
 }
 
 function typeLabel(t) {
