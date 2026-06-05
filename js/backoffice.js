@@ -2083,9 +2083,12 @@ async function loadSuivi() {
               </select>
             </td>
             <td>
-              <button class="btn-outline btn-sm" onclick="editContact(${p.id})">✏️ Modifier</button>
-              <button class="btn-outline btn-sm" onclick="voirEmailProspect(${p.id})" style="margin-left:4px">📋 Email</button>
-              <button class="btn-primary btn-sm" onclick="envoyerEmailProspect(${p.id}, this)" style="margin-left:4px">Envoyer</button>
+              <div class="table-actions">
+                <button class="btn-outline btn-sm" onclick="editContact(${p.id})">✏️ Modifier</button>
+                <button class="btn-outline btn-sm" onclick="voirEmailProspect(${p.id})">📋 Email</button>
+                <button class="btn-primary btn-sm" onclick="envoyerEmailProspect(${p.id}, this)">Envoyer</button>
+                <button class="btn-danger btn-sm" onclick="supprimerProspect(${p.id}, this)">🗑️</button>
+              </div>
             </td>
           </tr>
         `).join("")}
@@ -2167,6 +2170,20 @@ async function saveNouveauProspect() {
     loadSuivi();
   } catch (e) {
     alert('Erreur : ' + e.message);
+  }
+}
+
+async function supprimerProspect(id, btn) {
+  const p = _suiviProspects[id];
+  if (!confirm(`Supprimer "${p?.nom || 'ce prospect'}" ? Cette action est irréversible.`)) return;
+  btn.disabled = true;
+  try {
+    const res = await fetch(`${AGENT_API}/prospects/${id}`, { method: 'DELETE' });
+    if (!res.ok) throw new Error(await res.text());
+    loadSuivi();
+  } catch (e) {
+    alert('Erreur : ' + e.message);
+    btn.disabled = false;
   }
 }
 

@@ -1621,7 +1621,20 @@ textarea { resize: vertical; }
   font-size: 12px;
   font-weight: 600;
   cursor: pointer;
+  min-width: 120px;
 }
+.suivi-table .btn-sm { margin-top: 0; }
+.table-actions { display: flex; flex-wrap: wrap; gap: 4px; align-items: center; }
+.btn-danger {
+  background: #e74c3c;
+  color: #fff;
+  border: none;
+  border-radius: var(--radius, 8px);
+  cursor: pointer;
+  font-weight: 600;
+  transition: background 0.15s;
+}
+.btn-danger:hover { background: #c0392b; }
 
 /* ===== TYPE PILLS (suivi des prospects) ===== */
 .type-pills {
