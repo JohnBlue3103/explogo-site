@@ -2110,7 +2110,7 @@ async function envoyerEmailProspect(id, btn) {
 }
 
 function typeLabel(t) {
-  const m = { OFFICE_TOURISME: "Office de tourisme", MAIRIE: "Mairie", MUSEE: "Musée", SITE_PATRIMONIAL: "Site patrimonial", ECOLE: "École", AUTRE: "Autre" };
+  const m = { OFFICE_TOURISME: "Office de tourisme", ELUS: "Élus", MUSEE: "Musée", SITE_PATRIMONIAL: "Site patrimonial", ECOLE: "École", AUTRE: "Autre" };
   return m[t] || t;
 }
 
