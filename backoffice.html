@@ -708,7 +708,10 @@
         <button class="type-pill" id="pill-ECOLE" onclick="setTypeSuivi('ECOLE')">École</button>
       </div>
 
-      <div style="margin-bottom:1rem">
+      <div class="suivi-filtres">
+        <input id="suivi-search" type="text" placeholder="🔍 Rechercher par nom…" oninput="debounceSuivi()">
+        <input id="suivi-ville" type="text" placeholder="Ville…" oninput="debounceSuivi()">
+        <input id="suivi-region" type="text" placeholder="Région…" oninput="debounceSuivi()">
         <select id="suivi-filtre" onchange="loadSuivi()">
           <option value="">Tous les statuts</option>
           <option value="A_CONTACTER">À contacter</option>
@@ -717,6 +720,7 @@
           <option value="CLIENT">Client</option>
           <option value="SANS_SUITE">Sans suite</option>
         </select>
+        <button class="btn-outline btn-sm" onclick="resetFiltresSuivi()">✕ Effacer</button>
       </div>
 
       <div id="suivi-list">

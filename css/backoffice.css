@@ -1656,3 +1656,34 @@ textarea { resize: vertical; }
 }
 .type-pill:hover { border-color: var(--primary); color: var(--primary); }
 .type-pill.active { background: var(--primary); border-color: var(--primary); color: #fff; }
+
+/* ===== BARRE DE FILTRES SUIVI ===== */
+.suivi-filtres {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+  align-items: center;
+}
+.suivi-filtres input[type="text"] {
+  flex: 1;
+  min-width: 140px;
+  max-width: 220px;
+  padding: 0.45rem 0.75rem;
+  border: 1.5px solid var(--border);
+  border-radius: 8px;
+  font-size: 13px;
+  background: #fff;
+}
+.suivi-filtres input[type="text"]:focus {
+  outline: none;
+  border-color: var(--primary);
+}
+.suivi-filtres select {
+  padding: 0.45rem 0.75rem;
+  border: 1.5px solid var(--border);
+  border-radius: 8px;
+  font-size: 13px;
+  background: #fff;
+  cursor: pointer;
+}

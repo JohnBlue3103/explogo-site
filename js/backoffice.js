@@ -2043,6 +2043,21 @@ function setTypeSuivi(type) {
   loadSuivi();
 }
 
+let _suiviDebounceTimer = null;
+
+function debounceSuivi() {
+  clearTimeout(_suiviDebounceTimer);
+  _suiviDebounceTimer = setTimeout(loadSuivi, 350);
+}
+
+function resetFiltresSuivi() {
+  document.getElementById("suivi-search").value = "";
+  document.getElementById("suivi-ville").value = "";
+  document.getElementById("suivi-region").value = "";
+  document.getElementById("suivi-filtre").value = "";
+  loadSuivi();
+}
+
 async function loadSuivi() {
   const list = document.getElementById("suivi-list");
   if (currentTypeSuivi === null) {
@@ -2051,12 +2066,18 @@ async function loadSuivi() {
   }
 
   const statut = document.getElementById("suivi-filtre").value;
+  const q      = document.getElementById("suivi-search")?.value.trim() || "";
+  const ville  = document.getElementById("suivi-ville")?.value.trim() || "";
+  const region = document.getElementById("suivi-region")?.value.trim() || "";
   list.innerHTML = "<div class='loading'>Chargement…</div>";
 
   try {
     const params = new URLSearchParams();
     if (statut) params.set('statut', statut);
     if (currentTypeSuivi) params.set('type_organisation', currentTypeSuivi);
+    if (q)      params.set('q', q);
+    if (ville)  params.set('ville', ville);
+    if (region) params.set('region', region);
     const res = await fetch(`${AGENT_API}/prospects?${params}`);
     const prospects = await res.json();
 
