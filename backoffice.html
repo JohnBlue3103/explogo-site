@@ -49,6 +49,7 @@
       <button id="contribNavBtn" class="btn-outline hidden" onclick="showContributions()">📥 Validations <span id="contribBadge" class="badge-count hidden"></span></button>
       <button id="adminNavBtn" class="btn-outline hidden" onclick="showAdmin()">⚙ Administration</button>
       <button id="commercialNavBtn" class="btn-outline hidden" onclick="showCommercial()">💼 Commercial</button>
+      <button id="actualiteNavBtn" class="btn-outline hidden" onclick="showActualites()">📰 Actualités <span id="veille-badge-nav" class="badge-count hidden"></span></button>
       <button class="btn-outline" onclick="logout()">Déconnexion</button>
     </div>
     <button class="topbar-hamburger" id="menuToggle" onclick="toggleMobileMenu()" aria-label="Menu">☰</button>
@@ -59,6 +60,7 @@
     <button id="contribNavBtnM" class="mobile-nav-btn hidden" onclick="showContributions(); closeMobileMenu()">📥 Validations <span id="contribBadgeM" class="badge-count hidden"></span></button>
     <button id="adminNavBtnM" class="mobile-nav-btn hidden" onclick="showAdmin(); closeMobileMenu()">⚙ Administration</button>
     <button id="commercialNavBtnM" class="mobile-nav-btn hidden" onclick="showCommercial(); closeMobileMenu()">💼 Commercial</button>
+    <button id="actualiteNavBtnM" class="mobile-nav-btn hidden" onclick="showActualites(); closeMobileMenu()">📰 Actualités</button>
     <button class="mobile-nav-btn mobile-nav-logout" onclick="logout()">↪ Déconnexion</button>
   </div>
 
@@ -644,6 +646,7 @@
     <div class="commercial-tabs">
       <button class="commercial-tab active" id="tab-prospection" onclick="switchCommercialTab('prospection')">🎯 Prospection</button>
       <button class="commercial-tab" id="tab-suivi" onclick="switchCommercialTab('suivi')">📋 Suivi des prospects</button>
+      <button class="commercial-tab" id="tab-actualite" onclick="switchCommercialTab('actualite')">📰 Actualités <span id="veille-badge" class="badge-count hidden"></span></button>
     </div>
 
     <!-- ---- Onglet Prospection ---- -->
@@ -686,6 +689,52 @@
         </div>
         <div id="prosp-cards"></div>
       </div>
+    </div>
+
+    <!-- ---- Onglet Actualités (Veille) ---- -->
+    <div id="commercial-actualite" class="commercial-panel hidden">
+      <div class="page-header" style="flex-wrap:wrap;gap:.75rem">
+        <div>
+          <h2>Actualités & opportunités</h2>
+          <p class="page-sub">Détectées automatiquement toutes les 2h, région par région</p>
+        </div>
+        <div style="display:flex;gap:.75rem;align-items:center">
+          <input id="veille-zone-input" type="text" placeholder="Zone (ex: Bretagne)…" style="max-width:180px">
+          <button class="btn-secondary" id="veille-run-btn" onclick="lancerVeille()">🔍 Lancer</button>
+        </div>
+      </div>
+
+      <div class="veille-filtres">
+        <select id="veille-urgence" onchange="loadVeille()">
+          <option value="">Toutes urgences</option>
+          <option value="haute">🔴 Haute</option>
+          <option value="moyenne">🟠 Moyenne</option>
+          <option value="faible">🟢 Faible</option>
+        </select>
+        <select id="veille-region" onchange="loadVeille()">
+          <option value="">Toutes les régions</option>
+          <option value="Auvergne-Rhône-Alpes">Auvergne-Rhône-Alpes</option>
+          <option value="Bourgogne-Franche-Comté">Bourgogne-Franche-Comté</option>
+          <option value="Bretagne">Bretagne</option>
+          <option value="Centre-Val-de-Loire">Centre-Val-de-Loire</option>
+          <option value="Corse">Corse</option>
+          <option value="Grand-Est">Grand-Est</option>
+          <option value="Hauts-de-France">Hauts-de-France</option>
+          <option value="Île-de-France">Île-de-France</option>
+          <option value="Normandie">Normandie</option>
+          <option value="Nouvelle-Aquitaine">Nouvelle-Aquitaine</option>
+          <option value="Occitanie">Occitanie</option>
+          <option value="Pays-de-la-Loire">Pays-de-la-Loire</option>
+          <option value="Provence-Alpes-Côte d'Azur">Provence-Alpes-Côte d'Azur</option>
+        </select>
+        <label class="veille-filtre-vue">
+          <input type="checkbox" id="veille-non-vue" onchange="loadVeille()">
+          Non vues seulement
+        </label>
+      </div>
+
+      <div id="veille-status" class="hidden" style="margin:.75rem 0;color:#666;font-size:.9rem"></div>
+      <div id="veille-list"><p class="page-sub">Cliquez sur "Lancer" pour démarrer une recherche ou attendez la prochaine exécution automatique.</p></div>
     </div>
 
     <!-- ---- Onglet Suivi ---- -->
@@ -800,6 +849,21 @@
     <div class="modal-actions">
       <button class="btn-outline" onclick="closeModal('modal-add-prospect')">Annuler</button>
       <button class="btn-primary" onclick="saveNouveauProspect()">Ajouter</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal email veille -->
+<div id="modal-veille-email" class="modal-overlay hidden" onclick="closeVeilleEmailModal(event)">
+  <div class="modal-card" style="max-width:620px;width:95%">
+    <h3>Email de prospection</h3>
+    <label>Objet</label>
+    <input id="veille-email-objet" type="text" readonly style="font-weight:600;background:#f8f9fa">
+    <label style="margin-top:1rem">Corps</label>
+    <textarea id="veille-email-corps" rows="12" readonly style="font-family:monospace;font-size:.85rem;background:#f8f9fa"></textarea>
+    <div class="modal-actions">
+      <button class="btn-outline" onclick="closeVeilleEmailModal()">Fermer</button>
+      <button class="btn-secondary" onclick="copierEmailVeille()">📋 Copier le corps</button>
     </div>
   </div>
 </div>

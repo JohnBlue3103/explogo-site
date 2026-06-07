@@ -91,6 +91,7 @@ function syncMobileNav(isAdmin) {
   document.getElementById("contribNavBtnM")?.classList.toggle("hidden", !isAdmin);
   document.getElementById("adminNavBtnM")?.classList.toggle("hidden", !isAdmin);
   document.getElementById("commercialNavBtnM")?.classList.toggle("hidden", !isAdmin);
+  document.getElementById("actualiteNavBtnM")?.classList.toggle("hidden", !isAdmin);
 }
 
 function showDashboard() {
@@ -103,6 +104,7 @@ function showDashboard() {
   const isAdmin = userRole === "ROLE_ADMIN";
   document.getElementById("adminNavBtn")?.classList.toggle("hidden", !isAdmin);
   document.getElementById("commercialNavBtn")?.classList.toggle("hidden", !isAdmin);
+  document.getElementById("actualiteNavBtn")?.classList.toggle("hidden", !isAdmin);
   document.getElementById("dataNavBtn")?.classList.toggle("hidden", !isAdmin);
   document.getElementById("contribNavBtn")?.classList.toggle("hidden", !isAdmin);
   syncMobileNav(isAdmin);
@@ -1944,12 +1946,157 @@ function showCommercial() {
   switchCommercialTab("prospection");
 }
 
+function showActualites() {
+  if (userRole !== "ROLE_ADMIN") return;
+  showView("commercial");
+  switchCommercialTab("actualite");
+}
+
 function switchCommercialTab(tab) {
   document.querySelectorAll(".commercial-tab").forEach(t => t.classList.remove("active"));
   document.querySelectorAll(".commercial-panel").forEach(p => p.classList.add("hidden"));
   document.getElementById("tab-" + tab)?.classList.add("active");
   document.getElementById("commercial-" + tab)?.classList.remove("hidden");
   if (tab === "suivi") loadSuivi();
+  if (tab === "actualite") loadVeille();
+}
+
+/* =============================================================
+   COMMERCIAL — Veille actualités
+   ============================================================= */
+
+const VEILLE_TYPE_LABELS = {
+  evenement: "Événement",
+  appel_projets: "Appel à projets",
+  innovation: "Innovation",
+  recrutement: "Recrutement",
+  partenariat: "Partenariat",
+};
+
+function _veilleDateRelative(iso) {
+  if (!iso) return "";
+  const diff = Date.now() - new Date(iso).getTime();
+  const h = Math.floor(diff / 3600000);
+  if (h < 1) return "il y a moins d'1h";
+  if (h < 24) return `il y a ${h}h`;
+  return `il y a ${Math.floor(h / 24)}j`;
+}
+
+async function loadVeille() {
+  const urgence = document.getElementById("veille-urgence")?.value || "";
+  const region  = document.getElementById("veille-region")?.value  || "";
+  const nonVue  = document.getElementById("veille-non-vue")?.checked || false;
+
+  const params = new URLSearchParams();
+  if (urgence) params.set("urgence", urgence);
+  if (region)  params.set("region",  region);
+  if (nonVue)  params.set("non_vue", "true");
+
+  const el = document.getElementById("veille-list");
+  el.innerHTML = '<p class="page-sub">Chargement…</p>';
+
+  try {
+    const res = await fetch(`${AGENT_API}/veille/opportunites?${params}`);
+    if (!res.ok) throw new Error(await res.text());
+    const items = await res.json();
+
+    const nonVues = items.filter(i => !i.vue).length;
+    for (const id of ["veille-badge", "veille-badge-nav"]) {
+      const badge = document.getElementById(id);
+      if (badge) {
+        badge.textContent = nonVues;
+        badge.classList.toggle("hidden", nonVues === 0);
+      }
+    }
+
+    if (!items.length) {
+      el.innerHTML = '<p class="page-sub">Aucune opportunité trouvée. Lancez une recherche ou attendez le prochain cycle automatique (toutes les 2h).</p>';
+      return;
+    }
+
+    el.innerHTML = items.map(o => {
+      const typeLabel = VEILLE_TYPE_LABELS[o.type_opportunite] || o.type_opportunite || "";
+      const vueClass  = o.vue ? " veille-card-vue" : "";
+      return `
+        <div class="veille-card urgence-${o.urgence}${vueClass}" id="veille-card-${o.id}">
+          <div class="veille-card-header">
+            <div class="veille-card-meta">
+              <span class="veille-badge-type type-${o.type_opportunite}">${typeLabel}</span>
+              <span class="veille-badge-urgence urg-${o.urgence}">${o.urgence}</span>
+              ${o.vue ? '<span class="veille-badge-vue">✓ Vue</span>' : ""}
+            </div>
+            <span class="veille-card-date">${_veilleDateRelative(o.created_at)}</span>
+          </div>
+          <h4 class="veille-card-org">${o.organisation || "—"}</h4>
+          <p class="veille-card-loc">${[o.ville, o.region].filter(Boolean).join(" · ")}</p>
+          ${o.description ? `<p class="veille-card-desc">${o.description}</p>` : ""}
+          ${o.accroche ? `<p class="veille-card-accroche">💡 ${o.accroche}</p>` : ""}
+          <div class="veille-card-actions">
+            ${o.source_url ? `<a href="${o.source_url}" target="_blank" rel="noopener" class="btn-outline btn-sm">🔗 Source</a>` : ""}
+            <button onclick="voirEmailVeille(${o.id}, ${JSON.stringify(o.email_objet || "")}, ${JSON.stringify(o.email_corps || "")})" class="btn-secondary btn-sm">📧 Voir email</button>
+            ${!o.vue ? `<button onclick="marquerVuVeille(${o.id})" class="btn-outline btn-sm">✓ Marquer vu</button>` : ""}
+          </div>
+        </div>`;
+    }).join("");
+  } catch (e) {
+    el.innerHTML = `<p class="error">Erreur : ${e.message}</p>`;
+  }
+}
+
+async function lancerVeille() {
+  const zone   = document.getElementById("veille-zone-input")?.value.trim() || "";
+  const btn    = document.getElementById("veille-run-btn");
+  const status = document.getElementById("veille-status");
+
+  btn.disabled = true;
+  btn.textContent = "⏳ Recherche…";
+  status.textContent = `Recherche en cours${zone ? " sur " + zone : " (France entière)"}… (peut prendre 30-60s)`;
+  status.classList.remove("hidden");
+
+  try {
+    const url = `${AGENT_API}/agents/veille/run${zone ? "?zone=" + encodeURIComponent(zone) : ""}`;
+    const res = await fetch(url, { method: "POST" });
+    if (!res.ok) throw new Error(await res.text());
+    const data = await res.json();
+    status.textContent = `✅ ${data.opportunites_trouvees} opportunité(s) trouvée(s) sur ${data.zone}`;
+    await loadVeille();
+  } catch (e) {
+    status.textContent = `❌ Erreur : ${e.message}`;
+  } finally {
+    btn.disabled = false;
+    btn.textContent = "🔍 Lancer";
+  }
+}
+
+async function marquerVuVeille(id) {
+  try {
+    await fetch(`${AGENT_API}/veille/opportunites/${id}/vue`, { method: "PATCH" });
+    await loadVeille();
+  } catch (e) {
+    alert("Erreur : " + e.message);
+  }
+}
+
+function voirEmailVeille(id, objet, corps) {
+  document.getElementById("veille-email-objet").value = objet || "";
+  document.getElementById("veille-email-corps").value = corps || "";
+  document.getElementById("modal-veille-email").classList.remove("hidden");
+}
+
+function closeVeilleEmailModal(event) {
+  if (!event || event.target.id === "modal-veille-email") {
+    document.getElementById("modal-veille-email").classList.add("hidden");
+  }
+}
+
+function copierEmailVeille() {
+  const corps = document.getElementById("veille-email-corps").value;
+  navigator.clipboard.writeText(corps).then(() => {
+    const btn = document.querySelector("#modal-veille-email .btn-secondary");
+    const orig = btn.textContent;
+    btn.textContent = "✅ Copié !";
+    setTimeout(() => { btn.textContent = orig; }, 1500);
+  });
 }
 
 // --- Prospection ---

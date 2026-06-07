@@ -1687,3 +1687,124 @@ textarea { resize: vertical; }
   background: #fff;
   cursor: pointer;
 }
+
+/* ===== VEILLE ACTUALITÉS ===== */
+.veille-filtres {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+.veille-filtres select {
+  padding: 0.45rem 0.75rem;
+  border: 1.5px solid var(--border);
+  border-radius: 8px;
+  font-size: 13px;
+  background: #fff;
+  cursor: pointer;
+}
+.veille-filtre-vue {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 13px;
+  color: var(--text-muted);
+  cursor: pointer;
+}
+
+.veille-card {
+  background: #fff;
+  border: 1.5px solid var(--border);
+  border-left: 4px solid #aaa;
+  border-radius: var(--radius);
+  padding: 1rem 1.25rem;
+  margin-bottom: 0.75rem;
+  transition: opacity .2s;
+}
+.veille-card.urgence-haute   { border-left-color: #dc3545; }
+.veille-card.urgence-moyenne { border-left-color: #fd7e14; }
+.veille-card.urgence-faible  { border-left-color: #198754; }
+.veille-card.veille-card-vue { opacity: .55; }
+
+.veille-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+  margin-bottom: .5rem;
+}
+.veille-card-meta { display: flex; flex-wrap: wrap; gap: .35rem; align-items: center; }
+
+.veille-card-date {
+  font-size: 11px;
+  color: var(--text-muted);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.veille-card-org {
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: .15rem;
+}
+.veille-card-loc {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-bottom: .5rem;
+}
+.veille-card-desc {
+  font-size: .9rem;
+  margin-bottom: .4rem;
+  line-height: 1.5;
+}
+.veille-card-accroche {
+  font-size: .85rem;
+  color: #555;
+  background: #f8f9fa;
+  border-radius: 6px;
+  padding: .5rem .75rem;
+  margin-bottom: .6rem;
+  font-style: italic;
+}
+.veille-card-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .5rem;
+  margin-top: .5rem;
+}
+
+/* Badges type */
+.veille-badge-type {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 20px;
+  color: #fff;
+}
+.veille-badge-type.type-evenement     { background: #0d6efd; }
+.veille-badge-type.type-appel_projets { background: #6f42c1; }
+.veille-badge-type.type-innovation    { background: #0dcaf0; color: #000; }
+.veille-badge-type.type-recrutement   { background: #ffc107; color: #000; }
+.veille-badge-type.type-partenariat   { background: #20c997; }
+
+/* Badges urgence */
+.veille-badge-urgence {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 20px;
+  text-transform: uppercase;
+}
+.veille-badge-urgence.urg-haute   { background: #fde8ea; color: #dc3545; }
+.veille-badge-urgence.urg-moyenne { background: #fff3e0; color: #e65100; }
+.veille-badge-urgence.urg-faible  { background: #e8f5e9; color: #2e7d32; }
+
+/* Badge vu */
+.veille-badge-vue {
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 20px;
+  background: #e9ecef;
+  color: #6c757d;
+}
