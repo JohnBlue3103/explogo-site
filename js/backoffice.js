@@ -1,5 +1,5 @@
 const API = "https://api.explogo.fr";
-const AGENT_API = "http://localhost:8001"; // microservice agent IA (à changer pour le VPS en prod)
+const AGENT_API = "https://api.explogo.fr/agent";
 
 let token    = localStorage.getItem("bo_token") || null;
 let userRole = localStorage.getItem("bo_role")  || null;
