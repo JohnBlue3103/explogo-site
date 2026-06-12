@@ -2035,6 +2035,12 @@ async function loadVeille() {
             ${o.source_url ? `<a href="${o.source_url}" target="_blank" rel="noopener" class="btn-outline btn-sm">🔗 Source</a>` : ""}
             <button onclick="voirEmailVeille(${o.id}, ${JSON.stringify(o.email_objet || "")}, ${JSON.stringify(o.email_corps || "")})" class="btn-secondary btn-sm">📧 Voir email</button>
             ${!o.vue ? `<button onclick="marquerVuVeille(${o.id})" class="btn-outline btn-sm">✓ Marquer vu</button>` : ""}
+            <select class="veille-statut-select" onchange="updateStatutVeille(${o.id}, this.value)">
+              <option value="en_attente"    ${(o.statut||"en_attente")==="en_attente"    ? "selected":""}>⏳ En attente</option>
+              <option value="email_envoye"  ${o.statut==="email_envoye"  ? "selected":""}>📤 Email envoyé</option>
+              <option value="en_discussion" ${o.statut==="en_discussion" ? "selected":""}>💬 En discussion</option>
+              <option value="sans_suite"    ${o.statut==="sans_suite"    ? "selected":""}>❌ Sans suite</option>
+            </select>
           </div>
         </div>`;
     }).join("");
@@ -2074,6 +2080,14 @@ async function marquerVuVeille(id) {
     await loadVeille();
   } catch (e) {
     alert("Erreur : " + e.message);
+  }
+}
+
+async function updateStatutVeille(id, statut) {
+  try {
+    await fetch(`${AGENT_API}/veille/opportunites/${id}/statut?statut=${statut}`, { method: "PATCH" });
+  } catch (e) {
+    alert("Erreur statut : " + e.message);
   }
 }
 
