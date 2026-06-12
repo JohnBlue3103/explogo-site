@@ -2039,6 +2039,7 @@ async function loadVeille() {
             ${o.source_url ? `<a href="${o.source_url}" target="_blank" rel="noopener" class="btn-outline btn-sm">🔗 Source</a>` : ""}
             <button onclick="voirEmailVeille(${o.id}, ${JSON.stringify(o.email_objet || "")}, ${JSON.stringify(o.email_corps || "")})" class="btn-secondary btn-sm">📧 Voir email</button>
             ${!o.vue ? `<button onclick="marquerVuVeille(${o.id})" class="btn-outline btn-sm">✓ Marquer vu</button>` : ""}
+            <button onclick="supprimerVeille(${o.id})" class="btn-outline btn-sm" style="color:#dc3545;border-color:#dc3545" title="Supprimer">🗑</button>
             <select class="veille-statut-select" onchange="updateStatutVeille(${o.id}, this.value)">
               <option value="en_attente"    ${(o.statut||"en_attente")==="en_attente"    ? "selected":""}>⏳ En attente</option>
               <option value="email_envoye"  ${o.statut==="email_envoye"  ? "selected":""}>📤 Email envoyé</option>
@@ -2081,6 +2082,16 @@ async function lancerVeille() {
 async function marquerVuVeille(id) {
   try {
     await fetch(`${AGENT_API}/veille/opportunites/${id}/vue`, { method: "PATCH" });
+    await loadVeille();
+  } catch (e) {
+    alert("Erreur : " + e.message);
+  }
+}
+
+async function supprimerVeille(id) {
+  if (!confirm("Supprimer cette opportunité ?")) return;
+  try {
+    await fetch(`${AGENT_API}/veille/opportunites/${id}`, { method: "DELETE" });
     await loadVeille();
   } catch (e) {
     alert("Erreur : " + e.message);
