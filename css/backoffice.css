@@ -1792,11 +1792,14 @@ textarea { resize: vertical; }
   border-radius: 20px;
   color: #fff;
 }
-.veille-badge-type.type-evenement     { background: #0d6efd; }
-.veille-badge-type.type-appel_projets { background: #6f42c1; }
-.veille-badge-type.type-innovation    { background: #0dcaf0; color: #000; }
-.veille-badge-type.type-recrutement   { background: #ffc107; color: #000; }
-.veille-badge-type.type-partenariat   { background: #20c997; }
+.veille-badge-type.type-appel_projets        { background: #6f42c1; }
+.veille-badge-type.type-marche_public        { background: #dc3545; }
+.veille-badge-type.type-recrutement          { background: #ffc107; color: #000; }
+.veille-badge-type.type-subvention           { background: #198754; }
+.veille-badge-type.type-recherche_prestataire{ background: #0d6efd; }
+.veille-badge-type.type-evenement            { background: #adb5bd; color: #000; }
+.veille-badge-type.type-innovation           { background: #0dcaf0; color: #000; }
+.veille-badge-type.type-partenariat          { background: #20c997; }
 
 /* Badges urgence */
 .veille-badge-urgence {

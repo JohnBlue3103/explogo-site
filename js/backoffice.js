@@ -1966,8 +1966,12 @@ function switchCommercialTab(tab) {
    ============================================================= */
 
 const VEILLE_TYPE_LABELS = {
-  evenement: "Événement",
   appel_projets: "Appel à projets",
+  marche_public: "Marché public",
+  recrutement: "Recrutement",
+  subvention: "Subvention",
+  recherche_prestataire: "Recherche prestataire",
+  evenement: "Événement",
   innovation: "Innovation",
   recrutement: "Recrutement",
   partenariat: "Partenariat",
