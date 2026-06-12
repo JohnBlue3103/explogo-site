@@ -1971,6 +1971,7 @@ const VEILLE_TYPE_LABELS = {
   recrutement: "Recrutement",
   subvention: "Subvention",
   recherche_prestataire: "Recherche prestataire",
+  signal_numerique: "Signal numérique",
   evenement: "Événement",
   innovation: "Innovation",
   recrutement: "Recrutement",

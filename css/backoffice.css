@@ -1797,6 +1797,7 @@ textarea { resize: vertical; }
 .veille-badge-type.type-recrutement          { background: #ffc107; color: #000; }
 .veille-badge-type.type-subvention           { background: #198754; }
 .veille-badge-type.type-recherche_prestataire{ background: #0d6efd; }
+.veille-badge-type.type-signal_numerique     { background: #0dcaf0; color: #000; }
 .veille-badge-type.type-evenement            { background: #adb5bd; color: #000; }
 .veille-badge-type.type-innovation           { background: #0dcaf0; color: #000; }
 .veille-badge-type.type-partenariat          { background: #20c997; }
