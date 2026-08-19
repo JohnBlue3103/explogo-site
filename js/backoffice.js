@@ -446,6 +446,7 @@ function renderUsers(users, page, totalPages) {
         ${isOrg ? `<button class="btn-secondary" onclick="openPromoEdit(_userCache['${u.id}'])">Modifier org</button>` : ""}
         ${isOrg ? `<button class="btn-icon danger" onclick="revoquerOrg(${org.id}, '${esc(u.pseudo)}')">Révoquer</button>` : ""}
         ${(isCollab || isAdmin) ? `<button class="btn-icon danger" onclick="revoquerRole('${u.id}', '${esc(u.pseudo)}')">Révoquer</button>` : ""}
+        ${!isOrg ? `<button class="btn-icon danger" onclick="deleteUser('${u.id}', '${esc(u.pseudo)}')">Supprimer</button>` : ""}
       </div>
     </div>`;
   }).join("");
@@ -576,6 +577,19 @@ async function revoquerRole(userId, pseudo) {
     const res = await apiFetch(`/admin/utilisateurs/${userId}/role`, { method: "DELETE" });
     if (res.ok) loadAdminUsers();
     else alert("Erreur lors de la révocation");
+  } catch { alert("Serveur indisponible"); }
+}
+
+async function deleteUser(userId, pseudo) {
+  if (!confirm(`Supprimer définitivement le compte de ${pseudo} ? Cette action est irréversible : toutes ses visites, ses posts et ses données seront perdus.`)) return;
+  try {
+    const res = await apiFetch(`/admin/utilisateurs/${userId}`, { method: "DELETE" });
+    if (res.ok) {
+      loadAdminUsers();
+    } else {
+      const msg = await res.text().catch(() => "");
+      alert(msg || "Erreur lors de la suppression");
+    }
   } catch { alert("Serveur indisponible"); }
 }
 
@@ -945,6 +959,7 @@ function renderEtapes() {
             <input type="text" placeholder="ex: bataille-pech-david"
               value="${esc(e.qrCode || '')}"
               onchange="updateEtape(${i}, 'qrCode', this.value)">
+            ${e.qrCode ? `<button type="button" onclick="showQRCode('${esc(e.qrCode)}','${esc(e.poiNom||'Étape '+(i+1))}')" style="margin-top:6px;width:100%;padding:6px 0;background:#2563eb;color:#fff;border:none;border-radius:6px;cursor:pointer;font-size:12px;font-weight:600">📄 Voir / Imprimer QR</button>` : ''}
           </div>
           <div class="form-group" style="flex:1;margin:0">
             <label style="font-size:11px;color:#2563eb;font-weight:700;text-transform:uppercase;letter-spacing:.5px">🎬 Clé vidéo</label>
@@ -2022,6 +2037,29 @@ async function loadVeille() {
     el.innerHTML = items.map(o => {
       const typeLabel = VEILLE_TYPE_LABELS[o.type_opportunite] || o.type_opportunite || "";
       const vueClass  = o.vue ? " veille-card-vue" : "";
+
+      // Scores — affichés uniquement si présents
+      const hasScores = o.score_commercial != null;
+      const scoreBar = (label, val, color) => val != null ? `
+        <div class="veille-score-row">
+          <span class="veille-score-label">${label}</span>
+          <div class="veille-score-track">
+            <div class="veille-score-fill" style="width:${val*10}%;background:${color}"></div>
+          </div>
+          <span class="veille-score-val">${val}/10</span>
+        </div>` : "";
+
+      const scoresBlock = hasScores ? `
+        <div class="veille-scores">
+          ${scoreBar("Potentiel commercial", o.score_commercial, "#0d6efd")}
+          ${scoreBar("Facilité contact", o.facilite_contact, "#198754")}
+          ${scoreBar("Probabilité conversion", o.probabilite_conversion, "#fd7e14")}
+          ${o.budget_estime ? `<p class="veille-budget">Budget estimé : <strong>${o.budget_estime}</strong></p>` : ""}
+        </div>` : "";
+
+      const besoinBlock = o.besoin_identifie ? `<p class="veille-card-besoin"><strong>Besoin :</strong> ${o.besoin_identifie}</p>` : "";
+      const pourquoiBlock = o.pourquoi_explogo ? `<p class="veille-card-pourquoi"><strong>Pourquoi ExploGo :</strong> ${o.pourquoi_explogo}</p>` : "";
+
       return `
         <div class="veille-card urgence-${o.urgence}${vueClass}" id="veille-card-${o.id}">
           <div class="veille-card-header">
@@ -2035,7 +2073,10 @@ async function loadVeille() {
           <h4 class="veille-card-org">${o.organisation || "—"}</h4>
           <p class="veille-card-loc">${[o.ville, o.region].filter(Boolean).join(" · ")}</p>
           ${o.description ? `<p class="veille-card-desc">${o.description}</p>` : ""}
+          ${besoinBlock}
+          ${pourquoiBlock}
           ${o.accroche ? `<p class="veille-card-accroche">💡 ${o.accroche}</p>` : ""}
+          ${scoresBlock}
           <div class="veille-card-actions">
             ${o.source_url ? `<a href="${o.source_url}" target="_blank" rel="noopener" class="btn-outline btn-sm">🔗 Source</a>` : ""}
             <button onclick="voirEmailVeille(${o.id}, ${JSON.stringify(o.email_objet || "")}, ${JSON.stringify(o.email_corps || "")})" class="btn-secondary btn-sm">📧 Voir email</button>
@@ -2437,3 +2478,47 @@ function esc(str) {
     .replace(/>/g, "&gt;")
     .replace(/"/g, "&quot;");
 }
+
+/* =========================
+   QR CODE — affichage & téléchargement
+   ========================= */
+let _qrInstance = null;
+
+function showQRCode(value, label) {
+  document.getElementById("qrModalTitle").textContent = label;
+  document.getElementById("qrModalValue").textContent = value;
+
+  const container = document.getElementById("qrCanvas");
+  container.innerHTML = "";
+  _qrInstance = new QRCode(container, {
+    text: value,
+    width: 260,
+    height: 260,
+    colorDark: "#000000",
+    colorLight: "#ffffff",
+    correctLevel: QRCode.CorrectLevel.H,
+  });
+
+  const modal = document.getElementById("qrModal");
+  modal.style.display = "flex";
+}
+
+function closeQRModal() {
+  document.getElementById("qrModal").style.display = "none";
+  document.getElementById("qrCanvas").innerHTML = "";
+  _qrInstance = null;
+}
+
+function downloadQR() {
+  const canvas = document.querySelector("#qrCanvas canvas");
+  if (!canvas) return;
+  const value = document.getElementById("qrModalValue").textContent;
+  const link = document.createElement("a");
+  link.download = `qr-${value}.png`;
+  link.href = canvas.toDataURL("image/png");
+  link.click();
+}
+
+document.getElementById("qrModal")?.addEventListener("click", function(e) {
+  if (e.target === this) closeQRModal();
+});
