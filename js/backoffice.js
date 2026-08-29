@@ -1000,6 +1000,9 @@ const CATEGORY_CONFIG = {
   demeure:       { label: "Demeures",       icon: "🏠" },
   fortification: { label: "Fortifications", icon: "🏯" },
   personnage:    { label: "Personnages",    icon: "👤" },
+  commerce:      { label: "Commerces",      icon: "🏪" },
+  agriculture:   { label: "Agriculture",    icon: "🌾" },
+  public:        { label: "Bâtiments publics", icon: "🏛️" },
 };
 
 const CATEGORY_EXTRA_FIELDS = {
