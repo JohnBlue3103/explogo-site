@@ -627,6 +627,8 @@ textarea { resize: vertical; }
 
 .admin-user-email { font-size: 0.82rem; color: var(--text-muted); }
 
+.admin-user-date { font-size: 0.75rem; color: var(--text-muted); margin-top: 0.15rem; }
+
 .admin-org-info {
   font-size: 0.8rem;
   color: var(--primary);

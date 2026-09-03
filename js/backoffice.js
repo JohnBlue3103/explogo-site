@@ -400,6 +400,13 @@ function filterUsers() {
   }, 350);
 }
 
+function formatDateInscription(iso) {
+  if (!iso) return "";
+  const d = new Date(iso);
+  if (isNaN(d.getTime())) return "";
+  return d.toLocaleDateString("fr-FR", { day: "2-digit", month: "2-digit", year: "numeric" });
+}
+
 function renderUsers(users, page, totalPages) {
   const list = document.getElementById("adminUserList");
   if (!users.length) {
@@ -435,6 +442,7 @@ function renderUsers(users, page, totalPages) {
           <span class="admin-auth-badge">${authIcon}</span>
         </div>
         <div class="admin-user-email">${esc(u.email)}</div>
+        ${formatDateInscription(u.dateInscription) ? `<div class="admin-user-date">Inscrit le ${formatDateInscription(u.dateInscription)}</div>` : ""}
         ${isOrg && org && org.nom ? `<div class="admin-org-info">
           ${esc(org.nom)}${org.ville ? ` · ${esc(org.ville)}` : ""}
           · <span class="parcours-quota-pill ${org.parcoursCount >= org.maxParcours ? 'quota-full' : ''}">${org.parcoursCount ?? 0} / ${org.maxParcours} parcours</span>
