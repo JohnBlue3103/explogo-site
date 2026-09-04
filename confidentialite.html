@@ -55,7 +55,7 @@
             </div>
             <div class="mini-card">
               <span class="mini-kicker">Entrée en vigueur</span>
-              <strong>5 août 2025</strong><br />
+              <strong>5 septembre 2026</strong><br />
               Version actuelle
             </div>
           </div>
@@ -68,7 +68,7 @@
     <div class="container legal-layout">
       <article class="legal-main">
         <div class="article-intro">
-          <p><strong>Date d’entrée en vigueur :</strong> 5 août 2025</p>
+          <p><strong>Date d’entrée en vigueur :</strong> 5 septembre 2026</p>
           <p>
             ExploGo accorde une importance particulière à la protection des données personnelles.
             La présente politique vise à informer les utilisateurs, de manière claire et transparente,
@@ -158,6 +158,37 @@
             préalable de l’utilisateur.
           </p>
 
+          <h3>Microphone</h3>
+          <p>
+            Avec le consentement préalable de l’utilisateur, ExploGo peut accéder au microphone de
+            l’appareil afin de permettre l’enregistrement et l’envoi de messages vocaux dans la
+            messagerie privée entre utilisateurs. L’enregistrement n’est déclenché que par une
+            action volontaire de l’utilisateur et n’est jamais réalisé en arrière-plan.
+          </p>
+
+          <h3>Messagerie privée entre utilisateurs</h3>
+          <p>
+            ExploGo propose une messagerie privée permettant aux utilisateurs de s’échanger des
+            messages texte, des messages vocaux et des GIF. Le contenu de ces échanges (texte
+            saisi, fichier audio enregistré, ou GIF sélectionné) est conservé sur les serveurs
+            d’ExploGo afin de permettre son affichage dans l’historique de conversation.
+          </p>
+          <p>
+            Ces échanges sont strictement privés entre les deux utilisateurs concernés et ne sont
+            accessibles à aucun autre utilisateur. ExploGo n’analyse pas le contenu des messages de
+            manière automatisée, sauf dans le cadre d’un signalement effectué par l’un des
+            utilisateurs concernés.
+          </p>
+
+          <h3>Blocage et signalement entre utilisateurs</h3>
+          <p>
+            Afin d’assurer la sécurité des utilisateurs, ExploGo permet à chacun de bloquer ou de
+            signaler un autre utilisateur. La liste des comptes bloqués par un utilisateur, ainsi
+            que les signalements effectués, sont conservés afin d’appliquer les restrictions
+            demandées (suivi, commentaires, messages) et, le cas échéant, d’examiner les
+            signalements transmis.
+          </p>
+
           <h3>Contacts</h3>
           <p>
             Avec le consentement de l’utilisateur, ExploGo peut accéder aux contacts du téléphone
@@ -175,6 +206,7 @@
           <ul class="list-tight">
             <li>adresse IP ;</li>
             <li>identifiants techniques de session (tokens d’authentification) ;</li>
+            <li>identifiant de notification push (token de l’appareil), lorsque l’utilisateur autorise la réception de notifications ;</li>
             <li>journaux d’erreurs et de diagnostic (logs applicatifs) ;</li>
             <li>données liées à la sécurité et à la prévention des abus.</li>
           </ul>
@@ -192,6 +224,9 @@
             <li>permettre l’authentification et la sécurité des accès ;</li>
             <li>proposer des fonctionnalités géolocalisées ;</li>
             <li>permettre l’ajout de contenus et les interactions sociales ;</li>
+            <li>permettre la messagerie privée entre utilisateurs (texte, messages vocaux, GIF) ;</li>
+            <li>permettre aux utilisateurs de bloquer ou de signaler un autre utilisateur pour leur sécurité ;</li>
+            <li>envoyer des notifications relatives à l’activité du compte (nouveau message, nouvel abonné, etc.), lorsque l’utilisateur y a consenti ;</li>
             <li>améliorer l’expérience utilisateur et les fonctionnalités du service ;</li>
             <li>assurer la sécurité, la maintenance et la prévention des usages abusifs.</li>
           </ul>
@@ -206,8 +241,8 @@
               fonctionnalités principales.
             </li>
             <li>
-              <strong>Consentement :</strong> accès à la localisation, à la caméra, à la galerie et
-              aux contacts du téléphone.
+              <strong>Consentement :</strong> accès à la localisation, à la caméra, à la galerie, au
+              microphone et aux contacts du téléphone, ainsi qu’à l’envoi de notifications push.
             </li>
             <li>
               <strong>Intérêt légitime :</strong> sécurité du service, prévention des usages abusifs,
@@ -247,7 +282,14 @@
           </p>
           <ul class="list-tight">
             <li>OVHcloud pour l’hébergement des serveurs et des données ;</li>
-            <li>les services nécessaires à l’envoi d’e-mails techniques ou fonctionnels.</li>
+            <li>les services nécessaires à l’envoi d’e-mails techniques ou fonctionnels ;</li>
+            <li>
+              GIPHY, pour la recherche et l’envoi de GIF dans la messagerie : lorsqu’un utilisateur
+              recherche un GIF, les termes saisis sont transmis directement depuis l’application à
+              l’API GIPHY, indépendamment des serveurs d’ExploGo. Cet usage est soumis aux
+              conditions d’utilisation et à la politique de confidentialité propres à GIPHY ;
+            </li>
+            <li>les services techniques nécessaires à l’envoi de notifications push (Expo, Apple, Google) sur les appareils des utilisateurs.</li>
           </ul>
 
           <p>
@@ -261,6 +303,11 @@
           <h2>7. Hébergement et sécurité</h2>
           <p>
             Les données sont hébergées par OVHcloud sur des serveurs situés dans l’Union européenne.
+          </p>
+          <p>
+            Les fichiers médias (photos, messages vocaux) sont stockés sur un espace de stockage
+            objet hébergé chez OVHcloud, distinct de la base de données mais soumis aux mêmes
+            garanties de localisation et de sécurité.
           </p>
           <p>
             ExploGo met en place des mesures techniques et organisationnelles appropriées afin de
