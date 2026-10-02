@@ -1879,3 +1879,52 @@ textarea { resize: vertical; }
   background: #e9ecef;
   color: #6c757d;
 }
+
+/* ===== ZONES CONTRÔLÉES (réglages du jeu) ===== */
+.zc { padding-bottom: 6rem; }
+.zc-section { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); margin-bottom: 0.75rem; box-shadow: var(--shadow); }
+.zc-section > summary { cursor: pointer; padding: 0.9rem 1.1rem; font-weight: 700; font-size: 1rem; list-style: none; display: flex; align-items: center; gap: 0.5rem; }
+.zc-section > summary::before { content: "▸"; color: var(--text-muted); transition: transform .15s; }
+.zc-section[open] > summary::before { transform: rotate(90deg); }
+.zc-section-corps { padding: 0 1.1rem 1rem; }
+.zc-pastille { background: #FCEFD2; color: #8A5A12; font-size: 0.72rem; font-weight: 700; padding: 2px 8px; border-radius: 999px; }
+.zc-aide { color: var(--text-muted); font-size: 0.82rem; margin: 0.15rem 0 0.6rem; }
+.zc-scroll { overflow-x: auto; }
+.zc-table { border-collapse: collapse; width: 100%; font-size: 0.88rem; }
+.zc-table th, .zc-table td { border-bottom: 1px solid var(--border); padding: 0.4rem 0.5rem; text-align: left; white-space: nowrap; }
+.zc-table th { color: var(--text-muted); font-weight: 600; font-size: 0.8rem; }
+.zc-unite { font-weight: 600; }
+.zc-diag { color: var(--text-muted); text-align: center !important; }
+.zc-input { width: 90px; padding: 0.35rem 0.45rem; border: 1px solid var(--border); border-radius: 8px; font-size: 0.9rem; background: #fff; }
+.zc-input.zc-modifie { border-color: #E0B654; background: #FFF9EC; }
+.zc-input.zc-brouillon, .zc-choix.zc-brouillon { outline: 2px solid var(--primary); background: #EEF7EE; }
+.zc-input.zc-fort { color: #2E7D32; font-weight: 700; }
+.zc-input.zc-faible { color: #B5482F; font-weight: 700; }
+b.zc-fort { color: #2E7D32; } b.zc-faible { color: #B5482F; }
+.zc-ligne { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: 0.6rem 0; border-bottom: 1px solid var(--border); }
+.zc-ligne:last-child { border-bottom: none; }
+.zc-libelle { font-weight: 600; font-size: 0.92rem; }
+.zc-ligne-champ { display: flex; align-items: center; gap: 0.4rem; flex-shrink: 0; }
+.zc-choix { display: flex; flex-wrap: wrap; gap: 0.3rem 0.8rem; max-width: 520px; padding: 0.3rem; border-radius: 8px; font-size: 0.85rem; }
+.zc-defaut { border: 1px solid var(--border); background: #fff; border-radius: 8px; cursor: pointer; padding: 0.2rem 0.5rem; font-size: 0.95rem; }
+.zc-defaut:hover { border-color: var(--text-muted); }
+.zc-barre { position: fixed; left: 0; right: 0; bottom: 0; z-index: 50; display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap; padding: 0.8rem 1.5rem; background: #FFF9EC; border-top: 2px solid #E0B654; box-shadow: 0 -4px 16px rgba(0,0,0,0.08); font-weight: 600; }
+.zc-barre-actions { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+.zc-carte { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 1rem; box-shadow: var(--shadow); }
+.zc-carte h3 { font-size: 1rem; margin-bottom: 0.6rem; }
+.zc-carte h4 { font-size: 0.88rem; margin: 0.8rem 0 0.3rem; color: var(--text-muted); }
+.zc-simu-grille { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1rem; margin-bottom: 1rem; }
+.zc-champ { display: flex; flex-direction: column; gap: 0.25rem; font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.6rem; }
+.zc-champ input, .zc-champ select { padding: 0.45rem; border: 1px solid var(--border); border-radius: 8px; font-size: 0.92rem; color: var(--text); }
+.zc-champ-ligne { flex-direction: row; align-items: center; justify-content: space-between; color: var(--text); }
+.zc-champ-ligne input { width: 90px; }
+.zc-case { display: flex; align-items: center; gap: 0.4rem; font-size: 0.88rem; margin-top: 0.4rem; }
+.zc-resultat { margin-top: 0.5rem; }
+.zc-taux { text-align: center; margin-bottom: 0.8rem; }
+.zc-taux-val { font-size: 2.4rem; font-weight: 800; color: var(--primary); }
+.zc-jauge { height: 10px; background: #F1E4E1; border-radius: 999px; overflow: hidden; margin: 0.6rem auto 0; max-width: 420px; }
+.zc-jauge > div { height: 100%; background: var(--primary); }
+@media (max-width: 640px) {
+  .zc-ligne { flex-direction: column; align-items: flex-start; }
+  .zc-barre { padding: 0.7rem 1rem; }
+}

@@ -66,6 +66,7 @@ window.addEventListener("popstate", (e) => {
     else if (view === "admin-users") loadAdminUsers();
     else if (view === "data")     loadCategories();
     else if (view === "contributions") switchValidationTab("poi");
+    else if (view === "zones")    zcCharger();
   } else {
     if (token) showDashboard();
     else showView("login");
@@ -92,6 +93,7 @@ function syncMobileNav(isAdmin) {
   document.getElementById("adminNavBtnM")?.classList.toggle("hidden", !isAdmin);
   document.getElementById("commercialNavBtnM")?.classList.toggle("hidden", !isAdmin);
   document.getElementById("actualiteNavBtnM")?.classList.toggle("hidden", !isAdmin);
+  document.getElementById("zonesNavBtnM")?.classList.toggle("hidden", !isAdmin);
 }
 
 function showDashboard() {
@@ -107,6 +109,7 @@ function showDashboard() {
   document.getElementById("actualiteNavBtn")?.classList.toggle("hidden", !isAdmin);
   document.getElementById("dataNavBtn")?.classList.toggle("hidden", !isAdmin);
   document.getElementById("contribNavBtn")?.classList.toggle("hidden", !isAdmin);
+  document.getElementById("zonesNavBtn")?.classList.toggle("hidden", !isAdmin);
   syncMobileNav(isAdmin);
 
   if (isAdmin) {

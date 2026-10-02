@@ -50,6 +50,7 @@
       <button id="adminNavBtn" class="btn-outline hidden" onclick="showAdmin()">⚙ Administration</button>
       <button id="commercialNavBtn" class="btn-outline hidden" onclick="showCommercial()">💼 Commercial</button>
       <button id="actualiteNavBtn" class="btn-outline hidden" onclick="showActualites()">📰 Actualités <span id="veille-badge-nav" class="badge-count hidden"></span></button>
+      <button id="zonesNavBtn" class="btn-outline hidden" onclick="showZones()">🚩 Zones contrôlées</button>
       <button class="btn-outline" onclick="logout()">Déconnexion</button>
     </div>
     <button class="topbar-hamburger" id="menuToggle" onclick="toggleMobileMenu()" aria-label="Menu">☰</button>
@@ -61,6 +62,7 @@
     <button id="adminNavBtnM" class="mobile-nav-btn hidden" onclick="showAdmin(); closeMobileMenu()">⚙ Administration</button>
     <button id="commercialNavBtnM" class="mobile-nav-btn hidden" onclick="showCommercial(); closeMobileMenu()">💼 Commercial</button>
     <button id="actualiteNavBtnM" class="mobile-nav-btn hidden" onclick="showActualites(); closeMobileMenu()">📰 Actualités</button>
+    <button id="zonesNavBtnM" class="mobile-nav-btn hidden" onclick="showZones(); closeMobileMenu()">🚩 Zones contrôlées</button>
     <button class="mobile-nav-btn mobile-nav-logout" onclick="logout()">↪ Déconnexion</button>
   </div>
 
@@ -98,6 +100,14 @@
             <div class="dash-card-val" id="statPoiVal">—</div>
             <div class="dash-card-label">Points d'intérêt</div>
             <div class="dash-card-hint">Gérer les données →</div>
+          </div>
+        </div>
+        <div class="dash-card dash-card-green" onclick="showZones()">
+          <div class="dash-card-icon">🚩</div>
+          <div class="dash-card-body">
+            <div class="dash-card-val">⚙</div>
+            <div class="dash-card-label">Zones contrôlées</div>
+            <div class="dash-card-hint">Réglages et simulateur →</div>
           </div>
         </div>
       </div>
@@ -430,6 +440,91 @@
         <div class="loading">Chargement…</div>
       </div>
     </div>
+  </main>
+</div>
+
+<!-- ========== ZONES CONTRÔLÉES (réglages du jeu) ========== -->
+<div id="view-zones" class="view hidden">
+  <header class="topbar">
+    <div class="topbar-brand">
+      <img src="assets/img/logo.png" alt="Explogo">
+      <span>Zones contrôlées</span>
+    </div>
+    <div class="topbar-right">
+      <button class="btn-outline" onclick="showDashboard()">← Accueil</button>
+      <button class="btn-outline" onclick="logout()">Déconnexion</button>
+    </div>
+  </header>
+
+  <main class="main-content zc">
+    <div class="page-header">
+      <div>
+        <h2>Réglages des zones contrôlées</h2>
+        <p class="page-sub">Prix des unités, combats, économie… Les changements s'appliquent dès l'enregistrement, sans redéployer.</p>
+      </div>
+    </div>
+
+    <div class="admin-tabs">
+      <button class="admin-tab active" data-zc-onglet="reglages" onclick="zcOnglet('reglages')">⚙ Réglages</button>
+      <button class="admin-tab" data-zc-onglet="simulateur" onclick="zcOnglet('simulateur')">🎲 Simulateur</button>
+      <button class="admin-tab" data-zc-onglet="historique" onclick="zcOnglet('historique')">🕓 Historique</button>
+    </div>
+
+    <!-- Réglages -->
+    <section id="zc-reglages">
+      <div id="zc-reglages-contenu"><div class="loading">Chargement…</div></div>
+      <div id="zc-barre" class="zc-barre hidden">
+        <span id="zc-barre-txt"></span>
+        <div class="zc-barre-actions">
+          <button class="btn-outline" onclick="zcAnnuler()">Annuler</button>
+          <button class="btn-outline" onclick="zcOnglet('simulateur')">🎲 Tester d'abord</button>
+          <button class="btn-primary" id="zc-enregistrer" onclick="zcEnregistrer()">Enregistrer</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Simulateur -->
+    <section id="zc-simulateur" class="hidden">
+      <p class="page-sub" style="margin-bottom:1rem">Rejoue la bataille plusieurs centaines de fois avec les réglages actuels et donne les statistiques. Rien n'est enregistré.</p>
+      <div class="zc-simu-grille">
+        <div class="zc-carte">
+          <h3>⚔️ Attaquant</h3>
+          <div id="zc-simu-att"></div>
+        </div>
+        <div class="zc-carte">
+          <h3>🛡️ Défenseur</h3>
+          <div id="zc-simu-def"></div>
+        </div>
+        <div class="zc-carte">
+          <h3>🌍 Conditions</h3>
+          <label class="zc-champ">Catégorie du lieu
+            <select id="zc-simu-cat"></select>
+          </label>
+          <label class="zc-champ">Météo
+            <select id="zc-simu-meteo">
+              <option value="BEAU">☀️ Beau temps</option>
+              <option value="PLUIE">🌧️ Pluie</option>
+              <option value="NEIGE">❄️ Neige</option>
+              <option value="BROUILLARD">🌫️ Brouillard</option>
+              <option value="VENT">💨 Vent fort</option>
+              <option value="CANICULE">🌡️ Canicule</option>
+            </select>
+          </label>
+          <label class="zc-champ">Nombre de batailles
+            <input id="zc-simu-iter" type="number" min="1" max="2000" value="1000">
+          </label>
+          <label class="zc-case"><input id="zc-simu-ev" type="checkbox"> Avec événements aléatoires</label>
+          <label class="zc-case"><input id="zc-simu-essai" type="checkbox" checked> Utiliser mes modifications non enregistrées</label>
+          <button class="btn-primary" style="margin-top:1rem;width:100%" onclick="zcSimuler()">Lancer la simulation</button>
+        </div>
+      </div>
+      <div id="zc-simu-resultat"></div>
+    </section>
+
+    <!-- Historique -->
+    <section id="zc-historique" class="hidden">
+      <div id="zc-historique-contenu"><div class="loading">Chargement…</div></div>
+    </section>
   </main>
 </div>
 
@@ -883,5 +978,6 @@
 
 <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
 <script src="js/backoffice.js"></script>
+<script src="js/zones.js"></script>
 </body>
 </html>
