@@ -27,7 +27,7 @@ const ZC_SECTIONS = {
   "Batailles": { icone: "⚔️", desc: "Manches, murs, pillage et tailles maximales des armées." },
   "Coffres": { icone: "📦", desc: "Écus produits chaque jour par une zone contrôlée." },
   "Entretien": { icone: "🍞", desc: "Coût des troupes et désertion quand on ne peut pas payer." },
-  "Événements": { icone: "🎲", desc: "Probabilité et force des coups du sort pendant les batailles." },
+  "Événements": { icone: "🎲", desc: "Un événement à chaque bataille, tiré au sort selon ces poids (10 sort deux fois plus souvent que 5, 0 = jamais), et la force de chacun." },
   "Zones": { icone: "🚩", desc: "Catégories de lieux qu'on ne peut pas contrôler." },
 };
 // Sections affichées en pleine largeur (tableaux) ; les autres vont deux par deux
