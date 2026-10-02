@@ -1989,3 +1989,11 @@ b.zc-fort { color: #2E7D32; } b.zc-faible { color: #B5482F; }
   .zc-onglets { grid-template-columns: 1fr; }
   .zc-grille-sections { grid-template-columns: 1fr; }
 }
+
+/* Bandeau environnement de recette (?env=recette) */
+.bo-env-recette {
+  position: sticky; top: 0; z-index: 9999;
+  background: #e8590c; color: #fff; text-align: center;
+  font-weight: 700; font-size: 13px; letter-spacing: .5px; padding: 6px 12px;
+}
+.bo-env-recette a { color: #fff; text-decoration: underline; font-weight: 400; }

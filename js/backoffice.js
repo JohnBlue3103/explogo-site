@@ -1,8 +1,18 @@
-const API = "https://api.explogo.fr";
-const AGENT_API = "https://api.explogo.fr/agent";
+/* Environnement : prod par défaut, recette avec ?env=recette (mémorisé pour
+   l'onglet ; ?env=prod pour revenir). Session séparée par environnement. */
+const BO_ENV = (() => {
+  const p = new URLSearchParams(location.search).get("env");
+  if (p === "recette" || p === "prod") sessionStorage.setItem("bo_env", p);
+  return sessionStorage.getItem("bo_env") === "recette" ? "recette" : "prod";
+})();
+const API_BASE = BO_ENV === "recette" ? "https://api-recette.explogo.fr" : "https://api.explogo.fr";
+const K = (cle) => (BO_ENV === "recette" ? cle + "_recette" : cle);
 
-let token    = localStorage.getItem("bo_token") || null;
-let userRole = localStorage.getItem("bo_role")  || null;
+const API = API_BASE;
+const AGENT_API = API_BASE + "/agent";
+
+let token    = localStorage.getItem(K("bo_token")) || null;
+let userRole = localStorage.getItem(K("bo_role"))  || null;
 let currentParcours = null;
 let etapes = [];
 
@@ -24,13 +34,21 @@ const POI_TYPES = [
    INIT
    ========================= */
 window.addEventListener("DOMContentLoaded", () => {
+  if (BO_ENV === "recette") {
+    const b = document.createElement("div");
+    b.className = "bo-env-recette";
+    b.innerHTML = 'RECETTE — api-recette.explogo.fr · <a href="?env=prod">revenir à la prod</a>';
+    document.body.prepend(b);
+    document.title = "[RECETTE] " + document.title;
+  }
+
   if (token) {
     if (userRole === "ROLE_COLLABORATEUR") {
-      const pseudo = localStorage.getItem("bo_pseudo") || "";
+      const pseudo = localStorage.getItem(K("bo_pseudo")) || "";
       document.getElementById("collabName").textContent = pseudo;
       showView("collab");
     } else {
-      const pseudo = localStorage.getItem("bo_pseudo") || "";
+      const pseudo = localStorage.getItem(K("bo_pseudo")) || "";
       document.getElementById("orgName").textContent = pseudo;
       showDashboard();
     }
@@ -82,7 +100,7 @@ function closeMobileMenu() {
   document.getElementById("mobileNavMenu")?.classList.add("hidden");
 }
 function syncMobileNav(isAdmin) {
-  const pseudo = localStorage.getItem("bo_pseudo") || "";
+  const pseudo = localStorage.getItem(K("bo_pseudo")) || "";
   const orgMob = document.getElementById("orgNameMobile");
   if (orgMob) {
     orgMob.textContent = pseudo;
@@ -185,9 +203,9 @@ async function handleLogin(e) {
     token = data.token;
     userRole = data.role;
     const pseudo = data.pseudo || data.email;
-    localStorage.setItem("bo_token", token);
-    localStorage.setItem("bo_role", userRole);
-    localStorage.setItem("bo_pseudo", pseudo);
+    localStorage.setItem(K("bo_token"), token);
+    localStorage.setItem(K("bo_role"), userRole);
+    localStorage.setItem(K("bo_pseudo"), pseudo);
     if (userRole === "ROLE_COLLABORATEUR") {
       document.getElementById("collabName").textContent = pseudo;
       showView("collab");
@@ -255,9 +273,9 @@ async function sendResetEmail() {
 }
 
 function logout() {
-  localStorage.removeItem("bo_token");
-  localStorage.removeItem("bo_role");
-  localStorage.removeItem("bo_pseudo");
+  localStorage.removeItem(K("bo_token"));
+  localStorage.removeItem(K("bo_role"));
+  localStorage.removeItem(K("bo_pseudo"));
   token = null;
   userRole = null;
   showView("login");
