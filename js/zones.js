@@ -19,6 +19,19 @@ const ZC_CHAMPS_UNITE = [
   { champ: "niveau", label: "Niveau requis" },
 ];
 const ZC_ORDRE_SECTIONS = ["Unités", "Affinités", "Écus", "Batailles", "Coffres", "Entretien", "Événements", "Zones"];
+// Icône et phrase d'explication de chaque section
+const ZC_SECTIONS = {
+  "Unités": { icone: "🛡️", desc: "Attaque, vie, prix, entretien et niveau requis de chaque unité." },
+  "Affinités": { icone: "🔁", desc: "Qui est fort ou faible contre qui : le cycle des unités." },
+  "Écus": { icone: "💰", desc: "Ce que gagnent les joueurs : bonus du jour, visites, niveaux, solde de départ." },
+  "Batailles": { icone: "⚔️", desc: "Manches, murs, pillage et tailles maximales des armées." },
+  "Coffres": { icone: "📦", desc: "Écus produits chaque jour par une zone contrôlée." },
+  "Entretien": { icone: "🍞", desc: "Coût des troupes et désertion quand on ne peut pas payer." },
+  "Événements": { icone: "🎲", desc: "Probabilité et force des coups du sort pendant les batailles." },
+  "Zones": { icone: "🚩", desc: "Catégories de lieux qu'on ne peut pas contrôler." },
+};
+// Sections affichées en pleine largeur (tableaux) ; les autres vont deux par deux
+const ZC_PLEINE_LARGEUR = ["Unités", "Affinités"];
 
 let zcReglages = [];     // réglages tels qu'enregistrés (API)
 let zcBrouillon = {};    // modifications en cours, pas encore enregistrées : { cle: valeur }
@@ -68,14 +81,49 @@ function zcAfficher() {
   zcReglages.forEach(r => (parSection[r.section] ??= []).push(r));
   const sections = ZC_ORDRE_SECTIONS.filter(s => parSection[s]).concat(Object.keys(parSection).filter(s => !ZC_ORDRE_SECTIONS.includes(s)));
 
-  document.getElementById("zc-reglages-contenu").innerHTML = sections.map(s => `
-    <details class="zc-section" ${s === "Unités" ? "open" : ""}>
-      <summary>${esc(s)} ${zcCompteurSection(parSection[s])}</summary>
+  const idSection = s => "zc-sec-" + s.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
+
+  // Raccourcis vers chaque section (avec le nombre de réglages modifiés)
+  document.getElementById("zc-raccourcis").innerHTML = sections.map(s => {
+    const info = ZC_SECTIONS[s] || { icone: "•" };
+    const n = parSection[s].filter(r => r.modifie).length;
+    const enCours = parSection[s].filter(r => r.cle in zcBrouillon).length;
+    return `<a class="zc-raccourci ${enCours ? "zc-raccourci-brouillon" : ""}" href="#${idSection(s)}"
+              onclick="event.preventDefault(); zcAllerA('${idSection(s)}')">
+              ${info.icone} ${esc(s)}${n ? ` <span class="zc-pastille">${n}</span>` : ""}</a>`;
+  }).join("");
+
+  const carte = (s, ouverte) => {
+    const info = ZC_SECTIONS[s] || { icone: "•", desc: "" };
+    return `
+    <details class="zc-section" id="${idSection(s)}" ${ouverte ? "open" : ""}>
+      <summary>
+        <span class="zc-section-icone">${info.icone}</span>
+        <span class="zc-section-titres">
+          <span class="zc-section-titre">${esc(s)} ${zcCompteurSection(parSection[s])}</span>
+          <span class="zc-section-desc">${esc(info.desc)}</span>
+        </span>
+      </summary>
       <div class="zc-section-corps">
         ${s === "Unités" ? zcTableUnites() : s === "Affinités" ? zcTableAffinites() : parSection[s].map(zcLigne).join("")}
       </div>
-    </details>`).join("");
+    </details>`;
+  };
+
+  const larges = sections.filter(s => ZC_PLEINE_LARGEUR.includes(s));
+  const autres = sections.filter(s => !ZC_PLEINE_LARGEUR.includes(s));
+  document.getElementById("zc-reglages-contenu").innerHTML =
+    larges.map(s => carte(s, s === "Unités")).join("") +
+    `<div class="zc-grille-sections">${autres.map(s => carte(s, false)).join("")}</div>`;
   zcMajBarre();
+}
+
+/** Ouvre une section et fait défiler jusqu'à elle. */
+function zcAllerA(id) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.open = true;
+  el.scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
 function zcCompteurSection(liste) {
@@ -181,14 +229,18 @@ function zcChangerListe(cle) {
 
 /** Ré-affiche en gardant les sections ouvertes là où elles étaient. */
 function zcAfficherSansPerdreSections() {
-  const ouvertes = [...document.querySelectorAll(".zc-section")].map(d => d.open);
+  const ouvertes = new Set([...document.querySelectorAll(".zc-section")].filter(d => d.open).map(d => d.id));
   zcAfficher();
-  document.querySelectorAll(".zc-section").forEach((d, i) => { if (i < ouvertes.length) d.open = ouvertes[i]; });
+  document.querySelectorAll(".zc-section").forEach(d => { d.open = ouvertes.has(d.id); });
 }
 
 function zcMajBarre() {
   const n = Object.keys(zcBrouillon).length;
   document.getElementById("zc-barre").classList.toggle("hidden", n === 0);
+  const badge = document.getElementById("zc-onglet-badge");
+  badge.textContent = n;
+  badge.classList.toggle("hidden", n === 0);
+  badge.title = `${n} modification${n > 1 ? "s" : ""} non enregistrée${n > 1 ? "s" : ""}`;
   document.getElementById("zc-barre-txt").textContent =
     `${n} modification${n > 1 ? "s" : ""} non enregistrée${n > 1 ? "s" : ""}`;
 }

@@ -464,14 +464,33 @@
       </div>
     </div>
 
-    <div class="admin-tabs">
-      <button class="admin-tab active" data-zc-onglet="reglages" onclick="zcOnglet('reglages')">⚙ Réglages</button>
-      <button class="admin-tab" data-zc-onglet="simulateur" onclick="zcOnglet('simulateur')">🎲 Simulateur</button>
-      <button class="admin-tab" data-zc-onglet="historique" onclick="zcOnglet('historique')">🕓 Historique</button>
-    </div>
+    <nav class="zc-onglets" role="tablist">
+      <button class="zc-onglet active" role="tab" data-zc-onglet="reglages" onclick="zcOnglet('reglages')">
+        <span class="zc-onglet-icone">⚙️</span>
+        <span class="zc-onglet-txt">
+          <span class="zc-onglet-titre">Réglages <span id="zc-onglet-badge" class="zc-onglet-badge hidden"></span></span>
+          <span class="zc-onglet-desc">Unités, économie, batailles…</span>
+        </span>
+      </button>
+      <button class="zc-onglet" role="tab" data-zc-onglet="simulateur" onclick="zcOnglet('simulateur')">
+        <span class="zc-onglet-icone">🎲</span>
+        <span class="zc-onglet-txt">
+          <span class="zc-onglet-titre">Simulateur</span>
+          <span class="zc-onglet-desc">Tester un équilibrage avant de l'appliquer</span>
+        </span>
+      </button>
+      <button class="zc-onglet" role="tab" data-zc-onglet="historique" onclick="zcOnglet('historique')">
+        <span class="zc-onglet-icone">🕓</span>
+        <span class="zc-onglet-txt">
+          <span class="zc-onglet-titre">Historique</span>
+          <span class="zc-onglet-desc">Qui a changé quoi, et quand</span>
+        </span>
+      </button>
+    </nav>
 
     <!-- Réglages -->
     <section id="zc-reglages">
+      <div id="zc-raccourcis" class="zc-raccourcis"></div>
       <div id="zc-reglages-contenu"><div class="loading">Chargement…</div></div>
       <div id="zc-barre" class="zc-barre hidden">
         <span id="zc-barre-txt"></span>
