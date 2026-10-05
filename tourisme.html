@@ -11,6 +11,8 @@
   <link rel="stylesheet" href="css/index.css">
   <link rel="stylesheet" href="css/tourisme.css">
   <script src="js/tourisme.js" defer></script>
+    <script src="js/stores.js" defer></script>
+    <link rel="icon" type="image/png" href="/assets/favicon.png">
 </head>
 
 <body>
@@ -283,13 +285,19 @@
                 </div>
 
                 <ul class="store-list" data-reveal>
-                  <li class="store-qr">
-                    <p class="store-qr-label">Télécharger sur Android</p>
-                    <img src="assets/qr_codes/qr_android.png" alt="QR code téléchargement Android Explogo" class="store-qr-img">
-                  </li>
-                    <li class="store-qr">
-                      <p class="store-qr-label">Télécharger sur iPhone</p>
-                      <img src="assets/qr_codes/qr_code_apple.png" alt="QR code téléchargement iOS Explogo" class="store-qr-img">
+                    <li>
+                      <a class="store-qr" href="https://play.google.com/store/apps/details?id=com.john.blue3103.explogomobile" target="_blank" rel="noopener" data-store="android">
+                        <span class="store-qr-label">Télécharger sur Android</span>
+                        <img src="assets/qr_codes/qr_android.png" alt="QR code : ExploGo sur Google Play" class="store-qr-img">
+                        <span class="store-btn"><span class="store-btn-small">Disponible sur</span> Google Play</span>
+                      </a>
+                    </li>
+                    <li>
+                      <a class="store-qr" href="https://apps.apple.com/fr/app/explogo/id6749705613" target="_blank" rel="noopener" data-store="ios">
+                        <span class="store-qr-label">Télécharger sur iPhone</span>
+                        <img src="assets/qr_codes/qr_code_apple.png" alt="QR code : ExploGo sur l’App Store" class="store-qr-img">
+                        <span class="store-btn"><span class="store-btn-small">Télécharger dans</span> l’App Store</span>
+                      </a>
                     </li>
                 </ul>
             </div>

@@ -635,33 +635,94 @@ h2{ font-size: var(--h2); }
   margin-left: 12px;
 }
 
-/* ---------------- Store QR code Android ---------------- */
+/* ---------------- Téléchargement : QR (ordinateur) / bouton (mobile) ---------------- */
 
-.store-qr {
+.store-list li{ list-style: none; }
+
+.store-list a.store-qr {
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
-  gap: 10px;
-  padding: 14px 16px;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 12px;
+  height: 100%;
+  padding: 16px 18px 18px;
   border-radius: var(--radius);
   background: #fff;
   border: 1px solid rgba(15,23,42,0.08);
   box-shadow: 0 12px 26px rgba(15,23,42,0.06);
+  color: var(--text);
+  text-decoration: none;
+  transition: transform 160ms ease, border-color 160ms ease;
+}
+
+.store-list a.store-qr::after{ content: none; }
+
+.store-list a.store-qr:hover{
+  transform: translateY(-2px);
+  border-color: rgba(255,122,92,0.35);
 }
 
 .store-qr-label {
   margin: 0;
-  font-size: 0.9rem;
-  font-weight: 600;
+  font-size: 0.95rem;
+  font-weight: 700;
   color: var(--text);
 }
 
 .store-qr-img {
-  width: 200px;
-  height: 200px;
+  width: 190px;
+  height: 190px;
   object-fit: contain;
-  border-radius: 8px;
+  border-radius: 10px;
   border: 1px solid rgba(15,23,42,0.07);
+}
+
+/* bouton façon badge de store */
+.store-btn {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 8px 18px;
+  border-radius: 12px;
+  background: #1f1a16;
+  color: #fff;
+  font-weight: 800;
+  font-size: 1rem;
+  line-height: 1.15;
+}
+
+.store-btn-small {
+  font-size: 0.68rem;
+  font-weight: 500;
+  opacity: 0.85;
+}
+
+@media (min-width: 769px){
+  .store-list{
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* téléphone / tablette : pas de QR (inutile sur l'appareil qui l'affiche), un vrai bouton */
+@media (max-width: 768px), (hover: none) and (pointer: coarse){
+  .store-qr-img,
+  .store-qr-label{ display: none; }
+
+  .store-list a.store-qr{
+    padding: 0;
+    border: none;
+    box-shadow: none;
+    background: transparent;
+  }
+
+  .store-btn{
+    width: 100%;
+    padding: 14px 18px;
+    font-size: 1.1rem;
+    border-radius: 14px;
+    box-shadow: 0 10px 22px rgba(15,23,42,0.18);
+  }
 }
 
 /* ---------------- FAQ ---------------- */
