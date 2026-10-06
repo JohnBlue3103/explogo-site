@@ -17,6 +17,65 @@
   const paragraphes = (txt) => String(txt || "").split(/\n\s*\n/).map((p) => p.trim()).filter(Boolean)
     .map((p) => `<p>${esc(p).replace(/\n/g, "<br>")}</p>`).join("");
 
+  // Article déposé en PDF (publié avec l'autorisation de l'auteure) : ses
+  // pages sont dessinées directement dans la page avec pdf.js, ce qui marche
+  // aussi sur téléphone (les navigateurs mobiles n'affichent pas un PDF intégré).
+  const carteLecture = (a, i) => {
+    const credit = [
+      a.journaliste ? `Article de ${esc(a.journaliste)}` : "Article",
+      a.media && `publié sur ${esc(a.media)}`,
+      a.datePublication && `le ${date(a.datePublication)}`,
+    ].filter(Boolean).join(" ");
+    return `
+      <article class="presse-lecture">
+        <div class="presse-pages" id="pressePages${i}" data-pdf="${esc(a.pdfUrl)}">
+          <p class="presse-pages-chargement">Chargement de l’article…</p>
+        </div>
+        <p class="presse-credit-article">
+          ${credit}. Reproduit avec l’autorisation de l’auteure.
+          ${a.lien ? `<a href="${esc(a.lien)}" target="_blank" rel="noopener">Voir l’article d’origine</a>` : ""}
+        </p>
+      </article>`;
+  };
+
+  const PDFJS = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/";
+  let pdfjs = null;
+  const chargerPdfjs = () => pdfjs || (pdfjs = new Promise((ok, ko) => {
+    const sc = document.createElement("script");
+    sc.src = PDFJS + "pdf.min.js";
+    sc.onload = () => {
+      window.pdfjsLib.GlobalWorkerOptions.workerSrc = PDFJS + "pdf.worker.min.js";
+      ok(window.pdfjsLib);
+    };
+    sc.onerror = ko;
+    document.head.appendChild(sc);
+  }));
+
+  async function dessinerPages(zone) {
+    try {
+      const lib = await chargerPdfjs();
+      const doc = await lib.getDocument(zone.dataset.pdf).promise;
+      zone.innerHTML = "";
+      const largeur = zone.clientWidth || 800;
+      const densite = Math.min(window.devicePixelRatio || 1, 2);
+      for (let n = 1; n <= doc.numPages; n++) {
+        const page = await doc.getPage(n);
+        const base = page.getViewport({ scale: 1 });
+        const vue = page.getViewport({ scale: (largeur / base.width) * densite });
+        const canvas = document.createElement("canvas");
+        canvas.width = vue.width;
+        canvas.height = vue.height;
+        canvas.className = "presse-page";
+        canvas.setAttribute("aria-label", `Page ${n} de l’article`);
+        zone.appendChild(canvas);
+        await page.render({ canvasContext: canvas.getContext("2d"), viewport: vue }).promise;
+      }
+    } catch {
+      // en dernier recours, lien vers le PDF
+      zone.innerHTML = `<p class="presse-pages-chargement"><a href="${esc(zone.dataset.pdf)}" target="_blank" rel="noopener">Lire l’article (PDF)</a></p>`;
+    }
+  }
+
   const carte = (a) => {
     const meta = [a.media && `<span class="presse-media">${esc(a.media)}</span>`, date(a.datePublication),
       a.journaliste && `par ${esc(a.journaliste)}`].filter(Boolean).join(" · ");
@@ -41,10 +100,14 @@
   fetch(`${API}/api/presse`)
     .then((r) => (r.ok ? r.json() : []))
     .then((articles) => {
-      // carte de présentation (photo, résumé, lien) ; un article sans résumé
-      // n'est pas affiché : la carte écrite dans index.html reste en place
-      const presentables = Array.isArray(articles) ? articles.filter((a) => (a.resume || "").trim()) : [];
-      if (presentables.length) liste.innerHTML = presentables.map(carte).join("");
+      // article en PDF -> lecture intégrée ; sinon carte de présentation
+      // (un article sans PDF ni résumé n'est pas affiché). Rien à afficher :
+      // la carte écrite dans index.html reste en place.
+      const affichables = Array.isArray(articles)
+        ? articles.filter((a) => a.pdfUrl || (a.resume || "").trim()) : [];
+      if (!affichables.length) return;
+      liste.innerHTML = affichables.map((a, i) => (a.pdfUrl ? carteLecture(a, i) : carte(a))).join("");
+      liste.querySelectorAll(".presse-pages").forEach(dessinerPages);
     })
     .catch(() => { /* on garde l'article écrit en dur */ });
 })();
