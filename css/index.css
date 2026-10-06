@@ -1253,3 +1253,28 @@ h2{ font-size: var(--h2); }
   .presse-pdf-icone{ font-size: 2rem; }
   .presse-pdf-aide{ font-size: .85rem; opacity: .85; }
 }
+
+/* article publié en entier (PDF dessiné page par page) */
+.presse-lecture{
+  padding: 14px;
+  border-radius: var(--radius);
+  background: #fff;
+  border: 1px solid rgba(15,23,42,0.08);
+  box-shadow: 0 16px 34px rgba(15,23,42,0.07);
+  max-width: 860px;
+  margin: 0 auto;
+}
+.presse-pages{ display: grid; gap: 10px; }
+.presse-page{
+  width: 100%;
+  height: auto;
+  display: block;
+  border-radius: 8px;
+  border: 1px solid rgba(15,23,42,0.06);
+}
+.presse-pages-chargement{ padding: 28px; text-align: center; color: var(--muted-2); margin: 0; }
+.presse-credit-article{ margin: 12px 4px 2px; font-size: .85rem; color: var(--muted-2); }
+.presse-credit-article a{ margin-left: 6px; font-weight: 600; }
+@media (max-width: 768px){
+  .presse-lecture{ padding: 6px; }
+}
