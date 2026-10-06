@@ -472,7 +472,7 @@
     <form id="pbForm" class="pb-form hidden" onsubmit="pbEnregistrer(event)">
       <h2 id="pbFormTitre">Nouvel article</h2>
       <div class="pb-grille">
-        <label>Titre *<input id="pbTitre" required maxlength="300"></label>
+        <label>Titre<input id="pbTitre" maxlength="300" placeholder="Repris du nom du PDF si vide"></label>
         <label>Média<input id="pbMedia" maxlength="120" placeholder="actu.fr"></label>
         <label>Journaliste<input id="pbJournaliste" maxlength="120"></label>
         <label>Date de publication<input id="pbDate" type="date"></label>
@@ -495,7 +495,7 @@
           <input type="file" accept="image/jpeg,image/png,image/webp" hidden>
         </div>
       </div>
-      <p class="pb-note">Les fichiers s’envoient dès qu’ils sont déposés (l’article est enregistré d’abord si besoin).</p>
+      <p class="pb-note">Déposer le PDF suffit : il s’affiche tel quel sur le site. Le titre est repris du nom du fichier s’il est vide ; les autres champs sont facultatifs.</p>
 
       <div class="pb-actions">
         <button type="button" class="btn-outline" onclick="pbFermer()">Fermer</button>

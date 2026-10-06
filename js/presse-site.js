@@ -17,6 +17,21 @@
   const paragraphes = (txt) => String(txt || "").split(/\n\s*\n/).map((p) => p.trim()).filter(Boolean)
     .map((p) => `<p>${esc(p).replace(/\n/g, "<br>")}</p>`).join("");
 
+  // Article déposé en PDF : son contenu s'affiche directement dans la page.
+  // Les navigateurs mobiles n'affichent pas toujours un PDF intégré : le
+  // bouton « Ouvrir le PDF » reste là dans tous les cas.
+  const cartePdf = (a) => `
+      <article class="presse-pdf">
+        ${a.titre ? `<h3 class="presse-titre">${esc(a.titre)}</h3>` : ""}
+        <object class="presse-pdf-vue" data="${esc(a.pdfUrl)}#view=FitH&toolbar=1" type="application/pdf">
+          <p class="presse-pdf-secours">Ton navigateur n’affiche pas le PDF ici.</p>
+        </object>
+        <div class="presse-boutons">
+          <a class="btn btn-secondary" href="${esc(a.pdfUrl)}" target="_blank" rel="noopener">Ouvrir le PDF</a>
+          ${a.lien ? `<a class="btn btn-primary" href="${esc(a.lien)}" target="_blank" rel="noopener">Voir l’article en ligne</a>` : ""}
+        </div>
+      </article>`;
+
   const carte = (a) => {
     const meta = [a.media && `<span class="presse-media">${esc(a.media)}</span>`, date(a.datePublication),
       a.journaliste && `par ${esc(a.journaliste)}`].filter(Boolean).join(" · ");
@@ -42,7 +57,9 @@
   fetch(`${API}/api/presse`)
     .then((r) => (r.ok ? r.json() : []))
     .then((articles) => {
-      if (Array.isArray(articles) && articles.length) liste.innerHTML = articles.map(carte).join("");
+      if (Array.isArray(articles) && articles.length) {
+        liste.innerHTML = articles.map((a) => (a.pdfUrl ? cartePdf(a) : carte(a))).join("");
+      }
     })
     .catch(() => { /* on garde l'article écrit en dur */ });
 })();
