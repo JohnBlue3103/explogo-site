@@ -51,6 +51,51 @@
     document.head.appendChild(sc);
   }));
 
+  /** Recadre une page sur son contenu (enlève les marges blanches). */
+  function rogner(src) {
+    const { width: w, height: h } = src;
+    const px = src.getContext("2d").getImageData(0, 0, w, h).data;
+    const blanc = (i) => px[i] > 245 && px[i + 1] > 245 && px[i + 2] > 245;
+    let haut = h, bas = 0, gauche = w, droite = 0;
+    const pas = 2; // échantillonnage : assez précis, bien plus rapide
+    for (let y = 0; y < h; y += pas) {
+      for (let x = 0; x < w; x += pas) {
+        if (!blanc((y * w + x) * 4)) {
+          if (y < haut) haut = y; if (y > bas) bas = y;
+          if (x < gauche) gauche = x; if (x > droite) droite = x;
+        }
+      }
+    }
+    if (bas <= haut || droite <= gauche) return src; // page blanche : on garde tout
+    const marge = Math.round(w * 0.015);
+    gauche = Math.max(0, gauche - marge); haut = Math.max(0, haut - marge);
+    droite = Math.min(w, droite + marge); bas = Math.min(h, bas + marge);
+    const out = document.createElement("canvas");
+    out.width = droite - gauche;
+    out.height = bas - haut;
+    out.getContext("2d").drawImage(src, gauche, haut, out.width, out.height, 0, 0, out.width, out.height);
+    return out;
+  }
+
+  /** Page en plein écran, en grand (défilement + zoom du téléphone) ; toucher pour fermer. */
+  function agrandir(canvas) {
+    const fond = document.createElement("div");
+    fond.className = "presse-zoom";
+    fond.setAttribute("role", "dialog");
+    fond.setAttribute("aria-label", "Page agrandie (toucher pour fermer)");
+    const img = document.createElement("img");
+    img.src = canvas.toDataURL("image/jpeg", 0.92);
+    img.alt = canvas.getAttribute("aria-label") || "";
+    fond.appendChild(img);
+    const fermer = () => { fond.remove(); document.body.style.overflow = ""; };
+    fond.addEventListener("click", fermer);
+    document.addEventListener("keydown", function echap(e) {
+      if (e.key === "Escape") { fermer(); document.removeEventListener("keydown", echap); }
+    });
+    document.body.style.overflow = "hidden";
+    document.body.appendChild(fond);
+  }
+
   async function dessinerPages(zone) {
     try {
       const lib = await chargerPdfjs();
@@ -61,14 +106,20 @@
       for (let n = 1; n <= doc.numPages; n++) {
         const page = await doc.getPage(n);
         const base = page.getViewport({ scale: 1 });
-        const vue = page.getViewport({ scale: (largeur / base.width) * densite });
-        const canvas = document.createElement("canvas");
-        canvas.width = vue.width;
-        canvas.height = vue.height;
+        // rendu net (x2 la largeur affichée, pour pouvoir agrandir), puis
+        // marges blanches rognées : le texte prend toute la largeur
+        const vue = page.getViewport({ scale: (largeur / base.width) * densite * 2 });
+        const brut = document.createElement("canvas");
+        brut.width = vue.width;
+        brut.height = vue.height;
+        const ctx = brut.getContext("2d");
+        await page.render({ canvasContext: ctx, viewport: vue }).promise;
+        const canvas = rogner(brut);
         canvas.className = "presse-page";
-        canvas.setAttribute("aria-label", `Page ${n} de l’article`);
+        canvas.setAttribute("role", "button");
+        canvas.setAttribute("aria-label", `Page ${n} de l’article (toucher pour agrandir)`);
+        canvas.addEventListener("click", () => agrandir(canvas));
         zone.appendChild(canvas);
-        await page.render({ canvasContext: canvas.getContext("2d"), viewport: vue }).promise;
       }
     } catch {
       // en dernier recours, lien vers le PDF
