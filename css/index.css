@@ -1196,3 +1196,16 @@ h2{ font-size: var(--h2); }
     opacity: 0;
   }
 }
+.presse-liste{ display: grid; gap: 22px; }
+.presse-texte p{ margin: 0 0 12px; }
+.presse-boutons{ display: flex; flex-wrap: wrap; gap: 10px; margin-top: 4px; }
+.presse-photos.presse-photo-unique{ grid-template-columns: 1fr; }
+
+/* bouton secondaire (ex. « Voir le PDF » à côté de « Lire l'article ») */
+.btn-secondary{
+  border-color: var(--primary-2);
+  color: var(--primary-2);
+  font-size: 20px;
+  font-weight: 600;
+}
+.btn-secondary:hover{ background: rgba(43,142,160,0.06); }

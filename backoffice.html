@@ -51,6 +51,7 @@
       <button id="commercialNavBtn" class="btn-outline hidden" onclick="showCommercial()">💼 Commercial</button>
       <button id="actualiteNavBtn" class="btn-outline hidden" onclick="showActualites()">📰 Actualités <span id="veille-badge-nav" class="badge-count hidden"></span></button>
       <button id="zonesNavBtn" class="btn-outline hidden" onclick="showZones()">🚩 Zones contrôlées</button>
+      <button id="presseNavBtn" class="btn-outline hidden" onclick="showPresse()">📰 Presse</button>
       <button class="btn-outline" onclick="logout()">Déconnexion</button>
     </div>
     <button class="topbar-hamburger" id="menuToggle" onclick="toggleMobileMenu()" aria-label="Menu">☰</button>
@@ -63,6 +64,7 @@
     <button id="commercialNavBtnM" class="mobile-nav-btn hidden" onclick="showCommercial(); closeMobileMenu()">💼 Commercial</button>
     <button id="actualiteNavBtnM" class="mobile-nav-btn hidden" onclick="showActualites(); closeMobileMenu()">📰 Actualités</button>
     <button id="zonesNavBtnM" class="mobile-nav-btn hidden" onclick="showZones(); closeMobileMenu()">🚩 Zones contrôlées</button>
+    <button id="presseNavBtnM" class="mobile-nav-btn hidden" onclick="showPresse(); closeMobileMenu()">📰 Presse</button>
     <button class="mobile-nav-btn mobile-nav-logout" onclick="logout()">↪ Déconnexion</button>
   </div>
 
@@ -444,6 +446,67 @@
 </div>
 
 <!-- ========== ZONES CONTRÔLÉES (réglages du jeu) ========== -->
+<!-- ===== PRESSE ("On parle de nous" sur explogo.fr) ===== -->
+<div id="view-presse" class="view hidden">
+  <header class="topbar">
+    <div class="topbar-brand">
+      <img src="assets/img/logo.png" alt="Explogo">
+      <span>Presse</span>
+    </div>
+    <div class="topbar-right">
+      <button class="btn-outline" onclick="showDashboard()">← Accueil</button>
+      <button class="btn-outline" onclick="logout()">Déconnexion</button>
+    </div>
+  </header>
+
+  <main class="main-content presse-bo">
+    <div class="page-header">
+      <div>
+        <h1>On parle de nous</h1>
+        <p class="page-sub">Les articles affichés dans la section « On parle de nous » du site. Un article non publié reste ici sans apparaître sur le site.</p>
+      </div>
+      <button class="btn-primary" onclick="pbNouveau()">+ Nouvel article</button>
+    </div>
+
+    <!-- Formulaire (création / modification) -->
+    <form id="pbForm" class="pb-form hidden" onsubmit="pbEnregistrer(event)">
+      <h2 id="pbFormTitre">Nouvel article</h2>
+      <div class="pb-grille">
+        <label>Titre *<input id="pbTitre" required maxlength="300"></label>
+        <label>Média<input id="pbMedia" maxlength="120" placeholder="actu.fr"></label>
+        <label>Journaliste<input id="pbJournaliste" maxlength="120"></label>
+        <label>Date de publication<input id="pbDate" type="date"></label>
+        <label class="pb-large">Lien vers l’article<input id="pbLien" type="url" placeholder="https://…"></label>
+        <label class="pb-large">Résumé (affiché sur le site, un paragraphe par ligne vide)<textarea id="pbResume" rows="7"></textarea></label>
+        <label class="pb-case"><input id="pbPublie" type="checkbox" checked> Publié sur le site</label>
+      </div>
+
+      <div class="pb-depots">
+        <div class="pb-depot" data-type="pdf">
+          <p class="pb-depot-titre">📄 PDF de l’article</p>
+          <p class="pb-depot-aide">Glisse le PDF ici, ou clique pour le choisir (10 Mo max).</p>
+          <p class="pb-depot-etat"></p>
+          <input type="file" accept="application/pdf" hidden>
+        </div>
+        <div class="pb-depot" data-type="photo">
+          <p class="pb-depot-titre">🖼 Photo</p>
+          <p class="pb-depot-aide">Glisse une photo ici, ou clique pour la choisir (JPEG, PNG, WebP, 5 Mo max).</p>
+          <p class="pb-depot-etat"></p>
+          <input type="file" accept="image/jpeg,image/png,image/webp" hidden>
+        </div>
+      </div>
+      <p class="pb-note">Les fichiers s’envoient dès qu’ils sont déposés (l’article est enregistré d’abord si besoin).</p>
+
+      <div class="pb-actions">
+        <button type="button" class="btn-outline" onclick="pbFermer()">Fermer</button>
+        <button type="submit" class="btn-primary">Enregistrer</button>
+      </div>
+    </form>
+
+    <div id="pbListe" class="pb-liste"></div>
+  </main>
+</div>
+
 <div id="view-zones" class="view hidden">
   <header class="topbar">
     <div class="topbar-brand">
@@ -998,5 +1061,6 @@
 <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
 <script src="js/backoffice.js"></script>
 <script src="js/zones.js"></script>
+<script src="js/presse.js"></script>
 </body>
 </html>
