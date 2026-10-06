@@ -1231,3 +1231,25 @@ h2{ font-size: var(--h2); }
 @media (max-width: 768px){
   .presse-pdf-vue{ height: 70vh; min-height: 420px; }
 }
+
+/* téléphone : pas de PDF intégré (non pris en charge), une carte qui l'ouvre */
+.presse-pdf-mobile{ display: none; }
+@media (max-width: 768px), (hover: none) and (pointer: coarse){
+  .presse-pdf-vue,
+  .presse-pdf-ouvrir{ display: none; }
+  .presse-pdf-mobile{
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 18px;
+    margin-bottom: 12px;
+    border-radius: 14px;
+    background: linear-gradient(135deg, var(--primary), var(--primary-2));
+    color: #fff;
+    text-decoration: none;
+    font-size: 1.1rem;
+    box-shadow: 0 10px 22px rgba(15,23,42,0.18);
+  }
+  .presse-pdf-icone{ font-size: 2rem; }
+  .presse-pdf-aide{ font-size: .85rem; opacity: .85; }
+}
