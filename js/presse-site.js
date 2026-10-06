@@ -20,6 +20,12 @@
   // Article déposé en PDF (publié avec l'autorisation de l'auteure) : ses
   // pages sont dessinées directement dans la page avec pdf.js, ce qui marche
   // aussi sur téléphone (les navigateurs mobiles n'affichent pas un PDF intégré).
+  // « actu.fr » saisi dans le back office -> « Actu.fr » ; rien -> « Presse »
+  const nomMedia = (m) => {
+    const t = String(m || "").trim();
+    return t ? t.charAt(0).toUpperCase() + t.slice(1) : "Presse";
+  };
+
   const carteLecture = (a, i) => {
     const credit = [
       a.journaliste ? `Article de ${esc(a.journaliste)}` : "Article",
@@ -28,6 +34,7 @@
     ].filter(Boolean).join(" ");
     return `
       <article class="presse-lecture">
+        <p class="presse-lecture-media">${esc(nomMedia(a.media))}</p>
         <div class="presse-pages" id="pressePages${i}" data-pdf="${esc(a.pdfUrl)}">
           <p class="presse-pages-chargement">Chargement de l’article…</p>
         </div>
