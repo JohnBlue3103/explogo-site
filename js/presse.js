@@ -161,7 +161,10 @@ async function pbEnvoyerFichier(type, fichier) {
   if (type === "pdf" && fichier.type !== "application/pdf") { alert("Ce fichier n’est pas un PDF."); return; }
   if (type === "photo" && !/^image\/(jpeg|png|webp)$/.test(fichier.type)) { alert("Photo en JPEG, PNG ou WebP."); return; }
 
-  // l'article doit exister (et avoir un titre) avant d'y attacher un fichier
+  // l'article doit exister avant d'y attacher un fichier : sans titre saisi,
+  // on prend le nom du PDF (déposer le fichier suffit)
+  const titre = document.getElementById("pbTitre");
+  if (!titre.value.trim()) titre.value = fichier.name.replace(/\.[^.]+$/, "").replace(/[_-]+/g, " ").trim();
   if (!pbCourant && !(await pbSauver())) return;
 
   etat.textContent = `Envoi de « ${fichier.name} »…`;
