@@ -1300,3 +1300,15 @@ h2{ font-size: var(--h2); }
 @media (min-width: 769px){
   .presse-zoom img{ width: min(1100px, 96vw); margin: 2vh auto; border-radius: 8px; }
 }
+
+/* nom du média en grand au-dessus de l'article */
+.presse-lecture-media{
+  margin: 4px 4px 12px;
+  font-size: 1.9rem;
+  font-weight: 900;
+  letter-spacing: -0.02em;
+  color: #0b5ea8;
+}
+@media (max-width: 768px){
+  .presse-lecture-media{ font-size: 1.6rem; margin: 6px 8px 10px; }
+}
