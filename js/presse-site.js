@@ -1,5 +1,5 @@
-// Section « On parle de nous » : affiche les articles gérés dans le back
-// office (onglet Presse). Si l'API ne répond pas ou n'a encore aucun article,
+// Section « On parle de nous » : affiche, en carte de présentation (photo,
+// résumé, lien vers l'article), les articles du back office (onglet Presse). Si l'API ne répond pas ou n'a encore aucun article,
 // l'article écrit en dur dans index.html reste affiché.
 // ?env=recette sur l'URL du site -> API de recette (pour tester avant la prod).
 (() => {
@@ -17,33 +17,11 @@
   const paragraphes = (txt) => String(txt || "").split(/\n\s*\n/).map((p) => p.trim()).filter(Boolean)
     .map((p) => `<p>${esc(p).replace(/\n/g, "<br>")}</p>`).join("");
 
-  // Article déposé en PDF : son contenu s'affiche directement dans la page.
-  // Les navigateurs mobiles n'affichent pas toujours un PDF intégré : le
-  // bouton « Ouvrir le PDF » reste là dans tous les cas.
-  const cartePdf = (a) => `
-      <article class="presse-pdf">
-        ${a.titre ? `<h3 class="presse-titre">${esc(a.titre)}</h3>` : ""}
-        <object class="presse-pdf-vue" data="${esc(a.pdfUrl)}#view=FitH&toolbar=1" type="application/pdf">
-          <p class="presse-pdf-secours">Ton navigateur n’affiche pas le PDF ici.</p>
-        </object>
-        <!-- téléphone : les navigateurs mobiles n'affichent pas un PDF intégré,
-             on ouvre le PDF dans la visionneuse du téléphone -->
-        <a class="presse-pdf-mobile" href="${esc(a.pdfUrl)}" target="_blank" rel="noopener">
-          <span class="presse-pdf-icone" aria-hidden="true">📄</span>
-          <span><strong>Lire l’article</strong><br><span class="presse-pdf-aide">Ouvre le PDF</span></span>
-        </a>
-        <div class="presse-boutons">
-          <a class="btn btn-secondary presse-pdf-ouvrir" href="${esc(a.pdfUrl)}" target="_blank" rel="noopener">Ouvrir le PDF</a>
-          ${a.lien ? `<a class="btn btn-primary" href="${esc(a.lien)}" target="_blank" rel="noopener">Voir l’article en ligne</a>` : ""}
-        </div>
-      </article>`;
-
   const carte = (a) => {
     const meta = [a.media && `<span class="presse-media">${esc(a.media)}</span>`, date(a.datePublication),
       a.journaliste && `par ${esc(a.journaliste)}`].filter(Boolean).join(" · ");
     const boutons = [
       a.lien && `<a class="btn btn-primary" href="${esc(a.lien)}" target="_blank" rel="noopener">Lire l’article${a.media ? " sur " + esc(a.media) : ""}</a>`,
-      a.pdfUrl && `<a class="btn btn-secondary" href="${esc(a.pdfUrl)}" target="_blank" rel="noopener">Voir le PDF</a>`,
     ].filter(Boolean).join("");
     return `
       <article class="presse-carte">
@@ -63,9 +41,10 @@
   fetch(`${API}/api/presse`)
     .then((r) => (r.ok ? r.json() : []))
     .then((articles) => {
-      if (Array.isArray(articles) && articles.length) {
-        liste.innerHTML = articles.map((a) => (a.pdfUrl ? cartePdf(a) : carte(a))).join("");
-      }
+      // carte de présentation (photo, résumé, lien) ; un article sans résumé
+      // n'est pas affiché : la carte écrite dans index.html reste en place
+      const presentables = Array.isArray(articles) ? articles.filter((a) => (a.resume || "").trim()) : [];
+      if (presentables.length) liste.innerHTML = presentables.map(carte).join("");
     })
     .catch(() => { /* on garde l'article écrit en dur */ });
 })();
