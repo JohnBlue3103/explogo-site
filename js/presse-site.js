@@ -26,8 +26,14 @@
         <object class="presse-pdf-vue" data="${esc(a.pdfUrl)}#view=FitH&toolbar=1" type="application/pdf">
           <p class="presse-pdf-secours">Ton navigateur n’affiche pas le PDF ici.</p>
         </object>
+        <!-- téléphone : les navigateurs mobiles n'affichent pas un PDF intégré,
+             on ouvre le PDF dans la visionneuse du téléphone -->
+        <a class="presse-pdf-mobile" href="${esc(a.pdfUrl)}" target="_blank" rel="noopener">
+          <span class="presse-pdf-icone" aria-hidden="true">📄</span>
+          <span><strong>Lire l’article</strong><br><span class="presse-pdf-aide">Ouvre le PDF</span></span>
+        </a>
         <div class="presse-boutons">
-          <a class="btn btn-secondary" href="${esc(a.pdfUrl)}" target="_blank" rel="noopener">Ouvrir le PDF</a>
+          <a class="btn btn-secondary presse-pdf-ouvrir" href="${esc(a.pdfUrl)}" target="_blank" rel="noopener">Ouvrir le PDF</a>
           ${a.lien ? `<a class="btn btn-primary" href="${esc(a.lien)}" target="_blank" rel="noopener">Voir l’article en ligne</a>` : ""}
         </div>
       </article>`;
