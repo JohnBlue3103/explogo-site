@@ -58,29 +58,43 @@
     document.head.appendChild(sc);
   }));
 
-  /** Recadre une page sur son contenu (enlève les marges blanches). */
+  /**
+   * Recadre une page sur son contenu (enlève les marges blanches). Les traits
+   * fins qui longent toute la page (bordure verticale du PDF) ne comptent pas
+   * comme du contenu : sinon ils gardaient tout le bas de page, vide.
+   */
   function rogner(src) {
     const { width: w, height: h } = src;
     const px = src.getContext("2d").getImageData(0, 0, w, h).data;
-    const blanc = (i) => px[i] > 245 && px[i + 1] > 245 && px[i + 2] > 245;
-    let haut = h, bas = 0, gauche = w, droite = 0;
     const pas = 2; // échantillonnage : assez précis, bien plus rapide
-    for (let y = 0; y < h; y += pas) {
-      for (let x = 0; x < w; x += pas) {
-        if (!blanc((y * w + x) * 4)) {
-          if (y < haut) haut = y; if (y > bas) bas = y;
-          if (x < gauche) gauche = x; if (x > droite) droite = x;
-        }
+    const nx = Math.ceil(w / pas), ny = Math.ceil(h / pas);
+    const ligne = new Uint32Array(ny), colonne = new Uint32Array(nx);
+    for (let j = 0; j < ny; j++) {
+      const y = j * pas;
+      for (let i = 0; i < nx; i++) {
+        const k = (y * w + i * pas) * 4;
+        if (px[k] < 235 || px[k + 1] < 235 || px[k + 2] < 235) { ligne[j]++; colonne[i]++; }
       }
     }
-    if (bas <= haut || droite <= gauche) return src; // page blanche : on garde tout
-    const marge = Math.round(w * 0.015);
-    gauche = Math.max(0, gauche - marge); haut = Math.max(0, haut - marge);
-    droite = Math.min(w, droite + marge); bas = Math.min(h, bas + marge);
+    // colonne de bordure : marquée sur presque toute la hauteur
+    const bordure = (i) => colonne[i] > ny * 0.85;
+    // ligne de contenu : quelques points marqués hors des bordures
+    const contenuLigne = (j) => {
+      let n = ligne[j];
+      for (let i = 0; i < nx && n > 0; i++) if (bordure(i)) n--; // approx : 1 point par bordure
+      return n > 2;
+    };
+    let haut = -1, bas = -1, gauche = -1, droite = -1;
+    for (let j = 0; j < ny; j++) if (contenuLigne(j)) { if (haut < 0) haut = j; bas = j; }
+    for (let i = 0; i < nx; i++) if (colonne[i] > 2 && !bordure(i)) { if (gauche < 0) gauche = i; droite = i; }
+    if (haut < 0 || gauche < 0) return src; // page blanche : on garde tout
+    const marge = Math.round(w * 0.02);
+    const x0 = Math.max(0, gauche * pas - marge), y0 = Math.max(0, haut * pas - marge);
+    const x1 = Math.min(w, droite * pas + marge), y1 = Math.min(h, bas * pas + marge);
     const out = document.createElement("canvas");
-    out.width = droite - gauche;
-    out.height = bas - haut;
-    out.getContext("2d").drawImage(src, gauche, haut, out.width, out.height, 0, 0, out.width, out.height);
+    out.width = x1 - x0;
+    out.height = y1 - y0;
+    out.getContext("2d").drawImage(src, x0, y0, out.width, out.height, 0, 0, out.width, out.height);
     return out;
   }
 
