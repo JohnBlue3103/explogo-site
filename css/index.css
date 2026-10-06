@@ -731,7 +731,7 @@ h2{ font-size: var(--h2); }
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr);
   gap: 28px;
-  align-items: center;
+  align-items: start;
   padding: 22px;
   border-radius: var(--radius);
   background: #fff;
