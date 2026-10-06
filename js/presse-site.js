@@ -32,7 +32,7 @@
           <p class="presse-pages-chargement">Chargement de l’article…</p>
         </div>
         <p class="presse-credit-article">
-          ${credit}. Reproduit avec l’autorisation de l’auteure.
+          ${credit}.
           ${a.lien ? `<a href="${esc(a.lien)}" target="_blank" rel="noopener">Voir l’article d’origine</a>` : ""}
         </p>
       </article>`;
