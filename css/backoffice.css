@@ -1051,7 +1051,30 @@ textarea { resize: vertical; }
 .csv-col-info { font-size: 0.82rem; color: var(--text-muted); margin: 0; }
 
 /* Aperçu des différences avant import */
-.csv-modal-card.csv-modal-large { max-width: 920px; width: calc(100vw - 32px); }
+.csv-modal-card.csv-modal-large {
+  max-width: 920px;
+  width: calc(100vw - 32px);
+  max-height: calc(100vh - 2rem);
+  overflow-y: auto;
+  padding-bottom: 0;
+}
+/* Boutons toujours visibles en bas de la fenêtre, même avec une longue liste */
+.csv-modal-large .modal-actions {
+  position: sticky;
+  bottom: 0;
+  background: var(--surface);
+  padding: 0.9rem 0 1.2rem;
+  margin-top: 0.75rem;
+  border-top: 1px solid var(--border);
+}
+/* Fichier chargé : zone de dépôt et statistiques réduites pour laisser la place à la liste */
+.csv-modal-large .csv-drop-zone { padding: 0.6rem 1rem; margin-top: 0.5rem; }
+.csv-modal-large .csv-drop-icon,
+.csv-modal-large .csv-drop-sub { display: none; }
+.csv-modal-large .csv-drop-label { font-size: 0.85rem; font-weight: 500; }
+.csv-modal-large .csv-preview { padding: 0.6rem 1rem; margin-top: 0.6rem; }
+.csv-modal-large .csv-stats { margin-bottom: 0.3rem; }
+.csv-modal-large .csv-stat span { font-size: 1.15rem; }
 .csv-diff { margin-top: 1rem; }
 .csv-diff-loading { font-size: 0.85rem; color: var(--text-muted); }
 .csv-diff-stats { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 0.75rem; }
@@ -1066,7 +1089,7 @@ textarea { resize: vertical; }
 .csv-diff-pill.ajout { background: #EDF7EF; border-color: #B7DFC1; color: #2e6336; }
 .csv-diff-pill.modif { background: #FFF6E5; border-color: #F0D49A; color: #8a5a00; }
 .csv-diff-pill.absent { background: #F4F4F6; color: var(--text-muted); }
-.csv-diff-list { max-height: 48vh; overflow-y: auto; border: 1px solid var(--border); border-radius: 10px; }
+.csv-diff-list { max-height: calc(100vh - 26rem); min-height: 12rem; overflow-y: auto; border: 1px solid var(--border); border-radius: 10px; }
 .csv-diff-section > summary {
   cursor: pointer;
   font-weight: 700;
