@@ -1050,6 +1050,54 @@ textarea { resize: vertical; }
 .csv-stat-ok span { color: #2e6336; }
 .csv-col-info { font-size: 0.82rem; color: var(--text-muted); margin: 0; }
 
+/* Aperçu des différences avant import */
+.csv-modal-card.csv-modal-large { max-width: 920px; width: calc(100vw - 32px); }
+.csv-diff { margin-top: 1rem; }
+.csv-diff-loading { font-size: 0.85rem; color: var(--text-muted); }
+.csv-diff-stats { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 0.75rem; }
+.csv-diff-pill {
+  border-radius: 999px;
+  padding: 0.3rem 0.8rem;
+  font-size: 0.82rem;
+  font-weight: 600;
+  border: 1px solid var(--border);
+  background: #fff;
+}
+.csv-diff-pill.ajout { background: #EDF7EF; border-color: #B7DFC1; color: #2e6336; }
+.csv-diff-pill.modif { background: #FFF6E5; border-color: #F0D49A; color: #8a5a00; }
+.csv-diff-pill.absent { background: #F4F4F6; color: var(--text-muted); }
+.csv-diff-list { max-height: 48vh; overflow-y: auto; border: 1px solid var(--border); border-radius: 10px; }
+.csv-diff-section > summary {
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 0.88rem;
+  padding: 0.6rem 0.8rem;
+  background: #FAFAF7;
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+}
+.csv-diff-note { font-size: 0.78rem; color: var(--text-muted); font-weight: 400; margin-left: 0.4rem; }
+.csv-diff-item { padding: 0.55rem 0.8rem; border-bottom: 1px solid var(--border); font-size: 0.84rem; }
+.csv-diff-item:last-child { border-bottom: none; }
+.csv-diff-item small { color: var(--text-muted); }
+.csv-diff-item > summary { cursor: pointer; }
+.csv-diff-champs { margin: 0.4rem 0 0.2rem; display: grid; gap: 0.5rem; }
+.csv-diff-champ-nom { font-size: 0.75rem; font-weight: 700; text-transform: uppercase; color: var(--text-muted); }
+.csv-diff-avap { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; }
+.csv-diff-avap > div {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  font-size: 0.8rem;
+  border-radius: 6px;
+  padding: 0.4rem 0.55rem;
+  max-height: 220px;
+  overflow-y: auto;
+}
+.csv-diff-avant { background: #FDECEC; color: #7a2323; }
+.csv-diff-apres { background: #EDF7EF; color: #1f4d26; }
+@media (max-width: 640px) { .csv-diff-avap { grid-template-columns: 1fr; } }
+
 /* ===== DASHBOARD ADMIN ===== */
 .dashboard-hero {
   text-align: center;

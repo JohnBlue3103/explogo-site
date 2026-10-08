@@ -773,7 +773,7 @@
 <!-- Modal CSV → GeoJSON -->
 <div id="csvModal" class="modal-overlay hidden" onclick="closeCsvModal(event)">
   <div class="modal-card csv-modal-card">
-    <h3>CSV → GeoJSON</h3>
+    <h3>Import CSV</h3>
     <p class="modal-sub" id="csvModalCat"></p>
 
     <div id="csvDropZone" class="csv-drop-zone" onclick="document.getElementById('csvFileInput').click()"
@@ -794,12 +794,14 @@
       <p id="csvColInfo" class="csv-col-info"></p>
     </div>
 
+    <div id="csvDiff" class="csv-diff hidden"></div>
+
     <p id="csvError" class="error hidden"></p>
 
     <div class="modal-actions">
       <button class="btn-outline" onclick="closeCsvModal()">Annuler</button>
       <button class="btn-secondary" id="csvDownloadBtn" onclick="downloadGeoJson()" disabled>⬇ Télécharger GeoJSON</button>
-      <button class="btn-primary" id="csvImportBtn" onclick="importCsvToDB()" disabled>⬆ Importer en DB</button>
+      <button class="btn-primary" id="csvImportBtn" onclick="importCsvToDB()" disabled>⬆ Valider l'import</button>
     </div>
   </div>
 </div>
