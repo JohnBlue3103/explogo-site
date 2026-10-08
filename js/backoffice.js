@@ -1778,6 +1778,9 @@ function openCsvModal() {
   document.getElementById("csvDropZone").classList.remove("csv-drop-active");
   document.getElementById("csvDownloadBtn").disabled = true;
   document.getElementById("csvImportBtn").disabled = true;
+  document.getElementById("csvImportBtn").textContent = "⬆ Valider l'import";
+  document.getElementById("csvDiff").classList.add("hidden");
+  document.querySelector("#csvModal .modal-card").classList.remove("csv-modal-large");
   _csvFeatures = [];
   document.getElementById("csvModal").classList.remove("hidden");
 }
@@ -1839,9 +1842,9 @@ function parseCsvToFeatures(text, categorie) {
     throw new Error(`Colonnes de coordonnées introuvables. Colonnes détectées : ${headers.join(", ")}`);
   }
 
-  const prefix = WIKIDATA_PREFIXES[categorie] || categorie.toUpperCase().slice(0, 2);
+  // Les lignes sans wikidata_id sont rapprochées par nom + commune, ou reçoivent
+  // un identifiant du serveur (qui connaît les numéros déjà pris)
   const features = [];
-  let idCounter = 100000;
 
   for (let i = 1; i < records.length; i++) {
     const vals = records[i];
@@ -1854,13 +1857,14 @@ function parseCsvToFeatures(text, categorie) {
     const lng = parseFloat(row[lngCol]);
     if (isNaN(lat) || isNaN(lng)) continue;
 
-    let wikidataId = row["wikidata_id"] || row["wikidataid"] || "";
-    if (!wikidataId) wikidataId = `${prefix}${idCounter++}`;
+    const wikidataId = (row["wikidata_id"] || row["wikidataid"] || "").trim();
 
-    const props = { wikidata_id: wikidataId };
+    const props = {};
     headers.forEach(h => {
-      if (h !== latCol && h !== lngCol) props[h] = row[h];
+      if (h && h !== latCol && h !== lngCol && h !== "wikidataid") props[h] = row[h];
     });
+    if (wikidataId) props.wikidata_id = wikidataId;
+    else delete props.wikidata_id;
 
     features.push({
       type: "Feature",
@@ -1918,7 +1922,7 @@ function processCsvFile(file) {
       document.getElementById("csvPreview").classList.remove("hidden");
       const hasData = features.length > 0;
       document.getElementById("csvDownloadBtn").disabled = !hasData;
-      document.getElementById("csvImportBtn").disabled = !hasData;
+      if (hasData) loadCsvApercu();
     } catch (err) {
       errEl.textContent = err.message;
       errEl.classList.remove("hidden");
@@ -1940,6 +1944,106 @@ function downloadGeoJson() {
   URL.revokeObjectURL(url);
 }
 
+function csvImportPath(suffixe = "") {
+  const prefixe = WIKIDATA_PREFIXES[currentDataCategory] || "";
+  return `/admin/data/import-file/${currentDataCategory}${suffixe}?prefixe=${encodeURIComponent(prefixe)}`;
+}
+
+const CSV_LIBELLES_CHAMPS = {
+  nom: "Nom", commune: "Commune", departement: "Département", region: "Région",
+  siecle: "Siècle", description: "Description", coordonnees: "Coordonnées",
+};
+
+// Avant d'écrire quoi que ce soit : ce que le fichier ajoute, modifie, laisse
+// tel quel, et les lieux de la base qu'il ne contient pas (conservés)
+async function loadCsvApercu() {
+  const diffEl = document.getElementById("csvDiff");
+  const btn = document.getElementById("csvImportBtn");
+  const errEl = document.getElementById("csvError");
+  btn.disabled = true;
+  diffEl.innerHTML = '<p class="csv-diff-loading">Comparaison avec la base…</p>';
+  diffEl.classList.remove("hidden");
+
+  try {
+    const res = await apiFetch(csvImportPath("/apercu"), {
+      method: "POST",
+      body: JSON.stringify(_csvFeatures),
+    });
+    if (res.status === 404 || res.status === 405) {
+      // Backend pas encore à jour : ancien comportement (ajout seul, existants ignorés)
+      diffEl.innerHTML = '<p class="csv-diff-loading">⚠️ Ce serveur n\'a pas encore la comparaison : '
+        + "l'import ajoutera seulement les nouveaux lieux, sans modifier ceux déjà en base.</p>";
+      // L'ancien serveur ne génère pas d'identifiant : on garde l'ancienne numérotation
+      const prefixe = WIKIDATA_PREFIXES[currentDataCategory] || currentDataCategory.toUpperCase().slice(0, 2);
+      let n = 100000;
+      _csvFeatures.forEach(f => { if (!f.properties.wikidata_id) f.properties.wikidata_id = `${prefixe}${n++}`; });
+      btn.disabled = false;
+      btn.textContent = "⬆ Importer (ajouts seulement)";
+      return;
+    }
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.message || "Erreur serveur");
+    renderCsvApercu(data);
+    const total = data.ajouts.length + data.modifications.length;
+    btn.disabled = total === 0;
+    btn.textContent = total === 0
+      ? "Rien à importer"
+      : `⬆ Valider (${data.ajouts.length} ajout(s), ${data.modifications.length} mise(s) à jour)`;
+  } catch (err) {
+    diffEl.classList.add("hidden");
+    errEl.textContent = err.message === "Failed to fetch" ? "Serveur indisponible" : err.message;
+    errEl.classList.remove("hidden");
+  }
+}
+
+function renderCsvApercu(data) {
+  document.querySelector("#csvModal .modal-card").classList.add("csv-modal-large");
+  const lieu = l => `<strong>${esc(l.nom || "Sans nom")}</strong>`
+    + (l.commune ? ` <small>· ${esc(l.commune)}</small>` : "")
+    + (l.wikidataId ? ` <small>· ${esc(l.wikidataId)}</small>` : "");
+  const valeur = v => (v === null || v === undefined || v === "") ? "<em>(vide)</em>" : esc(v);
+
+  const modifs = data.modifications.map(m => `
+    <details class="csv-diff-item">
+      <summary>${lieu(m)} <small>— ${m.changements.map(c => esc(CSV_LIBELLES_CHAMPS[c.champ] || c.champ)).join(", ")}</small></summary>
+      <div class="csv-diff-champs">
+        ${m.changements.map(c => `
+          <div>
+            <div class="csv-diff-champ-nom">${esc(CSV_LIBELLES_CHAMPS[c.champ] || c.champ)}</div>
+            <div class="csv-diff-avap">
+              <div class="csv-diff-avant">${valeur(c.avant)}</div>
+              <div class="csv-diff-apres">${valeur(c.apres)}</div>
+            </div>
+          </div>`).join("")}
+      </div>
+    </details>`).join("");
+  const ajouts = data.ajouts.map(l => `<div class="csv-diff-item">${lieu(l)}</div>`).join("");
+  const absents = data.absents.map(l => `<div class="csv-diff-item">${lieu(l)}</div>`).join("");
+
+  const section = (titre, n, contenu, note = "", ouvert = false) => n === 0 ? "" : `
+    <details class="csv-diff-section"${ouvert ? " open" : ""}>
+      <summary>${titre} (${n})${note ? `<span class="csv-diff-note">${note}</span>` : ""}</summary>
+      ${contenu}
+    </details>`;
+
+  document.getElementById("csvDiff").innerHTML = `
+    <div class="csv-diff-stats">
+      <span class="csv-diff-pill ajout">+ ${data.ajouts.length} ajoutée(s)</span>
+      <span class="csv-diff-pill modif">✎ ${data.modifications.length} modifiée(s)</span>
+      <span class="csv-diff-pill">= ${data.inchanges} inchangée(s)</span>
+      ${data.absents.length ? `<span class="csv-diff-pill absent">${data.absents.length} absente(s) du fichier</span>` : ""}
+      ${data.ignorees ? `<span class="csv-diff-pill absent">${data.ignorees} ignorée(s)</span>` : ""}
+    </div>
+    ${data.ajouts.length + data.modifications.length + data.absents.length === 0 ? "" : `
+    <div class="csv-diff-list">
+      ${section("Lignes modifiées", data.modifications.length, modifs, "clic sur un lieu : avant / après", true)}
+      ${section("Lignes ajoutées", data.ajouts.length, ajouts, "", data.modifications.length === 0)}
+      ${section("En base mais absentes du fichier", data.absents.length, absents, "conservées telles quelles")}
+    </div>`}
+    ${data.ignorees ? `<p class="csv-col-info" style="margin-top:.5rem">Ignorées : doublons dans le fichier ou nouveaux lieux sans coordonnées.</p>` : ""}
+    <p class="csv-col-info" style="margin-top:.5rem">Une case vide dans le fichier garde la valeur actuelle.</p>`;
+}
+
 async function importCsvToDB() {
   if (!_csvFeatures.length) return;
   const btn = document.getElementById("csvImportBtn");
@@ -1949,7 +2053,7 @@ async function importCsvToDB() {
   errEl.classList.add("hidden");
 
   try {
-    const res = await apiFetch(`/admin/data/import-file/${currentDataCategory}`, {
+    const res = await apiFetch(csvImportPath(), {
       method: "POST",
       body: JSON.stringify(_csvFeatures),
     });
@@ -1957,18 +2061,19 @@ async function importCsvToDB() {
     if (!res.ok) {
       errEl.textContent = data.message || "Erreur serveur";
       errEl.classList.remove("hidden");
+      btn.disabled = false;
+      btn.textContent = "⬆ Valider l'import";
       return;
     }
     document.getElementById("csvModal").classList.add("hidden");
-    alert(`Import terminé : ${data.imported} entrée(s) ajoutée(s).`);
+    alert(`Import terminé : ${data.imported} ajoutée(s), ${data.updated ?? 0} mise(s) à jour.`);
     loadPoiData();
     loadCategories();
   } catch {
     errEl.textContent = "Serveur indisponible";
     errEl.classList.remove("hidden");
-  } finally {
     btn.disabled = false;
-    btn.textContent = "⬆ Importer en DB";
+    btn.textContent = "⬆ Valider l'import";
   }
 }
 
