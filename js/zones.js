@@ -17,11 +17,12 @@ const ZC_CHAMPS_UNITE = [
   { champ: "prix", label: "Prix (écus)" },
   { champ: "entretien", label: "Entretien (écus/j)" },
   { champ: "niveau", label: "Niveau requis" },
+  { champ: "vitesse", label: "Allure (× marche)" },
 ];
-const ZC_ORDRE_SECTIONS = ["Unités", "Affinités", "Écus", "Batailles", "Coffres", "Entretien", "Événements", "Zones"];
+const ZC_ORDRE_SECTIONS = ["Unités", "Affinités", "Écus", "Batailles", "Camp", "Coffres", "Entretien", "Événements", "Zones"];
 // Icône et phrase d'explication de chaque section
 const ZC_SECTIONS = {
-  "Unités": { icone: "🛡️", desc: "Attaque, vie, prix, entretien et niveau requis de chaque unité." },
+  "Unités": { icone: "🛡️", desc: "Attaque, vie, prix, entretien, niveau requis et allure de marche de chaque unité (une armée avance au rythme de la plus lente)." },
   "Affinités": { icone: "🔁", desc: "Qui est fort ou faible contre qui : le cycle des unités." },
   "Écus": { icone: "💰", desc: "Ce que gagnent les joueurs : bonus du jour, visites, niveaux, solde de départ." },
   "Batailles": { icone: "⚔️", desc: "Manches, murs, pillage et tailles maximales des armées." },
