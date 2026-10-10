@@ -122,7 +122,9 @@
   // -----------------------------
   const counterEl = document.getElementById("countPois");
   if (counterEl) {
-    const target = Number(counterEl.dataset.count || "0");
+    // valeur écrite dans la page en secours ; le vrai nombre vient de l'API
+    let target = Number(counterEl.dataset.count || "0");
+    let anime = false;
     const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
     const formatFR = (n) => {
@@ -130,7 +132,31 @@
       return n.toLocaleString("fr-FR").replace(/\s/g, "\u00A0");
     };
 
+    // Nombre réel de lieux de l'appli : compteur exact, et "plus de 26 000"
+    // (arrondi au millier inférieur) dans les autres mentions de la page
+    fetch("https://api.explogo.fr/api/lieux/total")
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => {
+        const total = Number(data?.total);
+        if (!Number.isFinite(total) || total <= 0) return;
+        target = total;
+        if (anime) counterEl.textContent = formatFR(target); // compteur déjà joué
+
+        const arrondi = formatFR(Math.floor(total / 1000) * 1000);
+        document.querySelectorAll("[data-lieux-arrondi]").forEach((el) => {
+          el.textContent = el.dataset.lieuxArrondi.replace("{n}", arrondi);
+        });
+        // badge de l'onglet "Carte interactive" (repris à chaque changement d'onglet)
+        document.querySelectorAll("[data-badge-lieux]").forEach((el) => {
+          el.dataset.badge = `+${arrondi} lieux`;
+          const badge = document.getElementById("featureBadge");
+          if (badge && el.classList.contains("is-active")) badge.textContent = el.dataset.badge;
+        });
+      })
+      .catch(() => {});
+
     const animate = () => {
+      anime = true;
       if (prefersReduced || !Number.isFinite(target) || target <= 0) {
         counterEl.textContent = formatFR(target);
         return;
