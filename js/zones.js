@@ -25,6 +25,7 @@ const ZC_SECTIONS = {
   "Affinités": { icone: "🔁", desc: "Qui est fort ou faible contre qui : le cycle des unités." },
   "Écus": { icone: "💰", desc: "Ce que gagnent les joueurs : bonus du jour, visites, niveaux, solde de départ." },
   "Batailles": { icone: "⚔️", desc: "Manches, murs, pillage et tailles maximales des armées." },
+  "Camp": { icone: "⛺", desc: "Camp principal : la zone d'où partent les armées d'un joueur. Déplacement, bonus de défense, pertes s'il tombe." },
   "Coffres": { icone: "📦", desc: "Écus produits chaque jour par une zone contrôlée." },
   "Entretien": { icone: "🍞", desc: "Coût des troupes et désertion quand on ne peut pas payer." },
   "Événements": { icone: "🎲", desc: "Un événement à chaque bataille, tiré au sort selon ces poids (10 sort deux fois plus souvent que 5, 0 = jamais), et la force de chacun." },
