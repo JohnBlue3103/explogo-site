@@ -154,10 +154,11 @@ function stAfficher(d) {
     </div>
 
     <h2 class="st-section">Garde-robe</h2>
+    ${g.indisponible ? '<p class="st-vide">Pas encore disponible sur ce serveur.</p>' : `
     <div class="st-tuiles">
       ${stTuile("Pièces achetées", stNb(g.achats), `par ${stNb(g.acheteurs)} joueur(s)`)}
       ${stTuile("Avatars créés portés", stNb(g.tenuesPortees))}
     </div>
-    ${stClassement("Pièces les plus achetées", g.topPieces, (l) => l.piece)}
+    ${stClassement("Pièces les plus achetées", g.topPieces, (l) => l.piece)}`}
   `;
 }
