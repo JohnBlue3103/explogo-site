@@ -114,6 +114,7 @@ function syncMobileNav(isAdmin) {
   document.getElementById("actualiteNavBtnM")?.classList.toggle("hidden", !isAdmin);
   document.getElementById("zonesNavBtnM")?.classList.toggle("hidden", !isAdmin);
   document.getElementById("presseNavBtnM")?.classList.toggle("hidden", !isAdmin);
+  document.getElementById("statsNavBtnM")?.classList.toggle("hidden", !isAdmin);
 }
 
 function showDashboard() {
@@ -131,6 +132,7 @@ function showDashboard() {
   document.getElementById("contribNavBtn")?.classList.toggle("hidden", !isAdmin);
   document.getElementById("zonesNavBtn")?.classList.toggle("hidden", !isAdmin);
   document.getElementById("presseNavBtn")?.classList.toggle("hidden", !isAdmin);
+  document.getElementById("statsNavBtn")?.classList.toggle("hidden", !isAdmin);
   syncMobileNav(isAdmin);
 
   if (isAdmin) {

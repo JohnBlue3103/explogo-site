@@ -2132,3 +2132,42 @@ b.zc-fort { color: #2E7D32; } b.zc-faible { color: #B5482F; }
   .pb-carte{ flex-wrap: wrap; }
   .pb-carte-actions{ width:100%; justify-content:flex-end; }
 }
+
+
+/* ===== Statistiques ===== */
+.stats-bo .page-header { align-items: flex-start; }
+.st-periodes { display: flex; gap: 6px; }
+.st-periodes .btn-outline.active { background: var(--primary); color: #fff; border-color: var(--primary); }
+.st-section { font-size: 1.05rem; margin: 28px 0 12px; color: var(--text); }
+.st-tuiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px; margin-bottom: 14px; }
+.st-tuile { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px 16px; }
+.st-tuile-titre { font-size: 0.78rem; color: var(--text-muted); font-weight: 600; }
+.st-tuile-valeur { font-size: 1.6rem; font-weight: 800; margin-top: 4px; font-variant-numeric: tabular-nums; }
+.st-tuile-sous { font-size: 0.76rem; color: var(--text-muted); margin-top: 4px; }
+.st-carte { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px 16px; margin-bottom: 14px; min-width: 0; }
+.st-carte-tete { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; flex-wrap: wrap; margin-bottom: 10px; }
+.st-carte-tete h3 { font-size: 0.92rem; }
+.st-total { font-size: 0.76rem; color: var(--text-muted); }
+.st-deux { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 14px; }
+.st-deux > .st-carte { margin-bottom: 0; }
+.st-deux { margin-bottom: 14px; }
+/* barres par jour : fines, bout arrondi ancré sur la ligne de base, 2px d'écart */
+.st-serie { display: flex; align-items: flex-end; gap: 2px; height: 120px; border-bottom: 1px solid var(--border); }
+.st-col { flex: 1; height: 100%; display: flex; align-items: flex-end; cursor: default; }
+.st-col:hover { background: rgba(58,125,68,0.08); }
+.st-barre { width: 100%; background: var(--primary); border-radius: 3px 3px 0 0; }
+.st-axe { display: flex; justify-content: space-between; font-size: 0.72rem; color: var(--text-muted); margin-top: 4px; }
+.st-rang { display: grid; grid-template-columns: minmax(110px, 38%) 1fr auto; align-items: center; gap: 10px; padding: 4px 0; }
+.st-rang-nom { font-size: 0.82rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.st-rang-piste { height: 10px; }
+.st-rang-barre { height: 100%; background: var(--primary); border-radius: 0 3px 3px 0; }
+.st-rang-n { font-size: 0.82rem; font-weight: 700; font-variant-numeric: tabular-nums; min-width: 32px; text-align: right; }
+.st-table { width: 100%; border-collapse: collapse; font-size: 0.82rem; }
+.st-table th, .st-table td { text-align: left; padding: 6px 8px; border-bottom: 1px solid var(--border); font-variant-numeric: tabular-nums; }
+.st-table th { color: var(--text-muted); font-weight: 600; }
+.st-note { font-size: 0.76rem; color: var(--text-muted); margin: -6px 0 6px; }
+.st-vide { color: var(--text-muted); font-size: 0.85rem; padding: 10px 0; }
+@media (max-width: 600px) {
+  .st-deux { grid-template-columns: 1fr; }
+  .st-periodes { margin-top: 8px; }
+}
