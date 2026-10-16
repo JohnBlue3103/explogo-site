@@ -3,3 +3,5 @@ Allow: /
 Disallow: /backoffice.html
 
 Sitemap: https://explogo.fr/sitemap.xml
+Sitemap: https://explogo.fr/sitemap-patrimoine.xml
+Sitemap: https://explogo.fr/sitemap-articles.xml
