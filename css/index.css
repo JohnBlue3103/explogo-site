@@ -292,13 +292,16 @@ h3{
 h1{ font-size: var(--h1); }
 h2{ font-size: var(--h2); }
 
-.section-head h2{
+.section-head h2,
+.section-head h1.titre-section{
   display: inline-block;
   position: relative;
   padding-bottom: 10px;
 }
+.section-head h1.titre-section{ font-size: var(--h2); }
 
-.section-head h2::after{
+.section-head h2::after,
+.section-head h1.titre-section::after{
   content:"";
   position:absolute;
   left:0;
@@ -516,15 +519,15 @@ h2{ font-size: var(--h2); }
 }
 
 .card-explorateurs::before{
-  background-image: url("../assets/img/vers_page_explorateur.png");
+  background-image: url("../assets/img/vers_page_explorateur.webp");
 }
 
 .card-enseignants::before{
-  background-image: url("../assets/img/vers_page_education.png");
+  background-image: url("../assets/img/vers_page_education.webp");
 }
 
 .card-tourisme::before{
-  background-image: url("../assets/img/vers_page_tourisme.png");
+  background-image: url("../assets/img/vers_page_tourisme.webp");
 }
 
 .link{

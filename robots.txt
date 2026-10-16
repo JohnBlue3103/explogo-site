@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+Disallow: /backoffice.html
+
+Sitemap: https://explogo.fr/sitemap.xml

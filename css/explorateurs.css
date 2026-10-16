@@ -394,27 +394,27 @@
 
 /* Images par catégorie */
 .report-rencontres::before{
-  background-image: url("../assets/img/personnage.png");
+  background-image: url("../assets/img/personnage.webp");
 }
 
 .report-batailles::before{
-  background-image: url("../assets/img/bataille.png");
+  background-image: url("../assets/img/bataille.webp");
 }
 
 .report-lieux::before{
-  background-image: url("../assets/img/iconique.png");
+  background-image: url("../assets/img/iconique.webp");
 }
 
 .report-monuments::before{
-  background-image: url("../assets/img/monument.png");
+  background-image: url("../assets/img/monument.webp");
 }
 
 .report-prehistoire::before{
-  background-image: url("../assets/img/prehistoire.png");
+  background-image: url("../assets/img/prehistoire.webp");
 }
 
 .report-antiquite::before{
-  background-image: url("../assets/img/antiquite.png");
+  background-image: url("../assets/img/antiquite.webp");
 }
 
 /* ======================================================
