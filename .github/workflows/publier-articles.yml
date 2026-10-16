@@ -1,5 +1,5 @@
-# Publication programmée des articles : chaque lundi matin, met en ligne les articles
-# de outils/articles/ dont la date est arrivée (voir outils/articles.js).
+# Chaque lundi matin : met en ligne les articles de outils/articles/ dont la date est arrivée
+# (outils/articles.js) et met à jour la note App Store affichée sur l'accueil (outils/notes.js).
 name: Publier les articles programmés
 
 on:
@@ -19,20 +19,23 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-      - name: Générer les articles publiables aujourd'hui
-        run: node outils/articles.js
+      - name: Note App Store, balises SEO et articles publiables aujourd'hui
+        run: |
+          node outils/notes.js
+          node outils/seo.js
+          node outils/articles.js
       - name: Mettre en ligne s'il y a du nouveau
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          git add -A articles sitemap-articles.xml
+          git add -A articles sitemap-articles.xml sitemap.xml outils/notes.json *.html
           if git diff --cached --quiet; then
-            echo "Aucun nouvel article cette semaine."
+            echo "Rien de nouveau cette semaine."
             exit 0
           fi
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git commit -m "Article programmé publié ($(date +%F))"
+          git commit -m "Mise à jour du lundi : articles programmés et note des stores ($(date +%F))"
           git push
           # un push fait par cette tâche ne relance pas toujours GitHub Pages : on le demande
           gh api -X POST "repos/${{ github.repository }}/pages/builds" || true
