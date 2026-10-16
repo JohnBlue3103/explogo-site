@@ -1,0 +1,38 @@
+# Publication programmée des articles : chaque lundi matin, met en ligne les articles
+# de outils/articles/ dont la date est arrivée (voir outils/articles.js).
+name: Publier les articles programmés
+
+on:
+  schedule:
+    - cron: '0 5 * * 1'   # lundi 5 h UTC (6 h ou 7 h à Paris)
+  workflow_dispatch:       # bouton « Run workflow » pour publier à la main
+
+permissions:
+  contents: write
+  pages: write
+
+jobs:
+  publier:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Générer les articles publiables aujourd'hui
+        run: node outils/articles.js
+      - name: Mettre en ligne s'il y a du nouveau
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          git add -A articles sitemap-articles.xml
+          if git diff --cached --quiet; then
+            echo "Aucun nouvel article cette semaine."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "Article programmé publié ($(date +%F))"
+          git push
+          # un push fait par cette tâche ne relance pas toujours GitHub Pages : on le demande
+          gh api -X POST "repos/${{ github.repository }}/pages/builds" || true
