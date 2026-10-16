@@ -77,6 +77,9 @@ function faqDe(html) {
   return qr;
 }
 
+// Note des stores (outils/notes.json, mis à jour par outils/notes.js) : étoiles dans Google
+const NOTE = require('./notes').noteGlobale(JSON.parse(fs.readFileSync(path.join(__dirname, 'notes.json'), 'utf8')));
+
 const ORGANISATION = {
   '@type': 'Organization', '@id': SITE + '/#organisation', name: 'ExploGo', url: SITE + '/',
   logo: SITE + '/assets/img/logo.png',
@@ -94,6 +97,7 @@ function donneesStructurees(p, html) {
       installUrl: [STORES.android, STORES.ios], downloadUrl: [STORES.android, STORES.ios],
       offers: { '@type': 'Offer', price: '0', priceCurrency: 'EUR' },
       publisher: { '@id': SITE + '/#organisation' },
+      ...(NOTE ? { aggregateRating: { '@type': 'AggregateRating', ratingValue: NOTE.note.toFixed(1), ratingCount: NOTE.nombre, bestRating: '5', worstRating: '1' } } : {}),
     });
   }
   graphe.push({
@@ -158,12 +162,22 @@ function ecrire(fichier, lignes, garderTitre) {
   const viewport = html.match(/[ \t]*<meta[^>]+name="viewport"[^>]*>\r?\n/);
   if (!viewport) throw new Error('pas de meta viewport dans ' + fichier);
   html = html.replace(viewport[0], viewport[0] + bloc);
-  fs.writeFileSync(chemin, html);
+  const change = html !== fs.readFileSync(chemin, 'utf8');
+  if (change) fs.writeFileSync(chemin, html);
+  return change;
 }
+
+// lastmod du sitemap : on garde la date précédente tant que la page n'a pas changé
+const ancienLastmod = {};
+try {
+  for (const m of fs.readFileSync(path.join(RACINE, 'sitemap.xml'), 'utf8').matchAll(/<loc>([^<]+)<\/loc>\s*<lastmod>([^<]+)<\/lastmod>/g)) ancienLastmod[m[1]] = m[2];
+} catch {}
+const lastmod = {};
 
 for (const p of PAGES) {
   const html = fs.readFileSync(path.join(RACINE, p.fichier), 'utf8');
-  ecrire(p.fichier, blocPublic(p, html), false);
+  const change = ecrire(p.fichier, blocPublic(p, html), false);
+  lastmod[p.fichier] = change || !ancienLastmod[urlDe(p)] ? AUJOURDHUI : ancienLastmod[urlDe(p)];
   if (p.titre.length > 60) console.warn('⚠ titre long', p.fichier, p.titre.length);
   if (p.description.length > 160) console.warn('⚠ description longue', p.fichier, p.description.length);
 }
@@ -177,7 +191,7 @@ const sitemap = [
   ...PAGES.map((p) => [
     '  <url>',
     `    <loc>${urlDe(p)}</loc>`,
-    `    <lastmod>${AUJOURDHUI}</lastmod>`,
+    `    <lastmod>${lastmod[p.fichier]}</lastmod>`,
     `    <priority>${p.priorite}</priority>`,
     `    <image:image><image:loc>${SITE}/assets/og/${p.image}.jpg</image:loc></image:image>`,
     '  </url>',

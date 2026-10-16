@@ -1,0 +1,13 @@
+{
+  "_lisez_moi": "appStore est mis à jour chaque lundi par outils/notes.js. googlePlay se saisit à la main (note sur 5 et nombre de notes, visibles dans la Play Console), puis : node outils/notes.js && node outils/seo.js",
+  "appStore": {
+    "note": 5,
+    "nombre": 10,
+    "maj": "2026-10-16"
+  },
+  "googlePlay": {
+    "note": null,
+    "nombre": 0,
+    "maj": null
+  }
+}
