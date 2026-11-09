@@ -40,6 +40,11 @@ window.addEventListener("DOMContentLoaded", () => {
     b.innerHTML = 'RECETTE — api-recette.explogo.fr · <a href="?env=prod">revenir à la prod</a>';
     document.body.prepend(b);
     document.title = "[RECETTE] " + document.title;
+  } else {
+    const b = document.createElement("div");
+    b.className = "bo-env-prod";
+    b.innerHTML = 'PRODUCTION — api.explogo.fr · <a href="?env=recette">passer en recette</a>';
+    document.body.prepend(b);
   }
 
   if (token) {

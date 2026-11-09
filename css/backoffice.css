@@ -2068,6 +2068,13 @@ b.zc-fort { color: #2E7D32; } b.zc-faible { color: #B5482F; }
   font-weight: 700; font-size: 13px; letter-spacing: .5px; padding: 6px 12px;
 }
 .bo-env-recette a { color: #fff; text-decoration: underline; font-weight: 400; }
+/* Bandeau de production, plus discret, avec le lien vers la recette */
+.bo-env-prod {
+  position: sticky; top: 0; z-index: 9999;
+  background: #1b5e3b; color: #fff; text-align: center;
+  font-weight: 700; font-size: 13px; letter-spacing: .5px; padding: 6px 12px;
+}
+.bo-env-prod a { color: #fff; text-decoration: underline; font-weight: 400; }
 
 /* =============================================================
    PRESSE — articles « On parle de nous »
