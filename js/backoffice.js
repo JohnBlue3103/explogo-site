@@ -1100,7 +1100,6 @@ const CATEGORY_EXTRA_FIELDS = {
         { value: "INDETERMINE",  label: "Indéterminé" },
     ]},
     { key: "bibliographie", label: "Bibliographie",    type: "textarea" },
-    { key: "mode_expert",   label: "Mode expert",      type: "textarea" },
     { key: "audio_file",    label: "Narration AR (clé audio)",  type: "text" },
   ],
   eglise: [
