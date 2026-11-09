@@ -10,6 +10,7 @@ const ZC_UNITES = [
   { type: "ARCHER", nom: "Archers", emoji: "🏹" },
   { type: "CAVALIER", nom: "Cavaliers", emoji: "🐎" },
   { type: "CATAPULTE", nom: "Catapultes", emoji: "🪨" },
+  { type: "COMMANDANT", nom: "Commandants", emoji: "👑" },
 ];
 const ZC_CHAMPS_UNITE = [
   { champ: "attaque", label: "Attaque" },
