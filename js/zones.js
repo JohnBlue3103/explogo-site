@@ -12,6 +12,28 @@ const ZC_UNITES = [
   { type: "CATAPULTE", nom: "Catapultes", emoji: "🪨" },
   { type: "COMMANDANT", nom: "Commandants", emoji: "👑" },
 ];
+// Unités du tableau de réglages : celles du simulateur plus les engins de siège
+const ZC_UNITES_TABLEAU = [
+  ...ZC_UNITES,
+  { type: "BELIER", nom: "Béliers", emoji: "🪵" },
+  { type: "TREBUCHET", nom: "Trébuchets", emoji: "🏰" },
+];
+// Défenses : vie et défense au combat (les tours tirent aussi : attaque au combat)
+const ZC_DEFENSES = [
+  { type: "BARRICADE", nom: "Barricades", emoji: "🪵" },
+  { type: "MUR_BOIS", nom: "Murs en bois", emoji: "🪵" },
+  { type: "PORTE_BOIS", nom: "Portes en bois", emoji: "🚪" },
+  { type: "MUR", nom: "Murs", emoji: "🧱" },
+  { type: "PORTE", nom: "Portes", emoji: "🚪" },
+  { type: "HERSE", nom: "Herses", emoji: "⚔️" },
+  { type: "TOUR", nom: "Tours de guet", emoji: "🗼" },
+  { type: "TOUR_ARBALETE", nom: "Tours arbalètes", emoji: "🏹" },
+];
+const ZC_CHAMPS_DEFENSE = [
+  { champ: "pv", label: "Vie" },
+  { champ: "combatDefense", label: "Défense au combat" },
+  { champ: "combatAttaque", label: "Attaque au combat (tours)" },
+];
 const ZC_CHAMPS_UNITE = [
   { champ: "attaque", label: "Attaque" },
   { champ: "pv", label: "Vie" },
@@ -19,11 +41,14 @@ const ZC_CHAMPS_UNITE = [
   { champ: "entretien", label: "Entretien (écus/j)" },
   { champ: "niveau", label: "Niveau requis" },
   { champ: "vitesse", label: "Allure (× marche)" },
+  { champ: "combatAttaque", label: "Attaque au combat" },
+  { champ: "combatDefense", label: "Défense au combat" },
+  { champ: "combatMouvement", label: "Déplacement au combat (cases)" },
 ];
 const ZC_ORDRE_SECTIONS = ["Unités", "Affinités", "Écus", "Batailles", "Camp", "Coffres", "Entretien", "Événements", "Zones"];
 // Icône et phrase d'explication de chaque section
 const ZC_SECTIONS = {
-  "Unités": { icone: "🛡️", desc: "Attaque, vie, prix, entretien, niveau requis et allure de marche de chaque unité (une armée avance au rythme de la plus lente)." },
+  "Unités": { icone: "🛡️", desc: "Attaque, vie, prix, entretien, niveau requis et allure de marche de chaque unité (une armée avance au rythme de la plus lente), puis attaque, défense et déplacement du combat tactique." },
   "Affinités": { icone: "🔁", desc: "Qui est fort ou faible contre qui : le cycle des unités." },
   "Écus": { icone: "💰", desc: "Ce que gagnent les joueurs : bonus du jour, visites, niveaux, solde de départ." },
   "Batailles": { icone: "⚔️", desc: "Manches, murs, pillage et tailles maximales des armées." },
@@ -154,11 +179,22 @@ function zcTableUnites() {
     <p class="zc-aide">Survolez une case pour voir la valeur par défaut. Entretien : 0,5 possible.</p>
     <div class="zc-scroll"><table class="zc-table">
       <thead><tr><th>Unité</th>${ZC_CHAMPS_UNITE.map(c => `<th>${c.label}</th>`).join("")}<th></th></tr></thead>
-      <tbody>${ZC_UNITES.map(u => `
+      <tbody>${ZC_UNITES_TABLEAU.map(u => `
         <tr>
           <td class="zc-unite">${u.emoji} ${u.nom}</td>
           ${ZC_CHAMPS_UNITE.map(c => `<td>${zcInput(`unite.${u.type}.${c.champ}`)}</td>`).join("")}
           <td>${zcBoutonDefautGroupe(ZC_CHAMPS_UNITE.map(c => `unite.${u.type}.${c.champ}`))}</td>
+        </tr>`).join("")}
+      </tbody>
+    </table></div>
+    <p class="zc-aide">Défenses (combat tactique) : une défense plus haute que l'attaque de l'assaillant réduit ses dégâts (−5 % par point d'écart), une attaque plus haute les augmente (+10 % par point).</p>
+    <div class="zc-scroll"><table class="zc-table">
+      <thead><tr><th>Défense</th>${ZC_CHAMPS_DEFENSE.map(c => `<th>${c.label}</th>`).join("")}<th></th></tr></thead>
+      <tbody>${ZC_DEFENSES.map(u => `
+        <tr>
+          <td class="zc-unite">${u.emoji} ${u.nom}</td>
+          ${ZC_CHAMPS_DEFENSE.map(c => `<td>${zcInput(`unite.${u.type}.${c.champ}`)}</td>`).join("")}
+          <td>${zcBoutonDefautGroupe(ZC_CHAMPS_DEFENSE.map(c => `unite.${u.type}.${c.champ}`))}</td>
         </tr>`).join("")}
       </tbody>
     </table></div>`;
