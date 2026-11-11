@@ -41,6 +41,8 @@ const ZC_CHAMPS_UNITE = [
   { champ: "entretien", label: "Entretien (écus/j)" },
   { champ: "niveau", label: "Niveau requis" },
   { champ: "vitesse", label: "Allure (× marche)" },
+  { champ: "degatsMin", label: "Dégâts min (0 = auto)" },
+  { champ: "degatsMax", label: "Dégâts max (0 = auto)" },
   { champ: "combatAttaque", label: "Attaque au combat" },
   { champ: "combatDefense", label: "Défense au combat" },
   { champ: "combatMouvement", label: "Déplacement au combat (cases)" },
@@ -187,7 +189,7 @@ function zcTableUnites() {
         </tr>`).join("")}
       </tbody>
     </table></div>
-    <p class="zc-aide">Défenses (combat tactique) : une défense plus haute que l'attaque de l'assaillant réduit ses dégâts (−5 % par point d'écart), une attaque plus haute les augmente (+10 % par point).</p>
+    <p class="zc-aide">Défenses (combat tactique) : comme dans Heroes 3, chaque point d'attaque au-dessus de la défense de la cible ajoute 5 % de dégâts (jusqu'à +300 %), chaque point de défense au-dessus de l'attaque en retire 2,5 % (jusqu'à −70 %).</p>
     <div class="zc-scroll"><table class="zc-table">
       <thead><tr><th>Défense</th>${ZC_CHAMPS_DEFENSE.map(c => `<th>${c.label}</th>`).join("")}<th></th></tr></thead>
       <tbody>${ZC_DEFENSES.map(u => `
